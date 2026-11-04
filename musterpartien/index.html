@@ -10,8 +10,8 @@ table{width:100%;border-collapse:collapse;font-size:.9rem}th,td{padding:6px 4px;
 .bt{display:inline-block;width:70px;height:8px;background:var(--line);border-radius:5px;vertical-align:middle;margin-right:6px;overflow:hidden}.bt i{display:block;height:100%}
 a.go{color:var(--acc);cursor:pointer;text-decoration:underline}
 .view{display:grid;grid-template-columns:minmax(260px,420px) 1fr;gap:16px;align-items:start}@media(max-width:760px){.view{grid-template-columns:1fr}}
-.board{display:grid;grid-template-columns:repeat(8,1fr);aspect-ratio:1;border-radius:6px;overflow:hidden;border:1px solid var(--line);width:100%;max-width:420px}
-.sq{display:flex;align-items:center;justify-content:center;font-size:min(7.2vw,38px);line-height:1;position:relative;user-select:none}.sq.l{background:var(--lt)}.sq.d{background:var(--dk)}.sq.h{box-shadow:inset 0 0 0 100px var(--hl)}
+.board{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));grid-template-rows:repeat(8,minmax(0,1fr));aspect-ratio:1;border-radius:6px;overflow:hidden;border:1px solid var(--line);width:100%;max-width:420px;container-type:inline-size}
+.sq{display:flex;align-items:center;justify-content:center;font-size:9.5cqw;line-height:1;position:relative;user-select:none;min-width:0;min-height:0;overflow:hidden;font-family:"Segoe UI Symbol","DejaVu Sans","Noto Sans Symbols 2",sans-serif}.sq span{display:block;line-height:1;transform:translateY(-4%)}.sq.l{background:var(--lt)}.sq.d{background:var(--dk)}.sq.h{box-shadow:inset 0 0 0 100px var(--hl)}
 .pw{color:#fff;text-shadow:0 0 2px #000,0 0 2px #000,0 0 1px #000}.pb{color:#111;text-shadow:0 0 1px rgba(255,255,255,.4)}
 .ctrl{display:flex;gap:6px;margin:8px 0;flex-wrap:wrap}.ctrl button{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:6px 12px;font:inherit;cursor:pointer}
 .moves{display:flex;flex-wrap:wrap;gap:2px 6px;font-size:.92rem;max-height:200px;overflow:auto;padding:6px;border:1px solid var(--line);border-radius:8px}.moves span.m{cursor:pointer;padding:0 3px;border-radius:4px}.moves span.m.cur{background:var(--acc);color:#fff}.moves span.bk{color:var(--mute)}.moves .no{color:var(--mute)}
@@ -212,7 +212,7 @@ a.go{color:var(--acc);cursor:pointer;text-decoration:underline}
 </script>
 <script>
 const DATA=JSON.parse(document.getElementById('d').textContent);const PGN=document.getElementById('pgn').textContent;
-const G={w:{K:'♚',Q:'♛',R:'♜',B:'♝',N:'♞',P:'♟'}};const files='abcdefgh';
+const G={w:{K:'♚︎',Q:'♛︎',R:'♜︎',B:'♝︎',N:'♞︎',P:'♟︎'}};const files='abcdefgh';
 function parse(fen){const rows=fen.split(' ')[0].split('/');const b=[];for(const r of rows){const x=[];for(const ch of r){if(/\d/.test(ch))for(let i=0;i<+ch;i++)x.push(null);else x.push(ch)}b.push(x)}return b}
 function board(fen,flip,hl){const b=parse(fen);let h='<div class="board">';for(let ri=0;ri<8;ri++)for(let fi=0;fi<8;fi++){const r=flip?7-ri:ri,f=flip?7-fi:fi;const p=b[r][f];const sq=files[f]+(8-r);const light=(r+f)%2===0;const isH=hl&&(hl[0]===sq||hl[1]===sq);h+='<div class="sq '+(light?'l':'d')+(isH?' h':'')+'">'+(p?'<span class="'+(p===p.toUpperCase()?'pw':'pb')+'">'+G.w[p.toUpperCase()]+'</span>':'')+'</div>'}return h+'</div>'}
 const $=s=>document.querySelector(s);let tab='check',gi=0,ply=0,play=null;
