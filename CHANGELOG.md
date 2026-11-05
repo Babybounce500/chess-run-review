@@ -1,8 +1,13 @@
 # Änderungsprotokoll
 
+## 2026-11-05 (fünfte Aktualisierung)
+- **Bullet-Run Teil 4 vom 05.11.** (10 Partien, 6–0–4, Rating laut Header 1078 → 1101, über 1100) eingerechnet und in [docs/RUNS.md](docs/RUNS.md) dokumentiert.
+- **Neu: [docs/ELO-SPRUNG-05-11.md](docs/ELO-SPRUNG-05-11.md):** Dokumentation des Rating-Sprungs vom 05.11. (51 Bullet-Partien, 33–1–17, Header-Rating 979 → 1101) mit Verlaufsgrafik.
+- Jetzt **1081 Partien**, 556–39–486.
+
 ## 2026-11-05 (vierte Aktualisierung)
 - **Bullet-Run Teil 3 vom 05.11.** (23 Partien, 13–1–9, Rating laut Header 1045 → 1086, **Höchstwert 1094**, neuer Bestwert) eingerechnet und in [docs/RUNS.md](docs/RUNS.md) dokumentiert.
-- Jetzt **1071 Partien**, 550–39–482.
+- Damals 1071 Partien.
 
 ## 2026-11-05 (dritte Aktualisierung)
 - **Bullet-Run Teil 2 vom 05.11.** (11 Partien, 8–0–3, Rating laut Header 1021 → 1053, Höchstwert 1053) eingerechnet und in [docs/RUNS.md](docs/RUNS.md) dokumentiert (Run vom 05.11. jetzt in zwei Teilen).
