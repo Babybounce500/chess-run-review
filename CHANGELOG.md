@@ -1,8 +1,12 @@
 # Änderungsprotokoll
 
+## 2026-11-05 (dritte Aktualisierung)
+- **Bullet-Run Teil 2 vom 05.11.** (11 Partien, 8–0–3, Rating laut Header 1021 → 1053, Höchstwert 1053) eingerechnet und in [docs/RUNS.md](docs/RUNS.md) dokumentiert (Run vom 05.11. jetzt in zwei Teilen).
+- Jetzt **1048 Partien**, 537–38–473.
+
 ## 2026-11-05 (zweite Aktualisierung)
 - **Bullet-Run vom 05.11.** (7 Partien, 6–0–1, Rating laut Header 979 → 1012, Höchstwert 1020) eingerechnet und in [docs/RUNS.md](docs/RUNS.md) dokumentiert; dort auch der Run vom 04.11.
-- Jetzt **1037 Partien**, 529–38–470.
+- Damals 1037 Partien.
 
 ## 2026-11-05
 - Fünf neue Live-Partien eingerechnet (damals 1030 Partien). Zwei Siege durch Gegnerfehler bzw. Zeit, ein Remis durch Timeout gegen ungenügendes Material, ein Matt nach Springeropfer und ein Remis durch Patt aus verlorener Stellung (Matt in 4 für den Gegner).
