@@ -6,17 +6,17 @@ Stockfish-Analyse eigener Chess.com-Partien mit Bericht, Lernviewer und Training
 - **Viewer** (Musterpartien, Matt & Taktik, Konterspiel, Computer-Turnier, Tal, Bauernsturm): https://babybounce500.github.io/chess-run-review/musterpartien/
 - Direktlinks im Viewer: `#turnier`, `#mate`, `#konter`, `#tal`, `#games`.
 
-**Runs im Detail** (Sessions, eine Zeile pro Partie): [docs/RUNS.md](docs/RUNS.md) · **Elo-Sprung vom 05.11.:** [docs/ELO-SPRUNG-05-11.md](docs/ELO-SPRUNG-05-11.md)
+**Runs im Detail** (Sessions, eine Zeile pro Partie): [docs/RUNS.md](docs/RUNS.md) · **Elo-Sprung vom 05.11.:** [docs/ELO-SPRUNG-05-11.md](docs/ELO-SPRUNG-05-11.md) · **Finale (1300):** [docs/FINALRUN-1300.md](docs/FINALRUN-1300.md)
 
 ## Datenbasis
 
 | | |
 |---|---|
-| Partien | **1081** (Chess.com-PGN-Exporte, 23.09.–05.11.2026) |
-| Bilanz | 556 Siege – 39 Remis – 486 Niederlagen (51.4 % Siege) |
-| Zeitkontrollen | Bullet 60 s: 393 Partien (55.2 % Siege) · Blitz 5+0: 688 Partien (49.3 % Siege) |
-| Rating (Tageswerte) | Blitz 1269 → 1434 · Bullet 712 → 1101 |
-| Analysierte eigene Züge | 36829 |
+| Partien | **1164** (Chess.com-PGN-Exporte, 23.09.–05.11.2026) |
+| Bilanz | 608 Siege – 40 Remis – 516 Niederlagen (52.2 % Siege) |
+| Zeitkontrollen | Bullet 60 s: 476 Partien (56.5 % Siege) · Blitz 5+0: 688 Partien (49.3 % Siege) |
+| Rating (Tageswerte) | Blitz 1269 → 1434 · Bullet 712 → 1303 |
+| Analysierte eigene Züge | 39598 |
 
 Gegnernamen und Chess.com-Links werden nicht veröffentlicht.
 
@@ -43,10 +43,10 @@ Die Werte sind deshalb **nicht exakt vergleichbar**: Bei geringerer Tiefe schwan
 
 ## Wichtige Definitionen (Bericht und Viewer)
 
-- **Verlorene Stellung:** Die Engine bewertet die Partie irgendwann mit ≤ −300 cp aus deiner Sicht. Aktuell 782 Partien, davon 304 gewonnen (39 %), 23 remis, 455 verloren. Mit Remis 42 % gerettet.
-- **Gegnerfehler bestraft:** Der Gegner verschlechtert seine Stellung um ≥ 200 cp, du stehst danach ≥ +300 und spielst einen Zug mit höchstens 50 cp Verlust. Quote: 815 von 1783.
-- **Vorteil verspielt:** Eigener Vorteil ≥ +300 sinkt durch einen eigenen Zug auf unter +100 (570-mal).
-- **Verpasstes Matt / zugelassenes Matt:** Die Engine sieht Matt in n Zügen für dich bzw. gegen dich und der gespielte Zug lässt es zu bzw. nicht aus (200 bzw. 451).
+- **Verlorene Stellung:** Die Engine bewertet die Partie irgendwann mit ≤ −300 cp aus deiner Sicht. Aktuell 849 Partien, davon 342 gewonnen (40 %), 24 remis, 483 verloren. Mit Remis 43 % gerettet.
+- **Gegnerfehler bestraft:** Der Gegner verschlechtert seine Stellung um ≥ 200 cp, du stehst danach ≥ +300 und spielst einen Zug mit höchstens 50 cp Verlust. Quote: 917 von 1988.
+- **Vorteil verspielt:** Eigener Vorteil ≥ +300 sinkt durch einen eigenen Zug auf unter +100 (642-mal).
+- **Verpasstes Matt / zugelassenes Matt:** Die Engine sieht Matt in n Zügen für dich bzw. gegen dich und der gespielte Zug lässt es zu bzw. nicht aus (223 bzw. 500).
 - **Brillanz-Kandidat (eigene Heuristik, kein offizielles Chess.com-Urteil):** Engine-Bestzug (≤ 15 cp Verlust), mindestens 2 Punkte Material geopfert, danach nicht schlechter als −50 cp, vorher nicht klar gewonnen. Viele Königsopfer sind Fehlalarme.
 - **Schlüsselzug „einziger Zug“ (Konter-Tab):** Du stehst schlechter, spielst den Bestzug, und der zweitbeste Zug ist laut Engine (zwei Varianten, Tiefe 14) mindestens 200 cp schlechter.
 

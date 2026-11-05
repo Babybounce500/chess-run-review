@@ -1,9 +1,15 @@
 # Änderungsprotokoll
 
+## 2026-11-05 (sechste Aktualisierung: Finale, 1300)
+- **Teil 5 bis 7 vom 05.11.** eingerechnet: Teil 5 (50 Partien, 28–1–21, Header 1100 → 1150), Teil 6 (13 Partien, 10–0–3, 1158 → 1206) und das **Finale** (20 Partien, 14–0–6, **1249 → 1303**). Die Teile 5 und 6 waren zuvor nur im Chat ausgewertet und werden hier erstmals dokumentiert.
+- **Neu: [docs/FINALRUN-1300.md](docs/FINALRUN-1300.md):** Auswertung des Finales mit Schwerpunkt auf den 7 Matt-Siegen (alle mit der Dame, 5× Grundreihe).
+- [docs/ELO-SPRUNG-05-11.md](docs/ELO-SPRUNG-05-11.md) und [docs/RUNS.md](docs/RUNS.md) auf alle sieben Teile erweitert.
+- Jetzt **1164 Partien**, 608–40–516.
+
 ## 2026-11-05 (fünfte Aktualisierung)
 - **Bullet-Run Teil 4 vom 05.11.** (10 Partien, 6–0–4, Rating laut Header 1078 → 1101, über 1100) eingerechnet und in [docs/RUNS.md](docs/RUNS.md) dokumentiert.
 - **Neu: [docs/ELO-SPRUNG-05-11.md](docs/ELO-SPRUNG-05-11.md):** Dokumentation des Rating-Sprungs vom 05.11. (51 Bullet-Partien, 33–1–17, Header-Rating 979 → 1101) mit Verlaufsgrafik.
-- Jetzt **1081 Partien**, 556–39–486.
+- Jetzt **1164 Partien**, 608–40–516.
 
 ## 2026-11-05 (vierte Aktualisierung)
 - **Bullet-Run Teil 3 vom 05.11.** (23 Partien, 13–1–9, Rating laut Header 1045 → 1086, **Höchstwert 1094**, neuer Bestwert) eingerechnet und in [docs/RUNS.md](docs/RUNS.md) dokumentiert.
@@ -19,7 +25,7 @@
 
 ## 2026-11-05
 - Fünf neue Live-Partien eingerechnet (damals 1030 Partien). Zwei Siege durch Gegnerfehler bzw. Zeit, ein Remis durch Timeout gegen ungenügendes Material, ein Matt nach Springeropfer und ein Remis durch Patt aus verlorener Stellung (Matt in 4 für den Gegner).
-- Remis-Aufteilung berechnet statt fest eingetragen: Patt 12, Stellungswiederholung 7, Zeit + zu wenig Material 18, zu wenig Material 2.
+- Remis-Aufteilung berechnet statt fest eingetragen: Patt 12, Stellungswiederholung 8, Zeit + zu wenig Material 18, zu wenig Material 2.
 - Dokumentation (README, dieses Protokoll) ergänzt.
 
 ## 2026-11-04

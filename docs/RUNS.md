@@ -13,6 +13,9 @@ Hier sind einzelne Bullet-Runs dokumentiert: Ergebnis, Rating, Fehlerquote und e
 | 05.11.2026 (Teil 2) | Bullet 60 s | 11 | 8–0–3 | 1021 → 1053 (Höchstwert 1053) | 10 % / 12 % |
 | 05.11.2026 (Teil 3) | Bullet 60 s | 23 | 13–1–9 | 1045 → 1086 (Höchstwert 1094) | 9 % / 8 % |
 | 05.11.2026 (Teil 4) | Bullet 60 s | 10 | 6–0–4 | 1078 → 1101 (Höchstwert 1101) | 10 % / 12 % |
+| 05.11.2026 (Teil 5) | Bullet 60 s | 50 | 28–1–21 | 1100 → 1150 (Höchstwert 1150) | 13 % / 12 % |
+| 05.11.2026 (Teil 6) | Bullet 60 s | 13 | 10–0–3 | 1158 → 1206 (Höchstwert 1206) | 15 % / 13 % |
+| 05.11.2026 (Teil 7, Finale: 1300 erreicht) | Bullet 60 s | 20 | 14–0–6 | 1249 → 1303 (Höchstwert 1303) | 13 % / 13 % |
 
 ## Bullet-Run vom 04.11.2026
 
@@ -124,12 +127,126 @@ Hier sind einzelne Bullet-Runs dokumentiert: Ergebnis, Rating, Fehlerquote und e
 | 9 | Weiß | 1054 | Sieg (Aufgabe) | 17 | 3/1/1 | 2/2 | 67 % / 3 % | dein größter Fehler 16.Qxc5 (−11.7, besser Qc7 O-O); Gegnerpatzer 16...b6 (Matt) |
 | 10 | Schwarz | 1100 | Sieg (auf Zeit) | 45 | 5/4/4 | 8/5 | 50 % / 6 % | dein größter Fehler 43...f6+ (Matt, besser Rc4 Kf6); Gegnerpatzer 44.Kf4 (Matt) |
 
+## Bullet-Run vom 05.11.2026 (Teil 5)
+
+- **Ergebnis:** 28 Siege, 1 Remis, 21 Niederlagen aus 50 Partien (56 % Siege).
+- **Rating:** 1100 (vor der ersten Partie) → 1150 (vor der letzten), Höchstwert 1150. Gegner im Schnitt 1121 Elo.
+- **Fehlerquote:** Du 215 Patzer, 273 grobe, 189 kleine Fehler in 1668 Zügen (12.9 % Patzer); Gegner 195 Patzer, 224 grobe, 211 kleine in 1664 Zügen (11.7 %).
+- **Art der Ergebnisse:** 5× Sieg Aufgabe, 12× Niederlage auf Zeit, 17× Sieg auf Zeit, 6× Sieg Schachmatt, 9× Niederlage Schachmatt, 1× Remis Remis wegen Stellungswiederholung.
+
+| # | Farbe | Gegner-Elo | Ergebnis | Züge | Du P/G/k | Gegner P/G | Stand ≥ +1 / ≤ −1 | Auffälligkeit |
+|---|---|---|---|---|---|---|---|---|
+| 1 | Weiß | 1101 | Sieg (Aufgabe) | 34 | 3/3/5 | 3/6 | 34 % / 1 % | dein größter Fehler 32.d7 (−6.4, besser Qxe8+ Kh7); Gegnerpatzer 32...Bg8 (−14.3) |
+| 2 | Schwarz | 1093 | Niederlage (auf Zeit) | 30 | 8/4/2 | 5/2 | 5 % / 68 % | dein größter Fehler 26...Re6 (Matt, besser f6 Qh4); Gegnerpatzer 27.Rh1 (Matt) |
+| 3 | Weiß | 1101 | Sieg (auf Zeit) | 31 | 4/7/3 | 4/2 | 41 % / 23 % | dein größter Fehler 20.Qa5+ (Matt, besser Bb6+ Ke7); Gegnerpatzer 19...Qd3 (Matt) |
+| 4 | Schwarz | 1090 | Niederlage (auf Zeit) | 25 | 1/2/2 | 1/3 | 20 % / 0 % | dein größter Fehler 24...b5 (−5.0, besser Qe7 Rd1); Gegnerpatzer 20.c4 (−3.0) |
+| 5 | Schwarz | 1101 | Sieg (auf Zeit) | 40 | 13/7/3 | 12/5 | 0 % / 84 % | dein größter Fehler 28...Kb5 (Matt, besser Qxd8 Bf3); Gegnerpatzer 20.Nxd7 (Matt) |
+| 6 | Weiß | 1110 | Sieg (Schachmatt) | 46 | 2/10/2 | 5/4 | 71 % / 8 % | dein größter Fehler 11.Qe2 (−4.6, besser Bxd5 Bh2+); Gegnerpatzer 16...Re1+ (−7.0) |
+| 7 | Weiß | 1126 | Niederlage (Schachmatt) | 26 | 2/7/3 | 0/4 | 0 % / 90 % | dein größter Fehler 22.g3 (Matt, besser Qh5 Bb5) |
+| 8 | Schwarz | 1124 | Niederlage (Schachmatt) | 35 | 7/5/4 | 6/3 | 26 % / 52 % | dein größter Fehler 29...e4 (Matt, besser Kg7 Re1); Gegnerpatzer 30.Rb5+ (Matt) |
+| 9 | Weiß | 1071 | Sieg (auf Zeit) | 43 | 6/2/4 | 6/5 | 49 % / 19 % | dein größter Fehler 28.Qxb2 (Matt, besser Rxf8#); Gegnerpatzer 27...Kd8 (Matt) |
+| 10 | Weiß | 1129 | Niederlage (auf Zeit) | 35 | 3/4/7 | 4/4 | 53 % / 20 % | dein größter Fehler 21.Qd7+ (Matt, besser Qxc7+ Nd7); Gegnerpatzer 18...Nf6 (Matt) |
+| 11 | Schwarz | 1085 | Sieg (Schachmatt) | 28 | 5/2/4 | 8/5 | 55 % / 2 % | dein größter Fehler 26...Qc2+ (Matt, besser Qd3#); Gegnerpatzer 28.Rxe6 (Matt) |
+| 12 | Weiß | 1080 | Sieg (Schachmatt) | 27 | 2/10/0 | 3/7 | 47 % / 26 % | dein größter Fehler 5.Bd3 (−5.6, besser cxb4 Bxe4); Gegnerpatzer 26...Nc4 (Matt) |
+| 13 | Schwarz | 1112 | Sieg (auf Zeit) | 51 | 3/12/7 | 4/7 | 52 % / 18 % | dein größter Fehler 50...Rg1+ (−7.4, besser Rxb2 Kc1); Gegnerpatzer 50.Rb2 (−10.0) |
+| 14 | Weiß | 1114 | Sieg (Aufgabe) | 20 | 5/4/2 | 7/3 | 72 % / 8 % | dein größter Fehler 13.Qxh5 (Matt, besser Qxd8+ Kg7); Gegnerpatzer 19...Be6 (Matt) |
+| 15 | Schwarz | 1136 | Sieg (auf Zeit) | 32 | 2/6/6 | 2/4 | 0 % / 88 % | dein größter Fehler 5...d5 (−6.3, besser dxe5 Nxe5); Gegnerpatzer 24.Ra1 (−4.6) |
+| 16 | Weiß | 1136 | Niederlage (Schachmatt) | 34 | 7/8/5 | 3/5 | 7 % / 79 % | dein größter Fehler 30.g3 (Matt, besser Qb4 e2); Gegnerpatzer 30...Ne2+ (Matt) |
+| 17 | Weiß | 1134 | Niederlage (auf Zeit) | 33 | 11/4/3 | 10/5 | 5 % / 61 % | dein größter Fehler 31.Qxg7+ (−8.1, besser Qxe8 Qxe8); Gegnerpatzer 30...Rxd6 (−8.7) |
+| 18 | Schwarz | 1113 | Sieg (auf Zeit) | 37 | 5/4/6 | 3/5 | 9 % / 55 % | dein größter Fehler 36...Ke6 (Matt, besser Ke7 Qf5); Gegnerpatzer 35.Qh7+ (Matt) |
+| 19 | Schwarz | 1139 | Sieg (Schachmatt) | 20 | 0/1/5 | 2/2 | 33 % / 0 % | Gegnerpatzer 20.Kxc2 (Matt) |
+| 20 | Schwarz | 1144 | Niederlage (Schachmatt) | 26 | 3/4/8 | 0/4 | 0 % / 82 % | dein größter Fehler 25...Qg7 (Matt, besser Qc5+ Kh1) |
+| 21 | Weiß | 1108 | Remis | 32 | 1/10/3 | 1/6 | 0 % / 84 % | dein größter Fehler 7.d5 (−3.7, besser Bb5 exd4); Gegnerpatzer 14...e4 (−3.1) |
+| 22 | Weiß | 1122 | Sieg (auf Zeit) | 47 | 3/5/5 | 4/5 | 76 % / 3 % | dein größter Fehler 31.Re1 (−9.4, besser R1d6 Re7); Gegnerpatzer 30...fxe4 (−8.5) |
+| 23 | Schwarz | 1130 | Niederlage (auf Zeit) | 42 | 5/6/3 | 4/5 | 5 % / 39 % | dein größter Fehler 23...Rc6 (−10.2, besser Qb6 b3); Gegnerpatzer 23.f4 (−8.1) |
+| 24 | Weiß | 1143 | Niederlage (auf Zeit) | 38 | 2/4/7 | 2/4 | 32 % / 18 % | dein größter Fehler 26.Qb4+ (−11.2, besser fxg3 h4); Gegnerpatzer 26...Qxb4 (−8.5) |
+| 25 | Schwarz | 1089 | Sieg (auf Zeit) | 28 | 5/8/3 | 5/6 | 25 % / 30 % | dein größter Fehler 25...Re8 (−7.3, besser Nd2 Qe6+); Gegnerpatzer 6.O-O (−6.4) |
+| 26 | Schwarz | 1138 | Sieg (auf Zeit) | 33 | 4/7/3 | 3/7 | 8 % / 50 % | dein größter Fehler 32...Nxa2 (−9.8, besser Ne4+ Ke3); Gegnerpatzer 30.Kc1 (−5.3) |
+| 27 | Schwarz | 1146 | Niederlage (auf Zeit) | 47 | 1/2/4 | 1/4 | 67 % / 0 % | dein größter Fehler 44...g5 (−6.8, besser Be5 Kh2); Gegnerpatzer 21.Bd2 (−5.9) |
+| 28 | Weiß | 1123 | Niederlage (auf Zeit) | 38 | 5/5/4 | 6/9 | 49 % / 36 % | dein größter Fehler 25.Qh3 (Matt, besser Rxe6+ Kxe6); Gegnerpatzer 13...Kd6 (Matt) |
+| 29 | Schwarz | 1121 | Sieg (auf Zeit) | 39 | 7/7/4 | 7/4 | 24 % / 28 % | dein größter Fehler 19...Qe4 (−11.3, besser Nd3+ Kd1); Gegnerpatzer 19.Qf2 (−16.7) |
+| 30 | Weiß | 1116 | Niederlage (Schachmatt) | 29 | 4/5/2 | 1/3 | 2 % / 79 % | dein größter Fehler 27.Qxg8+ (Matt, besser Re5 Nxe5+); Gegnerpatzer 21...g5 (−9.7) |
+| 31 | Weiß | 1129 | Sieg (auf Zeit) | 35 | 5/9/2 | 5/3 | 16 % / 71 % | dein größter Fehler 34.Re2 (−7.6, besser Kh2 Kh5); Gegnerpatzer 34...f4 (−7.4) |
+| 32 | Weiß | 1134 | Sieg (auf Zeit) | 31 | 2/7/4 | 3/5 | 5 % / 66 % | dein größter Fehler 12.Nh7 (−6.4, besser Ne4 Re6); Gegnerpatzer 9...Rf8 (−5.6) |
+| 33 | Schwarz | 1134 | Sieg (auf Zeit) | 46 | 7/5/8 | 7/8 | 2 % / 82 % | dein größter Fehler 39...a6 (Matt, besser Kg4 Rxa7); Gegnerpatzer 39.Rb7 (Matt) |
+| 34 | Schwarz | 1142 | Niederlage (auf Zeit) | 45 | 4/11/4 | 8/7 | 69 % / 12 % | dein größter Fehler 35...Qd4 (−8.2, besser Rb8+ Ka2); Gegnerpatzer 18.Qxc3 (−8.1) |
+| 35 | Schwarz | 1139 | Sieg (Schachmatt) | 21 | 3/1/1 | 4/1 | 12 % / 12 % | dein größter Fehler 11...Bg4 (−5.9, besser Re8 Nf1); Gegnerpatzer 20.Rxe4 (Matt) |
+| 36 | Weiß | 1129 | Niederlage (auf Zeit) | 46 | 13/9/4 | 11/5 | 7 % / 76 % | dein größter Fehler 40.Rxc7+ (Matt, besser Re2 Rf1+); Gegnerpatzer 24...Qxf5 (Matt) |
+| 37 | Weiß | 1110 | Sieg (auf Zeit) | 46 | 3/6/3 | 3/5 | 15 % / 52 % | dein größter Fehler 11.cxd4 (−5.7, besser Qa4+ Ke7); Gegnerpatzer 10...cxd4 (−4.7) |
+| 38 | Schwarz | 1164 | Niederlage (Schachmatt) | 27 | 1/10/2 | 0/6 | 11 % / 19 % | dein größter Fehler 25...Rcd8 (Matt, besser Rfe8 Qd7) |
+| 39 | Weiß | 1151 | Niederlage (Schachmatt) | 27 | 7/6/2 | 3/6 | 13 % / 43 % | dein größter Fehler 27.h3 (Matt, besser f3 Re6); Gegnerpatzer 22...h6 (−11.1) |
+| 40 | Schwarz | 1152 | Niederlage (Schachmatt) | 26 | 3/1/2 | 0/0 | 0 % / 67 % | dein größter Fehler 23...Rd5 (Matt, besser Rb8 Bf6+) |
+| 41 | Weiß | 1147 | Niederlage (auf Zeit) | 41 | 3/6/3 | 2/2 | 10 % / 49 % | dein größter Fehler 19.Nxf6 (−6.2, besser Rh7+ Kf8); Gegnerpatzer 18...h5 (−12.0) |
+| 42 | Weiß | 1100 | Niederlage (auf Zeit) | 47 | 1/9/11 | 3/5 | 41 % / 19 % | dein größter Fehler 19.Bd3 (−3.3, besser a5 Nf5); Gegnerpatzer 27...Bxe6 (−6.0) |
+| 43 | Schwarz | 1093 | Sieg (Aufgabe) | 17 | 0/1/0 | 1/1 | 6 % / 0 % | Gegnerpatzer 17.Qf3 (−11.0) |
+| 44 | Weiß | 1087 | Sieg (Aufgabe) | 21 | 2/6/2 | 1/3 | 5 % / 29 % | dein größter Fehler 20.Rxh5 (−5.4, besser Qg3 h4); Gegnerpatzer 20...Qc4 (−13.8) |
+| 45 | Schwarz | 1131 | Sieg (Schachmatt) | 40 | 6/4/3 | 7/9 | 65 % / 1 % | dein größter Fehler 22...Bd4+ (Matt, besser Qd4+ Re3); Gegnerpatzer 22.Rfe1 (Matt) |
+| 46 | Schwarz | 1100 | Sieg (auf Zeit) | 39 | 9/6/6 | 4/7 | 0 % / 82 % | dein größter Fehler 36...Bxf6 (Matt, besser Rc6 Nd7+); Gegnerpatzer 36.Qh4 (Matt) |
+| 47 | Weiß | 1157 | Niederlage (Schachmatt) | 27 | 6/6/4 | 2/6 | 26 % / 46 % | dein größter Fehler 25.Kg3 (Matt, besser f3 Kxg7); Gegnerpatzer 20...Ng7 (−5.3) |
+| 48 | Schwarz | 1118 | Sieg (auf Zeit) | 22 | 2/1/3 | 1/2 | 16 % / 77 % | dein größter Fehler 16...Qxh2+ (−12.5, besser Nc6 Kh1); Gegnerpatzer 13.Nxd5 (−9.9) |
+| 49 | Schwarz | 1125 | Sieg (auf Zeit) | 34 | 9/4/3 | 7/2 | 18 % / 59 % | dein größter Fehler 34...Kg7 (Matt, besser b6 Ne4); Gegnerpatzer 33.Nf6 (Matt) |
+| 50 | Weiß | 1147 | Sieg (Aufgabe) | 13 | 0/0/3 | 1/3 | 32 % / 12 % | Gegnerpatzer 9...Qxb2 (−3.5) |
+
+## Bullet-Run vom 05.11.2026 (Teil 6)
+
+- **Ergebnis:** 10 Siege, 0 Remis, 3 Niederlagen aus 13 Partien (77 % Siege).
+- **Rating:** 1158 (vor der ersten Partie) → 1206 (vor der letzten), Höchstwert 1206. Gegner im Schnitt 1169 Elo.
+- **Fehlerquote:** Du 65 Patzer, 69 grobe, 51 kleine Fehler in 421 Zügen (15.4 % Patzer); Gegner 52 Patzer, 72 grobe, 53 kleine in 416 Zügen (12.5 %).
+- **Art der Ergebnisse:** 6× Sieg auf Zeit, 2× Niederlage Schachmatt, 3× Sieg Schachmatt, 1× Sieg hat gewonnen - die Partie wurde verlassen, 1× Niederlage auf Zeit.
+
+| # | Farbe | Gegner-Elo | Ergebnis | Züge | Du P/G/k | Gegner P/G | Stand ≥ +1 / ≤ −1 | Auffälligkeit |
+|---|---|---|---|---|---|---|---|---|
+| 1 | Weiß | 1130 | Sieg (auf Zeit) | 30 | 4/5/5 | 4/5 | 24 % / 29 % | dein größter Fehler 20.Be4 (−4.8, besser Bxf8 Kxf8); Gegnerpatzer 14...b5 (−5.9) |
+| 2 | Schwarz | 1150 | Niederlage (Schachmatt) | 37 | 10/2/1 | 4/1 | 11 % / 45 % | dein größter Fehler 29...c5 (Matt, besser Bxg4 Qxf4+); Gegnerpatzer 31.Qxh3 (Matt) |
+| 3 | Schwarz | 1121 | Sieg (auf Zeit) | 35 | 6/3/9 | 4/7 | 11 % / 76 % | dein größter Fehler 34...Ka6 (−14.7, besser Rxg4 hxg4); Gegnerpatzer 34.Qg4 (−13.8) |
+| 4 | Weiß | 1131 | Sieg (Schachmatt) | 20 | 1/2/3 | 2/6 | 74 % / 3 % | dein größter Fehler 15.Qf3+ (−12.4, besser f4 Nc6); Gegnerpatzer 18...Qxg5 (Matt) |
+| 5 | Schwarz | 1165 | Sieg (auf Zeit) | 44 | 5/9/8 | 8/6 | 75 % / 2 % | dein größter Fehler 42...Nde2+ (Matt, besser Nd5+ Kc4); Gegnerpatzer 42.h5 (Matt) |
+| 6 | Weiß | 1156 | Sieg (Schachmatt) | 32 | 4/7/1 | 4/13 | 81 % / 0 % | dein größter Fehler 31.Ba6 (Matt, besser Qd6+ Kb7); Gegnerpatzer 31...Nxe4 (Matt) |
+| 7 | Weiß | 1178 | Sieg (hat gewonnen - die Partie wurde verlassen) | 16 | 2/0/1 | 1/3 | 68 % / 3 % | dein größter Fehler 6.f3 (Matt, besser Bxf7#); Gegnerpatzer 5...Bg4 (Matt) |
+| 8 | Weiß | 1169 | Sieg (Schachmatt) | 28 | 2/6/2 | 2/8 | 71 % / 0 % | dein größter Fehler 25.Ba5 (−4.5, besser Bxg5 axb6); Gegnerpatzer 26...Kd7 (Matt) |
+| 9 | Schwarz | 1224 | Niederlage (Schachmatt) | 33 | 6/5/3 | 5/2 | 12 % / 28 % | dein größter Fehler 31...Kg7 (Matt, besser Qxg5+ Rxg5); Gegnerpatzer 31.Qg5+ (Matt) |
+| 10 | Weiß | 1172 | Sieg (auf Zeit) | 20 | 7/4/2 | 5/1 | 0 % / 90 % | dein größter Fehler 14.Kh1 (Matt, besser Rf2 Bh3); Gegnerpatzer 16...Rhd8 (Matt) |
+| 11 | Schwarz | 1226 | Niederlage (auf Zeit) | 46 | 4/8/7 | 2/5 | 1 % / 79 % | dein größter Fehler 42...Kg3 (Matt, besser Kf5 Rb6); Gegnerpatzer 38.Raa7 (Matt) |
+| 12 | Weiß | 1173 | Sieg (auf Zeit) | 38 | 6/10/2 | 7/7 | 43 % / 31 % | dein größter Fehler 26.Nf6+ (Matt, besser Qf7#); Gegnerpatzer 25...Kh5 (Matt) |
+| 13 | Weiß | 1196 | Sieg (auf Zeit) | 45 | 8/8/7 | 4/8 | 27 % / 57 % | dein größter Fehler 20.Rf1 (−5.5, besser Bd3 Bd7); Gegnerpatzer 34...Rxe6 (−6.8) |
+
+## Bullet-Run vom 05.11.2026 (Teil 7, Finale: 1300 erreicht)
+
+- **Ergebnis:** 14 Siege, 0 Remis, 6 Niederlagen aus 20 Partien (70 % Siege).
+- **Rating:** 1249 (vor der ersten Partie) → 1303 (vor der letzten), Höchstwert 1303. Gegner im Schnitt 1261 Elo.
+- **Fehlerquote:** Du 86 Patzer, 92 grobe, 68 kleine Fehler in 680 Zügen (12.6 % Patzer); Gegner 90 Patzer, 85 grobe, 76 kleine in 675 Zügen (13.3 %).
+- **Art der Ergebnisse:** 7× Sieg Schachmatt, 6× Sieg auf Zeit, 3× Niederlage auf Zeit, 1× Sieg Aufgabe, 2× Niederlage Schachmatt, 1× Niederlage Aufgabe.
+
+| # | Farbe | Gegner-Elo | Ergebnis | Züge | Du P/G/k | Gegner P/G | Stand ≥ +1 / ≤ −1 | Auffälligkeit |
+|---|---|---|---|---|---|---|---|---|
+| 1 | Weiß | 1222 | Sieg (Schachmatt) | 33 | 5/4/4 | 6/5 | 18 % / 31 % | dein größter Fehler 26.Qa4 (−18.4, besser Bxb6 Bd6); Gegnerpatzer 26...Bc5 (Matt) |
+| 2 | Schwarz | 1256 | Sieg (auf Zeit) | 30 | 0/3/5 | 3/2 | 47 % / 0 % | Gegnerpatzer 14.axb4 (−4.6) |
+| 3 | Weiß | 1227 | Sieg (Schachmatt) | 36 | 6/8/3 | 8/2 | 73 % / 13 % | dein größter Fehler 35.Qxa7+ (Matt, besser Qb7+ Kd8); Gegnerpatzer 35...Ke8 (Matt) |
+| 4 | Schwarz | 1251 | Niederlage (auf Zeit) | 47 | 8/10/3 | 9/4 | 20 % / 44 % | dein größter Fehler 27...Rb7 (Matt, besser Qxc3+ Qc2); Gegnerpatzer 27.Qb1 (Matt) |
+| 5 | Schwarz | 1252 | Sieg (Schachmatt) | 37 | 5/2/3 | 7/3 | 85 % / 0 % | dein größter Fehler 34...Qf2 (Matt, besser Qf4+ g3); Gegnerpatzer 35.Bd5 (Matt) |
+| 6 | Weiß | 1267 | Sieg (auf Zeit) | 34 | 7/5/4 | 8/6 | 58 % / 3 % | dein größter Fehler 32.Qxf6+ (−12.1, besser fxe4 Qh8); Gegnerpatzer 22...Ke7 (−7.6) |
+| 7 | Weiß | 1275 | Sieg (Aufgabe) | 23 | 1/3/3 | 2/5 | 7 % / 38 % | dein größter Fehler 22.Qa1 (−4.8, besser Qb1 Kc7); Gegnerpatzer 22...Kc7 (−10.7) |
+| 8 | Weiß | 1286 | Niederlage (Schachmatt) | 28 | 4/3/3 | 2/2 | 9 % / 20 % | dein größter Fehler 28.Qc4 (Matt, besser Qxe4 Bxe4); Gegnerpatzer 23...Rae8 (−6.2) |
+| 9 | Schwarz | 1300 | Niederlage (auf Zeit) | 43 | 6/8/4 | 5/4 | 4 % / 75 % | dein größter Fehler 24...Qd6 (−6.4, besser Qxa2 Rxd2); Gegnerpatzer 16.Qf1 (−5.2) |
+| 10 | Weiß | 1251 | Niederlage (Schachmatt) | 17 | 2/3/3 | 0/1 | 0 % / 82 % | dein größter Fehler 4.Ne5 (−6.9, besser Bxf6 exf6) |
+| 11 | Weiß | 1276 | Niederlage (Aufgabe) | 26 | 3/4/3 | 1/3 | 0 % / 44 % | dein größter Fehler 26.Rc1 (Matt, besser Re4 Qd3); Gegnerpatzer 24...Bf6 (−7.5) |
+| 12 | Schwarz | 1194 | Sieg (auf Zeit) | 43 | 12/7/0 | 7/4 | 3 % / 48 % | dein größter Fehler 41...h5 (Matt, besser exf2+ Kxf2); Gegnerpatzer 43.a7 (Matt) |
+| 13 | Schwarz | 1226 | Sieg (Schachmatt) | 24 | 1/2/2 | 3/3 | 33 % / 48 % | dein größter Fehler 5...O-O (−5.3, besser Nh5 Bd2); Gegnerpatzer 24.Nd4 (Matt) |
+| 14 | Schwarz | 1277 | Sieg (Schachmatt) | 48 | 1/3/4 | 4/3 | 54 % / 24 % | dein größter Fehler 38...a5 (Matt, besser Qe5 Ke2); Gegnerpatzer 38.Ke3 (−17.8) |
+| 15 | Weiß | 1292 | Niederlage (auf Zeit) | 35 | 4/4/9 | 3/4 | 13 % / 37 % | dein größter Fehler 29.Re7 (−7.2, besser Nxc1 Bxc1); Gegnerpatzer 23...Bf6 (−10.3) |
+| 16 | Weiß | 1276 | Sieg (auf Zeit) | 40 | 6/6/7 | 3/8 | 0 % / 89 % | dein größter Fehler 36.Kg5 (Matt, besser Kg3 Re3+); Gegnerpatzer 30...Qxg2+ (Matt) |
+| 17 | Schwarz | 1270 | Sieg (Schachmatt) | 41 | 0/4/0 | 1/5 | 38 % / 0 % | Gegnerpatzer 29.Kf1 (−12.3) |
+| 18 | Schwarz | 1289 | Sieg (auf Zeit) | 31 | 3/5/1 | 5/6 | 31 % / 16 % | dein größter Fehler 18...Qc7 (−9.1, besser Bxd4 Nxd4); Gegnerpatzer 6.c3 (−7.2) |
+| 19 | Weiß | 1259 | Sieg (Schachmatt) | 23 | 0/0/4 | 2/1 | 18 % / 0 % | Gegnerpatzer 21...Bc4 (Matt) |
+| 20 | Weiß | 1267 | Sieg (auf Zeit) | 43 | 12/8/3 | 11/14 | 91 % / 2 % | dein größter Fehler 40.Qe6+ (Matt, besser Qb3+ Ke8); Gegnerpatzer 33...Bxb6 (Matt) |
+
 ## Fazit und Beobachtungen
 
-1. **Das Bullet-Rating (Header-Werte, vor der Partie) steigt über die fünf Runs:** 970 → 1003 (Run 1, 04.11.), dann am 05.11.: 979 → Höchstwert 1020 (Teil 1), 1021 → 1053 (Teil 2), 1045 → 1094 (Teil 3) und 1078 → **1101** (Teil 4, über 1100). Zwischen dem 04. und dem 05.11. steht im Header ein Rückgang von 1003 auf 979; die Partien dazwischen (nach deiner Angabe Niederlagen vom Vortag) liegen nicht in den Dateien, die Ursache ist nicht belegt. Den Sprung des Tages beschreibt [ELO-SPRUNG-05-11.md](ELO-SPRUNG-05-11.md).
-2. **Die Gegner werden stärker:** Im Schnitt 978 Elo (Run 1), 993, 1026, 1072 und **1077** (Teil 4). Teil 3 ist mit 23 Partien der längste Run (13–1–9), Teil 4 endet 6–0–4. Gegen die stärkeren Gegner gab es mehr Niederlagen, trotzdem stieg das Rating.
+1. **Das Bullet-Rating (Header-Werte, vor der Partie) steigt über acht Runs:** 970 → 1003 (Run 1, 04.11.), dann am 05.11.: 979 → 1020 (Teil 1), 1021 → 1053 (Teil 2), 1045 → 1094 (Teil 3), 1078 → 1101 (Teil 4), **1100 → 1150 (Teil 5, 50 Partien)**, **1158 → 1206 (Teil 6)** und **1249 → 1303 (Teil 7, Finale)**. Zwischen den Runs 6 und 7 (1206 → 1249) sowie zwischen dem 04. und 05.11. (1003 → 979) liegen Partien, die nicht in den Dateien sind. Den Sprung des Tages beschreibt [ELO-SPRUNG-05-11.md](ELO-SPRUNG-05-11.md), das Finale [FINALRUN-1300.md](FINALRUN-1300.md).
+2. **Die Gegner werden stärker:** Im Schnitt 978 Elo (Run 1), 993, 1026, 1072, 1077, **1121** (Teil 5), **1169** (Teil 6) und **1261** (Finale). Das Finale bringt 14–0–6 gegen die stärksten Gegner des Tages, Teil 5 ist mit 50 Partien (28–1–21) der längste Run. Gegen stärkere Gegner gab es mehr Niederlagen, trotzdem stieg das Rating.
 3. **Gewonnen wird selten durch klaren Vorteil, sondern durch Gegnerpatzer, Aufgaben und Zeit.** In Teil 3 sind von 13 Siegen 5 durch Matt, 6 auf Zeit und 2 durch Aufgabe; in Teil 4 von 6 Siegen 3 auf Zeit, 2 durch Aufgabe und 1 durch Matt. In allen Runs hast du Partien gewonnen, in denen die Engine dich lange schlechter sah (≤ −1) und der Gegner ein Matt zugelassen, aufgegeben oder die Uhr verloren hat. Das passt zu deinem Muster aus dem Gesamtbericht (Rettungen aus verlorener Stellung).
 4. **Die Uhr entscheidet viele Partien:** In Teil 2 endeten 6 von 11 auf Zeit, in Teil 3 11 von 23, in Teil 4 6 von 10 (3 Siege, 3 Niederlagen). Zweimal hast du auf Zeit verloren, obwohl die Engine dich fast die ganze Partie besser sah: Teil 2 Partie 5 (67 % besser, nie schlechter) und Teil 4 Partie 5 (95 % besser, nie schlechter, aber auch 10 Patzer und 15 grobe Fehler des Gegners). Ob Zeitnot oder Lag der Grund war, lässt sich aus den Dateien nicht erkennen.
-5. **Fehlerquote pro Zug (Patzer):** Run 1: 16 % (Gegner 16 %), Teil 1: 7 % (Gegner 10 %), Teil 2: 10 % (Gegner 12 %), Teil 3: 9 % (Gegner 8 %), Teil 4: 10 % (Gegner 12 %).
+5. **Fehlerquote pro Zug (Patzer):** Run 1: 16 % (Gegner 16 %), Teil 1: 7 % (10 %), Teil 2: 10 % (12 %), Teil 3: 9 % (8 %), Teil 4: 10 % (12 %), Teil 5: 13 % (12 %), Teil 6: 15 % (13 %), Finale: 13 % (13 %). Bei steigendem Rating und stärkeren Gegnern steigt die Quote bei beiden Seiten; der Abstand zu den Gegnern bleibt klein.
 6. **Wiederkehrender Mattfehler: Königszüge und Rochade.** Mehrfach lässt ein Königszug oder die Rochade Matt zu: Run 1 (27.Kf1), Teil 1 (32.Kf1), Teil 3 (27.Kh1 in Partie 13, 8.O-O in Partie 14 nach nur 8 Zügen, und in gewonnenen Partien 30.Kh1 und 36.Kh2). Die Engine bevorzugte jeweils einen Figurenzug (z. B. Rf2, Rc1, Nc3). Vor jedem Königszug lohnt sich die Frage: „Was greift mein König danach nicht mehr?“
-7. **Offen bleibt:** Lag, Zeitnot und Premoves lassen sich aus den PGN-Dateien nicht ablesen. Nimm beim Export Uhrzeiten (`[%clk]`) mit, dann wird Zeitnot auswertbar.
+7. **Im Finale gewinnst du 7 Partien durch Matt, alle mit der Dame (5× über die Grundreihe).** Details und Tipps in [FINALRUN-1300.md](FINALRUN-1300.md).
+8. **Offen bleibt:** Lag, Zeitnot und Premoves lassen sich aus den PGN-Dateien nicht ablesen. Nimm beim Export Uhrzeiten (`[%clk]`) mit, dann wird Zeitnot auswertbar.
