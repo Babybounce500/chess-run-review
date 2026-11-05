@@ -11,6 +11,7 @@ Hier sind einzelne Bullet-Runs dokumentiert: Ergebnis, Rating, Fehlerquote und e
 | 04.11.2026 | Bullet 60 s | 9 | 7–0–2 | 970 → 1003 (Höchstwert 1003) | 16 % / 16 % |
 | 05.11.2026 (Teil 1) | Bullet 60 s | 7 | 6–0–1 | 979 → 1012 (Höchstwert 1020) | 7 % / 10 % |
 | 05.11.2026 (Teil 2) | Bullet 60 s | 11 | 8–0–3 | 1021 → 1053 (Höchstwert 1053) | 10 % / 12 % |
+| 05.11.2026 (Teil 3) | Bullet 60 s | 23 | 13–1–9 | 1045 → 1086 (Höchstwert 1094) | 9 % / 8 % |
 
 ## Bullet-Run vom 04.11.2026
 
@@ -69,10 +70,45 @@ Hier sind einzelne Bullet-Runs dokumentiert: Ergebnis, Rating, Fehlerquote und e
 | 10 | Schwarz | 1030 | Sieg (Schachmatt) | 17 | 2/2/1 | 4/1 | 32 % / 0 % | dein größter Fehler 12...Bxh4 (−4.3, besser e3 Nf5); Gegnerpatzer 17.e3 (Matt) |
 | 11 | Weiß | 1033 | Sieg (Aufgabe) | 23 | 3/3/3 | 4/1 | 84 % / 4 % | dein größter Fehler 22.Ne1 (−12.1, besser Nd4 Qxe2); Gegnerpatzer 22...Rae8 (−17.7) |
 
+## Bullet-Run vom 05.11.2026 (Teil 3)
+
+- **Ergebnis:** 13 Siege, 1 Remis, 9 Niederlagen aus 23 Partien (57 % Siege).
+- **Rating:** 1045 (vor der ersten Partie) → 1086 (vor der letzten), Höchstwert 1094. Gegner im Schnitt 1072 Elo.
+- **Fehlerquote:** Du 67 Patzer, 100 grobe, 105 kleine Fehler in 732 Zügen (9.2 % Patzer); Gegner 56 Patzer, 122 grobe, 98 kleine in 730 Zügen (7.7 %).
+- **Art der Ergebnisse:** 5× Niederlage Schachmatt, 5× Sieg Schachmatt, 6× Sieg auf Zeit, 1× Remis Remis - Zeitüberschreitung, jedoch ungenügend Material, 2× Sieg Aufgabe, 4× Niederlage auf Zeit.
+
+| # | Farbe | Gegner-Elo | Ergebnis | Züge | Du P/G/k | Gegner P/G | Stand ≥ +1 / ≤ −1 | Auffälligkeit |
+|---|---|---|---|---|---|---|---|---|
+| 1 | Schwarz | 1079 | Niederlage (Schachmatt) | 27 | 5/3/4 | 1/2 | 2 % / 87 % | dein größter Fehler 22...Rf8 (Matt, besser Rad8 Rhf1); Gegnerpatzer 22.Bb5 (−3.4) |
+| 2 | Weiß | 1039 | Sieg (Schachmatt) | 12 | 0/4/3 | 2/0 | 26 % / 39 % | Gegnerpatzer 11...Qe7 (Matt) |
+| 3 | Schwarz | 1054 | Sieg (auf Zeit) | 30 | 2/3/2 | 3/4 | 55 % / 7 % | dein größter Fehler 24...Qc1+ (−8.3, besser Bxd4 cxd4); Gegnerpatzer 24.Qd4 (−6.9) |
+| 4 | Schwarz | 1078 | Remis | 57 | 1/4/10 | 1/3 | 3 % / 47 % | dein größter Fehler 32...Kd3 (−3.9, besser Kxe5 Rh7); Gegnerpatzer 53.f5 (−4.7) |
+| 5 | Weiß | 1032 | Sieg (Aufgabe) | 11 | 0/2/2 | 1/3 | 33 % / 0 % | Gegnerpatzer 10...h5 (−8.4) |
+| 6 | Schwarz | 1041 | Niederlage (auf Zeit) | 34 | 11/3/1 | 10/5 | 55 % / 21 % | dein größter Fehler 23...Qh5 (Matt, besser Qe8+ Qe5); Gegnerpatzer 23.Ke1 (Matt) |
+| 7 | Weiß | 1054 | Sieg (auf Zeit) | 31 | 6/2/4 | 4/6 | 48 % / 15 % | dein größter Fehler 30.Kh1 (Matt, besser Rf2 Bxe5); Gegnerpatzer 28...Qc6 (−8.2) |
+| 8 | Schwarz | 1082 | Sieg (Schachmatt) | 24 | 1/3/1 | 4/6 | 60 % / 10 % | dein größter Fehler 3...e5 (−6.0, besser cxb5 O-O); Gegnerpatzer 23.Re3 (Matt) |
+| 9 | Schwarz | 1107 | Niederlage (Schachmatt) | 43 | 4/10/6 | 0/9 | 4 % / 80 % | dein größter Fehler 39...e5 (−10.4, besser Kf8 Kf6) |
+| 10 | Schwarz | 1073 | Sieg (auf Zeit) | 32 | 8/4/3 | 3/5 | 2 % / 48 % | dein größter Fehler 29...Kh6 (Matt, besser Qxe6 Qxe6); Gegnerpatzer 30.Nxd8 (Matt) |
+| 11 | Schwarz | 1073 | Sieg (Schachmatt) | 44 | 2/4/0 | 1/9 | 58 % / 11 % | dein größter Fehler 11...O-O (−4.1, besser Bxg2 Rg1); Gegnerpatzer 23.f4 (−9.3) |
+| 12 | Weiß | 1063 | Sieg (Aufgabe) | 26 | 0/3/4 | 1/3 | 73 % / 0 % | Gegnerpatzer 13...Rh5 (−3.7) |
+| 13 | Weiß | 1113 | Niederlage (Schachmatt) | 28 | 3/5/5 | 2/6 | 36 % / 9 % | dein größter Fehler 27.Kh1 (Matt, besser b3 Rc2); Gegnerpatzer 19...Nc6 (−5.1) |
+| 14 | Weiß | 1089 | Niederlage (Schachmatt) | 8 | 1/1/1 | 0/2 | 19 % / 13 % | dein größter Fehler 8.O-O (Matt, besser Nc3 b6) |
+| 15 | Schwarz | 1090 | Sieg (auf Zeit) | 35 | 1/3/5 | 2/3 | 21 % / 43 % | dein größter Fehler 5...Qxd6 (−9.0, besser Bxd6 exd6); Gegnerpatzer 5.Qxd6 (−8.8) |
+| 16 | Weiß | 1073 | Niederlage (auf Zeit) | 37 | 6/10/7 | 4/6 | 23 % / 55 % | dein größter Fehler 34.Nb6 (Matt, besser Na3 Bf6); Gegnerpatzer 34...Rd6 (Matt) |
+| 17 | Weiß | 1054 | Sieg (auf Zeit) | 37 | 2/5/10 | 2/7 | 40 % / 42 % | dein größter Fehler 36.Kh2 (Matt, besser Rc1 Qf4); Gegnerpatzer 36...Kf6 (Matt) |
+| 18 | Schwarz | 1080 | Niederlage (Schachmatt) | 17 | 2/5/3 | 0/4 | 3 % / 67 % | dein größter Fehler 16...Rd8 (Matt, besser Qg6 Qxb7) |
+| 19 | Weiß | 1089 | Niederlage (auf Zeit) | 40 | 3/6/13 | 0/7 | 4 % / 66 % | dein größter Fehler 37.Ke4 (−5.8, besser Rxe7 Bxe7) |
+| 20 | Weiß | 1067 | Sieg (Schachmatt) | 47 | 2/8/3 | 7/8 | 69 % / 15 % | dein größter Fehler 18.Ne4 (−4.3, besser Qc4 Qb6+); Gegnerpatzer 42...Kh5 (−7.2) |
+| 21 | Weiß | 1056 | Sieg (auf Zeit) | 39 | 2/4/7 | 3/10 | 42 % / 25 % | dein größter Fehler 11.Be3 (−5.6, besser Bxg6 hxg6); Gegnerpatzer 31...Re1 (−5.4) |
+| 22 | Schwarz | 1102 | Niederlage (auf Zeit) | 48 | 3/6/8 | 2/8 | 26 % / 16 % | dein größter Fehler 32...Kd7 (−5.3, besser a5 b4); Gegnerpatzer 39.Ke4 (−4.7) |
+| 23 | Schwarz | 1077 | Sieg (Schachmatt) | 30 | 2/2/3 | 3/6 | 68 % / 0 % | dein größter Fehler 29...c5+ (Matt, besser Ra3 Bb3); Gegnerpatzer 29.Kd4 (Matt) |
+
 ## Fazit und Beobachtungen
 
-1. **Das Bullet-Rating (Header-Werte) steigt über die drei Runs:** 970 → 1003 (Run 1), 979 → Höchstwert 1020 (Run 2), 1021 → Höchstwert 1053 (Run 3). Zwischen Run 1 und 2 steht im Header ein Rückgang von 1003 auf 979; die Partien dazwischen (nach deiner Angabe Niederlagen vom Vortag) liegen nicht in den Dateien, die Ursache ist also nicht belegt.
-2. **Gewonnen wird selten durch klaren Vorteil, sondern durch Gegnerpatzer, Aufgaben und Zeit.** In Run 3 sind von 8 Siegen nur 1 durch Matt, 3 durch Aufgabe des Gegners (nach 12, 14 und 23 Zügen) und 4 auf Zeit. In allen Runs hast du Partien gewonnen, in denen die Engine dich lange schlechter sah (≤ −1) und der Gegner ein Matt zugelassen, aufgegeben oder die Uhr verloren hat. Das passt zu deinem Muster aus dem Gesamtbericht (Rettungen aus verlorener Stellung).
-3. **Die Uhr entscheidet viele Partien:** In Run 3 endeten 6 von 11 Partien auf Zeit (4 Siege, 2 Niederlagen). In Partie 5 (Run 3) standest du laut Engine 67 % der Zeit besser (nie schlechter) und hast trotzdem auf Zeit verloren. Ob Zeitnot oder Lag der Grund war, lässt sich aus den Dateien nicht erkennen.
-4. **Fehlerquote:** Run 1: 16 % Patzer pro Zug (Gegner 16 %), Run 2: 7 % (Gegner 10 %), Run 3: 10 % (Gegner 12 %). Die Niederlagen durch Matt: In Run 2 (Partie 7) kam sie aus überlegener Stellung (77 % der Zeit besser, nie schlechter): Matt zugelassen mit 32.Kf1 (besser Kh1). In Run 1 (Partie 3) standest du dagegen 58 % der Zeit schlechter (Matt zugelassen mit 27.Kf1, besser Txd2), und in Run 3 (Partie 4) war die Stellung ausgeglichen bis schlechter (25 % besser, 38 % schlechter; Matt zugelassen mit 22.Sxb7, besser Sc7+).
-5. **Offen bleibt:** Lag, Zeitnot und Premoves lassen sich aus den PGN-Dateien nicht ablesen. Wenn dir das wichtig ist, nimm beim Export Uhrzeiten (`[%clk]`) mit, dann wird Zeitnot auswertbar.
+1. **Das Bullet-Rating (Header-Werte, vor der Partie) steigt über die vier Runs:** 970 → 1003 (Run 1), 979 → Höchstwert 1020 (Run 2), 1021 → Höchstwert 1053 (Run 3), 1045 → Höchstwert **1094** (Run 4, neuer Bestwert, die 1100 wurde knapp verpasst). Zwischen Run 1 und 2 steht im Header ein Rückgang von 1003 auf 979; die Partien dazwischen (nach deiner Angabe Niederlagen vom Vortag) liegen nicht in den Dateien, die Ursache ist nicht belegt.
+2. **Die Gegner werden stärker:** Im Schnitt 978 Elo (Run 1), 993 (Run 2), 1026 (Run 3) und **1072** (Run 4). Run 4 ist mit 23 Partien der längste Run und endet 13–1–9 (57 % Siege); gegen die stärkeren Gegner gab es mehr Niederlagen als in den Runs davor, trotzdem stieg das Rating.
+3. **Gewonnen wird selten durch klaren Vorteil, sondern durch Gegnerpatzer, Aufgaben und Zeit.** In Run 4 sind von 13 Siegen 5 durch Matt, 6 auf Zeit und 2 durch Aufgabe. In allen Runs hast du Partien gewonnen, in denen die Engine dich lange schlechter sah (≤ −1) und der Gegner ein Matt zugelassen, aufgegeben oder die Uhr verloren hat. Das passt zu deinem Muster aus dem Gesamtbericht (Rettungen aus verlorener Stellung).
+4. **Die Uhr entscheidet viele Partien:** In Run 3 endeten 6 von 11 Partien auf Zeit (4 Siege, 2 Niederlagen), in Run 4 11 von 23 (6 Siege, 4 Niederlagen und das Remis durch Timeout gegen ungenügendes Material). Ob Zeitnot oder Lag der Grund war, lässt sich aus den Dateien nicht erkennen. Auffällig: In Run 3 (Partie 5) standest du 67 % der Zeit besser (nie schlechter) und hast auf Zeit verloren.
+5. **Fehlerquote pro Zug (Patzer):** Run 1: 16 % (Gegner 16 %), Run 2: 7 % (Gegner 10 %), Run 3: 10 % (Gegner 12 %), Run 4: 9 % (Gegner 8 %). In Run 4 war die Quote der Gegner erstmals niedriger als deine.
+6. **Wiederkehrender Mattfehler: Königszüge und Rochade.** Mehrfach lässt ein Königszug oder die Rochade Matt zu: Run 1 (27.Kf1), Run 2 (32.Kf1), Run 4 (27.Kh1 in Partie 13, 8.O-O in Partie 14 nach nur 8 Zügen, und in gewonnenen Partien 30.Kh1 und 36.Kh2). Die Engine bevorzugte jeweils einen Figurenzug (z. B. Rf2, Rc1, Nc3). Vor jedem Königszug lohnt sich die Frage: „Was greift mein König danach nicht mehr?“
+7. **Offen bleibt:** Lag, Zeitnot und Premoves lassen sich aus den PGN-Dateien nicht ablesen. Nimm beim Export Uhrzeiten (`[%clk]`) mit, dann wird Zeitnot auswertbar.
