@@ -46,6 +46,8 @@
 .og-sq.tgt.cap::after{width:84%;height:84%;background:transparent;border:5px solid rgba(20,20,20,.28)}
 .og-sq .og-coord{position:absolute;font-size:9px;line-height:1;opacity:.6;color:#000;pointer-events:none}
 .og-sq .og-coord.f{right:2px;bottom:2px}.og-sq .og-coord.r{left:2px;top:2px}
+.og-piece.img{width:92%;height:92%;font-size:0;display:flex;align-items:center;justify-content:center}
+.og-piece.img img{width:100%;height:100%;pointer-events:none;-webkit-user-drag:none;filter:drop-shadow(0 1.5px 1.2px rgba(0,0,0,.38))}
 .og-piece{position:relative;z-index:2;font-size:78cqmin;line-height:1;display:block;text-align:center;font-family:"Segoe UI Symbol","Noto Sans Symbols 2","Apple Symbols",sans-serif}
 .og-piece.w{color:#fff;-webkit-text-stroke:1.3px #222;text-shadow:0 1px 2px rgba(0,0,0,.35)}
 .og-piece.b{color:#161616;-webkit-text-stroke:.6px #000}
@@ -76,7 +78,12 @@
     rows.forEach((row, r) => { let f = 0; for (const ch of row) { if (/\d/.test(ch)) f += +ch; else { map[FILES[f] + (8 - r)] = { type: ch.toLowerCase(), color: ch === ch.toUpperCase() ? 'w' : 'b' }; f++; } } });
     return map;
   }
-  function pieceSpan(p) { return `<span class="og-piece ${p.color}">${GLYPH[p.type]}︎</span>`; }
+  const PIECE_URL = 'https://chessboardjs.com/img/chesspieces/wikipedia/{p}.png';
+  // Bildsatz wie in den uebrigen Seiten. Faellt das Bild aus (offline), springt das Unicode-Zeichen ein.
+  function pieceSpan(p, extra) {
+    const code = p.color + p.type.toUpperCase(); const glyph = GLYPH[p.type] + '︎';
+    return `<span class="og-piece img ${p.color}"${extra ? ' style="' + extra + '"' : ''}><img alt="${glyph}" draggable="false" src="${PIECE_URL.replace('{p}', code)}" onerror="this.parentNode.classList.remove('img');this.parentNode.textContent=this.alt"></span>`;
+  }
 
   function addCard(node) {
     const stream = $('chatStream');
@@ -173,7 +180,7 @@
     function build() {
       root.innerHTML = ''; const { rs, fs } = order();
       rs.forEach((r, ri) => fs.forEach((f, fi) => {
-        const sq = FILES[f] + r; const d = el('div', 'og-sq ' + ((f + r) % 2 === 0 ? 'd' : 'l')); d.dataset.sq = sq; sqEls[sq] = d;
+        const sq = FILES[f] + r; const d = el('div', 'og-sq ' + ((f + r) % 2 === 1 ? 'd' : 'l')); d.dataset.sq = sq; sqEls[sq] = d;
         if (fi === 0) d.appendChild(el('span', 'og-coord r', r)); if (ri === 7) d.appendChild(el('span', 'og-coord f', FILES[f]));
         root.appendChild(d);
       }));
@@ -181,7 +188,7 @@
     function paint() {
       for (const sq in sqEls) {
         const d = sqEls[sq]; const p = S.map[sq];
-        d.className = 'og-sq ' + (((FILES.indexOf(sq[0]) + +sq[1]) % 2 === 0) ? 'd' : 'l');
+        d.className = 'og-sq ' + (((FILES.indexOf(sq[0]) + +sq[1]) % 2 === 1) ? 'd' : 'l');
         if (S.last && (S.last[0] === sq || S.last[1] === sq)) d.classList.add('last');
         if (S.sel === sq) d.classList.add('sel');
         if (S.check === sq) d.classList.add('chk');
@@ -222,19 +229,20 @@
       if (targets && targets.length) {
         select(sq);
         const pe = sqEls[sq].querySelector('.og-piece');
-        if (pe) drag = { from: sq, x: e.clientX, y: e.clientY, moved: false, ghost: null, html: pe.outerHTML, size: pe.getBoundingClientRect().width };
+        if (pe) { drag = { from: sq, x: e.clientX, y: e.clientY, moved: false, ghost: null, html: pe.outerHTML, size: pe.getBoundingClientRect().width }; try { root.setPointerCapture(e.pointerId); } catch (err) { /* ignorieren */ } }
       } else deselect();
     });
-    document.addEventListener('pointermove', (e) => {
+    root.addEventListener('pointermove', (e) => {
       if (!drag) return;
       if (!drag.moved && Math.hypot(e.clientX - drag.x, e.clientY - drag.y) > 6) {
-        drag.moved = true; const g = el('div', 'og-ghost', drag.html); g.firstChild.style.fontSize = drag.size * 0.95 + 'px';
+        drag.moved = true; const g = el('div', 'og-ghost', drag.html); g.firstChild.style.fontSize = drag.size * 0.95 + 'px'; g.firstChild.style.width = g.firstChild.style.height = drag.size + 'px'; g.firstChild.classList.contains('img') && (g.firstChild.style.fontSize = '0');
         document.body.appendChild(g); drag.ghost = g;
         const pe = sqEls[drag.from].querySelector('.og-piece'); if (pe) pe.style.opacity = '.3';
       }
       if (drag.ghost) { drag.ghost.style.left = e.clientX + 'px'; drag.ghost.style.top = e.clientY + 'px'; }
     });
-    document.addEventListener('pointerup', (e) => {
+    root.addEventListener('pointercancel', () => { if (!drag) return; const f = drag.from; clearGhost(); const pe = sqEls[f] && sqEls[f].querySelector('.og-piece'); if (pe) pe.style.opacity = ''; });
+    root.addEventListener('pointerup', (e) => {
       if (!drag) return; const d = drag; const moved = d.moved;
       const to = moved ? sqFromPoint(e.clientX, e.clientY) : null;
       clearGhost();
@@ -243,7 +251,7 @@
     });
     build();
     return { el: root, set, state: S, sqEls, promo(color) { return new Promise((resolve) => {
-      const ov = el('div', 'og-promo'); ['q', 'r', 'b', 'n'].forEach(t => { const b = el('button', null, `<span class="og-piece ${color}" style="font-size:44px">${GLYPH[t]}︎</span>`); b.onclick = () => { ov.remove(); resolve(t); }; ov.appendChild(b); });
+      const ov = el('div', 'og-promo'); ['q', 'r', 'b', 'n'].forEach(t => { const b = el('button', null, pieceSpan({ color, type: t }, 'width:52px;height:52px')); b.onclick = () => { ov.remove(); resolve(t); }; ov.appendChild(b); });
       root.appendChild(ov);
     }); } };
   }
