@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="../orbitron-icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../orbitron-light.css">
+<title>Chess Library · Orbitron Chess</title>
+<style>
+  :root{--bg:#181715;--panel:#262421;--panel2:#1d1c1a;--line:#3d3a36;--text:#bab8b5;--bright:#fff;--accent:#81b64c;--blue:#5b8fdc}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;min-height:100vh}
+  .library-top{border-bottom:1px solid var(--line);background:#191817;position:sticky;top:0;z-index:10}
+  .topline{display:flex;align-items:center;gap:14px;padding:15px 20px 12px;max-width:1280px;margin:auto}
+  .back{color:var(--accent);font-weight:700;text-decoration:none;white-space:nowrap}
+  h1{font-size:1.22rem;color:var(--bright);margin:0;flex:1}
+  .eyebrow{font: .72rem monospace;color:#888}
+  .tabs{display:flex;gap:6px;max-width:1280px;margin:auto;padding:0 20px}
+  .tab{appearance:none;border:0;border-bottom:3px solid transparent;background:transparent;color:#96938f;padding:12px 16px 10px;cursor:pointer;font-weight:700;font-size:.84rem}
+  .tab:hover{color:var(--bright);background:#22211f}
+  .tab.active{color:var(--bright);border-color:var(--accent);background:#22211f}
+  .tab small{display:block;font-weight:400;color:#777;margin-top:3px}
+  .library-main{max-width:1280px;margin:auto;padding:16px 20px 28px}
+  .library-intro{display:flex;align-items:center;gap:12px;margin:0 0 12px;padding:11px 14px;background:var(--panel);border-left:3px solid var(--accent);border-radius:7px}
+  .library-intro strong{color:var(--bright)} .library-intro span{font-size:.78rem;color:#888}
+  .view{display:none}.view.active{display:block}
+  iframe{display:block;width:100%;height:calc(100vh - 178px);min-height:640px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+  .status{font-size:.72rem;color:#777;text-align:right;padding:7px 2px 0}
+  @media(max-width:700px){.topline{padding:12px}.topline .eyebrow{display:none}h1{font-size:1.02rem}.tabs{padding:0 8px;overflow-x:auto}.tab{flex:1 0 auto;padding:11px 10px 9px;font-size:.76rem}.library-main{padding:10px 8px 20px}.library-intro{align-items:flex-start;flex-direction:column;gap:3px}iframe{height:calc(100vh - 210px);min-height:600px;border-radius:7px}}
+</style>
+</head>
+<body>
+<header class="library-top">
+  <div class="topline">
+    <a class="back" href="../gemini-chat.html">← Orbitron Chess</a>
+    <h1>Chess Library</h1>
+    <span class="eyebrow">Sieben Werkzeuge · ein Index</span>
+  </div>
+  <nav class="tabs" aria-label="Chess Library Bereiche">
+    <button class="tab active" data-view="eco" type="button">ECO Explorer<small>Eröffnungen</small></button>
+    <button class="tab" data-view="masters" type="button">Meisterbibliothek<small>Partien</small></button>
+    <button class="tab" data-view="checkmates" type="button">Checkmate Library<small>Mattmuster</small></button>
+  </nav>
+</header>
+<main class="library-main">
+  <div class="library-intro"><strong id="viewTitle">Eröffnungswissen durchsuchen</strong><span id="viewDescription">ECO-Codes, Namen und Zugfolgen lokal erkunden.</span></div>
+  <section class="view active" id="view-eco"><iframe title="ECO Explorer" src="eco-explorer.html"></iframe><div class="status">Lokaler ECO-Datenbestand</div></section>
+  <section class="view" id="view-masters"><iframe title="Meisterbibliothek" loading="lazy" src="master-library.html"></iframe><div class="status">Lokale Meisterpartien</div></section>
+  <section class="view" id="view-checkmates"><iframe title="Checkmate Library" loading="lazy" src="checkmate-library.html"></iframe><div class="status">Kuratierte lokale Mattmuster</div></section>
+</main>
+<script>
+  const meta = {
+    eco: ['Eröffnungswissen durchsuchen','ECO-Codes, Namen und Zugfolgen lokal erkunden.'],
+    masters: ['Meisterpartien studieren','Klassische Partien, Wendepunkte und Zugfolgen nachspielen.'],
+    checkmates: ['Checkmate Library lernen','Wichtige Mattmuster und Endspiel-Techniken visuell trainieren.']
+  };
+  const tabs = [...document.querySelectorAll('.tab')];
+  const views = [...document.querySelectorAll('.view')];
+  function selectView(name, updateHash = true) {
+    const view = meta[name] ? name : 'eco';
+    tabs.forEach(tab => tab.classList.toggle('active', tab.dataset.view === view));
+    views.forEach(section => section.classList.toggle('active', section.id === `view-${view}`));
+    document.getElementById('viewTitle').textContent = meta[view][0];
+    document.getElementById('viewDescription').textContent = meta[view][1];
+    if (updateHash) history.replaceState(null, '', `#${view}`);
+  }
+  tabs.forEach(tab => tab.addEventListener('click', () => selectView(tab.dataset.view)));
+  selectView(location.hash.slice(1), false);
+  document.querySelectorAll('iframe').forEach(frame => frame.addEventListener('load', () => {
+    try {
+      const style = frame.contentDocument.createElement('style');
+      style.textContent = '.top{display:none!important}.shell{padding-top:0!important;max-width:none!important}body{min-height:0!important}';
+      frame.contentDocument.head.appendChild(style);
+    } catch (error) { console.warn('Library view styling unavailable', error); }
+  }));
+</script>
+</body>
+</html>

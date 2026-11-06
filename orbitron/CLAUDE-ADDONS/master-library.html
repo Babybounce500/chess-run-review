@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="../orbitron-icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../orbitron-light.css">
+<title>Meisterpartien-Bibliothek · Orbitron Chess</title>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<style>
+  :root{--bg-main:#181715;--bg-panel:#262421;--bg-panel2:#1a1917;--accent:#81b64c;--text:#bab8b5;--text-bright:#fff;--line:#3d3a36}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg-main);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;min-height:100vh}
+  .top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:16px 18px;border-bottom:1px solid var(--line)}
+  .top a{color:var(--accent);font-weight:700;text-decoration:none}
+  .top h1{font-size:1.15rem;color:var(--text-bright);margin:0;flex:1}
+  .top .count{font-size:.78rem;color:#888;font-family:monospace}
+  .shell{max-width:1180px;margin:0 auto;padding:18px}
+  .layout{display:grid;grid-template-columns:minmax(300px,400px) 1fr;gap:16px}
+  .panel{background:var(--bg-panel);border-radius:10px;padding:14px;margin-bottom:14px}
+  #searchInput{width:100%;background:var(--bg-panel2);border:1px solid var(--line);color:#fff;padding:10px 12px;border-radius:6px;font-size:.9rem;margin-bottom:10px}
+  #searchInput:focus{outline:1px solid var(--accent)}
+  .game-list{max-height:70vh;overflow-y:auto;display:flex;flex-direction:column;gap:6px}
+  .game-item{background:var(--bg-panel2);border:1px solid transparent;border-radius:8px;padding:10px 12px;cursor:pointer}
+  .game-item:hover{border-color:var(--line)}
+  .game-item.active{border-color:var(--accent);background:#20301a}
+  .game-title{color:var(--text-bright);font-size:.9rem;font-weight:700}
+  .game-meta{font-size:.76rem;color:#888;margin-top:2px}
+  .game-tags{margin-top:6px;display:flex;gap:4px;flex-wrap:wrap}
+  .gtag{font-size:.65rem;background:#2b2927;color:#aaa;padding:2px 6px;border-radius:99px}
+
+  .board-area{display:flex;flex-direction:column;gap:12px}
+  .selected-head{background:var(--bg-panel);border-radius:10px;padding:14px 16px;border-left:4px solid var(--accent)}
+  .selected-head h2{color:var(--text-bright);font-size:1.2rem;margin:2px 0 6px}
+  .selected-head .meta{font-size:.82rem;color:#888;line-height:1.6}
+  .selected-head .meta b{color:var(--text)}
+  .selected-head .src{font-size:.7rem;color:#666;margin-top:6px}
+  .stage{display:flex;gap:14px}
+  #boardContainer{width:min(460px,100%);aspect-ratio:1/1;border-radius:6px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.5);flex-shrink:0}
+  .side-panel{flex:1;display:flex;flex-direction:column;gap:10px;min-width:200px}
+  .nav-bar{display:flex;gap:6px;background:var(--bg-panel);padding:6px;border-radius:6px}
+  .btn-nav{flex:1;background:#363431;border:none;color:var(--text-bright);padding:9px 0;font-size:1rem;border-radius:4px;cursor:pointer}
+  .btn-nav:hover{background:#45423e}
+  .moves-grid{display:flex;flex-wrap:wrap;gap:4px;background:var(--bg-panel2);padding:8px;border-radius:6px;align-content:flex-start;max-height:220px;overflow-y:auto}
+  .move-chip{padding:4px 8px;background:#2b2927;border-radius:3px;font-size:.78rem;font-family:monospace;cursor:pointer;color:var(--text)}
+  .move-chip.active{background:var(--accent);color:#fff;font-weight:700}
+  .keymoments{font-size:.78rem;color:#888}
+  .keymoments b{color:var(--text)}
+  .empty{padding:30px 10px;text-align:center;color:#666;font-size:.85rem}
+  .kbd-hint{font-size:.72rem;color:#888;margin-top:auto;padding:8px 2px;line-height:1.4}
+  .btn-nav:focus-visible,.move-chip:focus-visible,.game-item:focus-visible,#searchInput:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  @media(max-width:1080px){.shell{padding:14px}.layout{grid-template-columns:minmax(260px,360px) 1fr}.stage{gap:10px}.side-panel{min-width:180px}}
+  @media(max-width:860px){.layout{grid-template-columns:1fr}.game-list{max-height:42vh}.stage{flex-direction:column}#boardContainer{width:min(88vw,460px);max-width:460px;margin:0 auto}.side-panel{width:100%;min-width:0}.nav-bar{position:sticky;top:8px;z-index:2}.moves-grid{max-height:210px}.kbd-hint{text-align:center}}
+  @media(max-width:520px){.top{padding:12px}.top h1{font-size:1rem}.shell{padding:10px}.panel,.selected-head{padding:11px}.btn-nav{min-height:42px;font-size:.92rem}.moves-grid{max-height:180px}.game-item{padding:11px}.game-title{font-size:.84rem}}
+</style>
+</head>
+<body>
+<div class="top">
+  <a href="gemini-chat.html">← Orbitron Chess</a>
+  <h1>Meisterpartien-Bibliothek</h1>
+  <a href="../chess-coach.html#batch-review" style="font-size:.75rem;color:#fff;background:#3a3733;border:1px solid var(--line);padding:6px 9px;border-radius:5px;text-decoration:none">Zu Batch Review</a>
+  <span class="count" id="totalCount">lädt …</span>
+</div>
+
+<div class="shell">
+  <div class="layout">
+    <div>
+      <div class="panel">
+        <input id="searchInput" placeholder="Spieler, Eröffnung oder Jahr suchen …" autocomplete="off">
+        <div class="game-list" id="gameList"></div>
+      </div>
+    </div>
+
+    <div class="board-area">
+      <div class="selected-head" id="selectedHead">
+        <h2>Wähle links eine Partie</h2>
+        <div class="meta">19 vollständige Meisterpartien, entlang der DomvsAvrea-Repertoire-Linien und klassischer Brillanzen.</div>
+      </div>
+      <div class="stage">
+        <div id="boardContainer"><div id="board"></div></div>
+        <div class="side-panel">
+          <div class="nav-bar">
+            <button class="btn-nav" id="btnFirst">⏮</button>
+            <button class="btn-nav" id="btnPrev">◀</button>
+            <button class="btn-nav" id="btnNext">▶</button>
+            <button class="btn-nav" id="btnLast">⏭</button>
+            <button class="btn-nav" id="btnFlip">⇅</button>
+          </div>
+          <div class="moves-grid" id="moveGrid"><span style="color:#666;font-size:.75rem">Noch keine Partie gewählt</span></div>
+          <div class="keymoments" id="keyMoments"></div>
+           <div class="kbd-hint">Tastatur: ← → Zug · Home/End Anfang/Ende · F Flip</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="orbitron-rag-data.js"></script>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  const games = window.ORBITRON_RAG_GAMES || [];
+  $('totalCount').textContent = games.length + ' Partien';
+
+  let selected = null, step = 0, fens = ['start'], sanShown = [], flipped = false;
+  const board = Chessboard('board', { position: 'start', draggable: false, pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png' });
+
+  function renderList() {
+    const q = $('searchInput').value.trim().toLowerCase();
+    const matches = !q ? games : games.filter(g =>
+      g.players.toLowerCase().includes(q) || g.opening.toLowerCase().includes(q) ||
+      g.title.toLowerCase().includes(q) || String(g.year).includes(q) ||
+      (g.tags || []).some(t => t.toLowerCase().includes(q)));
+    if (!matches.length) { $('gameList').innerHTML = '<div class="empty">Keine Treffer.</div>'; return; }
+    $('gameList').innerHTML = matches.map(g => `
+      <div class="game-item${selected === g ? ' active' : ''}" data-id="${esc(g.id)}">
+        <div class="game-title">${esc(g.title)}</div>
+        <div class="game-meta">${esc(g.players)} · ${g.year} · ${esc(g.opening)}</div>
+        <div class="game-tags">${(g.tags || []).map(t => `<span class="gtag">${esc(t)}</span>`).join('')}</div>
+      </div>`).join('');
+  }
+
+  $('gameList').addEventListener('click', e => {
+    const item = e.target.closest('.game-item');
+    if (!item) return;
+    selectGame(games.find(g => g.id === item.dataset.id));
+  });
+
+  function selectGame(g) {
+    if (!g) return;
+    selected = g;
+    renderList();
+
+    const chess = new Chess();
+    const ok = chess.load_pgn(g.pgn, { sloppy: true });
+    const verbose = ok !== false ? chess.history({ verbose: true }) : [];
+    const replay = new Chess();
+    fens = [replay.fen()];
+    sanShown = [];
+    verbose.forEach(m => { replay.move(m); fens.push(replay.fen()); sanShown.push(m.san); });
+    step = fens.length - 1;
+    renderBoard();
+
+    $('selectedHead').innerHTML = `
+      <h2>${esc(g.title)}</h2>
+      <div class="meta">
+        <b>${esc(g.players)}</b> · ${g.year} · ${esc(g.event || '')}<br>
+        Ergebnis: <b>${esc(g.result)}</b> · Eröffnung: <b>${esc(g.opening)}</b>
+      </div>
+      ${g.source ? `<div class="src">Quelle: ${esc(g.source)}</div>` : ''}`;
+
+    $('moveGrid').innerHTML = sanShown.map((san, i) => {
+      const num = Math.floor(i / 2) + 1;
+      const label = (i % 2 === 0 ? num + '.' : '') + san;
+      return `<span class="move-chip" data-step="${i + 1}">${esc(label)}</span>`;
+    }).join('') || '<span style="color:#666;font-size:.75rem">Keine Züge</span>';
+
+    $('keyMoments').innerHTML = (g.keyMoments && g.keyMoments.length)
+      ? `<b>Schlüsselstellen:</b> ${g.keyMoments.map(esc).join(' · ')}`
+      : '';
+
+    updateMoveGridActive();
+  }
+
+  function renderBoard() { board.position(fens[step], false); }
+  function updateMoveGridActive() {
+    document.querySelectorAll('.move-chip').forEach(c => c.classList.toggle('active', Number(c.dataset.step) === step));
+  }
+  $('moveGrid').addEventListener('click', e => {
+    const chip = e.target.closest('.move-chip');
+    if (!chip || !selected) return;
+    step = Number(chip.dataset.step);
+    renderBoard(); updateMoveGridActive();
+  });
+  $('btnFirst').onclick = () => { if (!selected) return; step = 0; renderBoard(); updateMoveGridActive(); };
+  $('btnPrev').onclick = () => { if (!selected) return; step = Math.max(0, step - 1); renderBoard(); updateMoveGridActive(); };
+  $('btnNext').onclick = () => { if (!selected) return; step = Math.min(fens.length - 1, step + 1); renderBoard(); updateMoveGridActive(); };
+  $('btnLast').onclick = () => { if (!selected) return; step = fens.length - 1; renderBoard(); updateMoveGridActive(); };
+  $('btnFlip').onclick = () => { flipped = !flipped; board.flip(); };
+  document.addEventListener('keydown', e => {
+    if (e.target.matches('input,textarea,select,button,[contenteditable="true"]')) return;
+    if (!selected) return;
+    if (e.key === 'ArrowLeft') { e.preventDefault(); $('btnPrev').click(); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); $('btnNext').click(); }
+    else if (e.key === 'Home') { e.preventDefault(); $('btnFirst').click(); }
+    else if (e.key === 'End') { e.preventDefault(); $('btnLast').click(); }
+    else if (e.key.toLowerCase() === 'f') { e.preventDefault(); $('btnFlip').click(); }
+  });
+
+  $('searchInput').addEventListener('input', renderList);
+  renderList();
+  if (games.length) selectGame(games[0]);
+})();
+</script>
+</body>
+</html>

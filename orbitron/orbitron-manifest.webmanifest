@@ -1,0 +1,20 @@
+{
+  "name": "Orbitron Chess",
+  "short_name": "Orbitron",
+  "description": "Chess-only analysis and coaching with grounded Stockfish evidence.",
+  "lang": "de",
+  "start_url": "./gemini-chat.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#ffffff",
+  "theme_color": "#1a73e8",
+  "icons": [
+    {
+      "src": "./orbitron-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="../orbitron-icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../orbitron-light.css">
+<title>ECO-Eröffnungsindex · Orbitron Chess</title>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<style>
+  :root{--bg-main:#181715;--bg-panel:#262421;--bg-panel2:#1a1917;--accent:#81b64c;--text:#bab8b5;--text-bright:#fff;--line:#3d3a36}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg-main);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;min-height:100vh}
+  .top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:16px 18px;border-bottom:1px solid var(--line)}
+  .top a{color:var(--accent);font-weight:700;text-decoration:none}
+  .top h1{font-size:1.15rem;color:var(--text-bright);margin:0;flex:1}
+  .top .count{font-size:.78rem;color:#888;font-family:monospace}
+  .shell{max-width:1180px;margin:0 auto;padding:18px}
+  .layout{display:grid;grid-template-columns:minmax(300px,420px) 1fr;gap:16px}
+  .panel{background:var(--bg-panel);border-radius:10px;padding:14px;margin-bottom:14px}
+  .search-row{display:flex;gap:8px;margin-bottom:10px}
+  #searchInput{flex:1;background:var(--bg-panel2);border:1px solid var(--line);color:#fff;padding:10px 12px;border-radius:6px;font-size:.9rem}
+  #searchInput:focus{outline:1px solid var(--accent)}
+  .volume-tabs{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+  .vtab{background:var(--bg-panel2);border:1px solid var(--line);color:var(--text);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:700}
+  .vtab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .result-hint{font-size:.74rem;color:#888;margin-bottom:8px}
+  .result-list{max-height:64vh;overflow-y:auto;display:flex;flex-direction:column;gap:4px}
+  .result-item{background:var(--bg-panel2);border:1px solid transparent;border-radius:6px;padding:9px 11px;cursor:pointer}
+  .result-item:hover{border-color:var(--line)}
+  .result-item.active{border-color:var(--accent);background:#20301a}
+  .result-eco{display:inline-block;font-family:monospace;font-weight:700;color:var(--accent);font-size:.76rem;background:#1a1917;padding:1px 6px;border-radius:3px;margin-right:7px}
+  .result-name{font-size:.86rem;color:var(--text-bright)}
+  .result-moves{font-family:monospace;font-size:.72rem;color:#888;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .empty{padding:30px 10px;text-align:center;color:#666;font-size:.85rem}
+
+  .board-area{display:flex;flex-direction:column;gap:12px}
+  .selected-head{background:var(--bg-panel);border-radius:10px;padding:14px 16px;border-left:4px solid var(--accent)}
+  .selected-head .eco-big{font-family:monospace;color:var(--accent);font-weight:700;font-size:1.1rem}
+  .selected-head h2{color:var(--text-bright);font-size:1.15rem;margin:4px 0}
+  .selected-head .meta{font-size:.8rem;color:#888}
+  .stage{display:flex;gap:14px}
+  #boardContainer{width:min(440px,100%);aspect-ratio:1/1;border-radius:6px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.5);flex-shrink:0}
+  .side-panel{flex:1;display:flex;flex-direction:column;gap:10px;min-width:200px}
+  .nav-bar{display:flex;gap:6px;background:var(--bg-panel);padding:6px;border-radius:6px}
+  .btn-nav{flex:1;background:#363431;border:none;color:var(--text-bright);padding:9px 0;font-size:1rem;border-radius:4px;cursor:pointer}
+  .btn-nav:hover{background:#45423e}
+  .btn-nav:disabled{opacity:.4;cursor:default}
+  .moves-grid{display:flex;flex-wrap:wrap;gap:4px;background:var(--bg-panel2);padding:8px;border-radius:6px;align-content:flex-start;max-height:180px;overflow-y:auto}
+  .move-chip{padding:4px 8px;background:#2b2927;border-radius:3px;font-size:.78rem;font-family:monospace;cursor:pointer;color:var(--text)}
+  .move-chip.active{background:var(--accent);color:#fff;font-weight:700}
+  .library-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+  .library-stat{background:var(--bg-panel);border-radius:6px;padding:9px;text-align:center}
+  .library-stat b{display:block;color:#fff;font-size:1.05rem;font-family:monospace}
+  .library-stat small{color:#888;font-size:.68rem}
+  .kbd-hint{font-size:.72rem;color:#888;margin-top:auto;padding:8px 2px;line-height:1.4}
+  .btn-nav:focus-visible,.move-chip:focus-visible,.result-item:focus-visible,.vtab:focus-visible,#searchInput:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  @media(max-width:1080px){.shell{padding:14px}.layout{grid-template-columns:minmax(260px,360px) 1fr}.stage{gap:10px}.side-panel{min-width:180px}}
+  @media(max-width:860px){.layout{grid-template-columns:1fr}.result-list{max-height:42vh}.stage{flex-direction:column}#boardContainer{width:min(88vw,440px);max-width:440px;margin:0 auto}.side-panel{width:100%;min-width:0}.nav-bar{position:sticky;top:8px;z-index:2}.moves-grid{max-height:210px}.kbd-hint{text-align:center}}
+  @media(max-width:520px){.top{padding:12px}.top h1{font-size:1rem}.shell{padding:10px}.panel,.selected-head{padding:11px}.library-stats{gap:5px}.library-stat{padding:8px 4px}.library-stat b{font-size:.98rem}.btn-nav{min-height:42px;font-size:.92rem}.moves-grid{max-height:180px}.result-item{padding:10px}.result-moves{font-size:.68rem}}
+</style>
+</head>
+<body>
+<div class="top">
+  <a href="gemini-chat.html">← Orbitron Chess</a>
+  <h1>ECO-Eröffnungsindex</h1>
+  <span class="count" id="totalCount">lädt …</span>
+</div>
+
+<div class="shell">
+  <div class="library-stats" style="margin-bottom:14px">
+    <div class="library-stat"><b id="statTotal">–</b><small>Eröffnungen total</small></div>
+    <div class="library-stat"><b id="statVolumes">A–E</b><small>ECO-Bände</small></div>
+    <div class="library-stat"><b id="statMatches">–</b><small>aktuelle Treffer</small></div>
+  </div>
+
+  <div class="layout">
+    <div>
+      <div class="panel">
+        <div class="search-row"><input id="searchInput" placeholder="Name oder ECO-Code suchen, z.B. &quot;Sicilian Kan&quot; oder &quot;B43&quot; …" autocomplete="off"></div>
+        <div class="volume-tabs" id="volumeTabs"></div>
+        <div class="result-hint" id="resultHint"></div>
+        <div class="result-list" id="resultList"></div>
+      </div>
+    </div>
+
+    <div class="board-area">
+      <div class="selected-head" id="selectedHead">
+        <div class="eco-big">—</div>
+        <h2>Wähle links eine Eröffnung</h2>
+        <div class="meta">Suche nach Name oder ECO-Code, oder filtere nach Band A–E.</div>
+      </div>
+      <div class="stage">
+        <div id="boardContainer"><div id="board"></div></div>
+        <div class="side-panel">
+          <div class="nav-bar">
+            <button class="btn-nav" id="btnFirst">⏮</button>
+            <button class="btn-nav" id="btnPrev">◀</button>
+            <button class="btn-nav" id="btnNext">▶</button>
+            <button class="btn-nav" id="btnLast">⏭</button>
+            <button class="btn-nav" id="btnFlip">⇅</button>
+          </div>
+          <div class="moves-grid" id="moveGrid"><span style="color:#666;font-size:.75rem">Noch keine Eröffnung gewählt</span></div>
+           <div class="kbd-hint">Tastatur: ← → Zug · Home/End Anfang/Ende · F Flip</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="orbitron-eco-data.js"></script>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  const raw = window.ORBITRON_ECO_DATA || [];
+  const entries = raw.map(([eco, name, movesStr]) => ({ eco, name, movesStr, tokens: movesStr.split(' ').filter(Boolean) }));
+  $('totalCount').textContent = entries.length + ' Eröffnungen · lichess-org/chess-openings (CC0)';
+  $('statTotal').textContent = entries.length;
+
+  let volumeFilter = '';
+  let flipped = false;
+  let selected = null;
+  let step = 0;
+  let fens = ['start'];
+  let board = null;
+
+  board = Chessboard('board', { position: 'start', draggable: false, pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png' });
+
+  // volume tabs
+  const volumes = ['', 'A', 'B', 'C', 'D', 'E'];
+  $('volumeTabs').innerHTML = volumes.map(v => `<button class="vtab${v===''?' active':''}" data-v="${v}">${v || 'Alle'}</button>`).join('');
+  $('volumeTabs').addEventListener('click', e => {
+    const btn = e.target.closest('.vtab');
+    if (!btn) return;
+    volumeFilter = btn.dataset.v;
+    document.querySelectorAll('.vtab').forEach(b => b.classList.toggle('active', b === btn));
+    runSearch();
+  });
+
+  function runSearch() {
+    const q = $('searchInput').value.trim().toLowerCase();
+    const terms = q.split(/\s+/).filter(Boolean);
+    let pool = entries;
+    if (volumeFilter) pool = pool.filter(e => e.eco.startsWith(volumeFilter));
+    let matches = pool;
+    if (terms.length) {
+      matches = pool.filter(e => {
+        const hay = (e.eco + ' ' + e.name).toLowerCase();
+        return terms.every(t => hay.includes(t));
+      });
+    } else if (!volumeFilter) {
+      matches = pool.slice(0, 60);
+    }
+    $('statMatches').textContent = matches.length;
+    const shown = matches.slice(0, 150);
+    $('resultHint').textContent = q || volumeFilter
+      ? `${matches.length} Treffer${matches.length > shown.length ? ' · zeige erste 150 · weiter eingrenzen' : ''}`
+      : `${entries.length} Eröffnungen insgesamt · zeige erste 60 · tippen zum Suchen`;
+    if (!shown.length) { $('resultList').innerHTML = '<div class="empty">Keine Treffer.</div>'; return; }
+    $('resultList').innerHTML = shown.map((e, i) => `
+      <div class="result-item${selected === e ? ' active' : ''}" data-i="${i}">
+        <span class="result-eco">${esc(e.eco)}</span><span class="result-name">${esc(e.name)}</span>
+        <div class="result-moves">${esc(e.movesStr)}</div>
+      </div>`).join('');
+    $('resultList').__shown = shown;
+  }
+
+  $('resultList').addEventListener('click', e => {
+    const item = e.target.closest('.result-item');
+    if (!item) return;
+    const shown = $('resultList').__shown;
+    selectEntry(shown[Number(item.dataset.i)]);
+  });
+
+  function selectEntry(entry) {
+    selected = entry;
+    document.querySelectorAll('.result-item').forEach((el, i) => el.classList.toggle('active', $('resultList').__shown[i] === entry));
+
+    const chess = new Chess();
+    fens = ['start'];
+    const sanShown = [];
+    for (const tok of entry.tokens) {
+      const mv = chess.move(tok, { sloppy: true });
+      if (!mv) break;
+      sanShown.push(mv.san);
+      fens.push(chess.fen());
+    }
+    step = fens.length - 1;
+    renderBoard();
+
+    $('selectedHead').innerHTML = `
+      <div class="eco-big">${esc(entry.eco)}</div>
+      <h2>${esc(entry.name)}</h2>
+      <div class="meta">${sanShown.length} Halbzüge · ${esc(entry.movesStr)}</div>`;
+
+    $('moveGrid').innerHTML = sanShown.map((san, i) => {
+      const num = Math.floor(i / 2) + 1;
+      const label = (i % 2 === 0 ? num + '.' : '') + san;
+      return `<span class="move-chip" data-step="${i + 1}">${esc(label)}</span>`;
+    }).join('') || '<span style="color:#666;font-size:.75rem">Keine Züge</span>';
+    updateMoveGridActive();
+  }
+
+  function renderBoard() {
+    board.position(fens[step], false);
+  }
+  function updateMoveGridActive() {
+    document.querySelectorAll('.move-chip').forEach(c => c.classList.toggle('active', Number(c.dataset.step) === step));
+  }
+  $('moveGrid').addEventListener('click', e => {
+    const chip = e.target.closest('.move-chip');
+    if (!chip || !selected) return;
+    step = Number(chip.dataset.step);
+    renderBoard(); updateMoveGridActive();
+  });
+  $('btnFirst').onclick = () => { if (!selected) return; step = 0; renderBoard(); updateMoveGridActive(); };
+  $('btnPrev').onclick = () => { if (!selected) return; step = Math.max(0, step - 1); renderBoard(); updateMoveGridActive(); };
+  $('btnNext').onclick = () => { if (!selected) return; step = Math.min(fens.length - 1, step + 1); renderBoard(); updateMoveGridActive(); };
+  $('btnLast').onclick = () => { if (!selected) return; step = fens.length - 1; renderBoard(); updateMoveGridActive(); };
+  $('btnFlip').onclick = () => { flipped = !flipped; board.flip(); };
+  document.addEventListener('keydown', e => {
+    if (e.target.matches('input,textarea,select,button,[contenteditable="true"]')) return;
+    if (!selected) return;
+    if (e.key === 'ArrowLeft') { e.preventDefault(); $('btnPrev').click(); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); $('btnNext').click(); }
+    else if (e.key === 'Home') { e.preventDefault(); $('btnFirst').click(); }
+    else if (e.key === 'End') { e.preventDefault(); $('btnLast').click(); }
+    else if (e.key.toLowerCase() === 'f') { e.preventDefault(); $('btnFlip').click(); }
+  });
+
+  $('searchInput').addEventListener('input', runSearch);
+  runSearch();
+})();
+</script>
+</body>
+</html>
