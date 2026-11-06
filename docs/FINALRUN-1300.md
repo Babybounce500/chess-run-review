@@ -18,17 +18,17 @@
 
 ## Deine Matt-Partien (7 Siege durch Matt)
 
-**In allen 7 Partien hast du mit der Dame mattgesetzt, in 5 davon über die Grundreihe** (der gegnerische König saß hinter seinen eigenen Bauern fest und die Dame schlug auf der hintersten Reihe zu).
+**In allen 7 Partien hast du mit der Dame mattgesetzt, in 6 davon über die Grundreihe** (der gegnerische König stand auf seiner Grundreihe und die Dame schlug dort zu).
 
 | Partie | Farbe | Gegner | Züge | Mattbild | Wann das Matt sichtbar wurde und wie schnell du es hattest | Verpasstes Matt auf dem Weg | größter Gegnerfehler (Stand für dich) |
 |---|---|---|---|---|---|---|---|
-| 1 | Weiß | 1222 | 33 | Grundreihenmatt mit der Dame (der König war hinter eigenen Bauern eingesperrt) | ab Zug 33: Matt in 1, du brauchtest 1 | keins | -27.0 → -3.5 bei Zug 26 |
-| 3 | Weiß | 1227 | 36 | Damenmatt | ab Zug 34: Matt in 4, du brauchtest 3 | Zug 35 (Matt in 3) | -13.3 → Matt bei Zug 35 |
-| 5 | Schwarz | 1252 | 37 | Grundreihenmatt mit der Dame (der König war hinter eigenen Bauern eingesperrt) | ab Zug 27: Matt in 7, du brauchtest 11 (4 mehr als nötig) | Zug 30 (Matt in 4), Zug 32 (Matt in 5), Zug 34 (Matt in 3) | +12.6 → Matt bei Zug 35 |
-| 13 | Schwarz | 1226 | 24 | Damenmatt (König von eigenen Figuren eingeengt) | ab Zug 24: Matt in 1, du brauchtest 1 | keins | +5.8 → Matt bei Zug 24 |
-| 14 | Schwarz | 1277 | 48 | Grundreihenmatt mit der Dame (der König war hinter eigenen Bauern eingesperrt) | ab Zug 40: Matt in 9, du brauchtest 9 | keins | +17.7 → +30.0 bei Zug 38 |
-| 17 | Schwarz | 1270 | 41 | Grundreihenmatt mit der Dame (der König war hinter eigenen Bauern eingesperrt) | ab Zug 34: Matt in 4, du brauchtest 8 (4 mehr als nötig) | keins | -0.0 → +12.3 bei Zug 29 |
-| 19 | Weiß | 1259 | 23 | Grundreihenmatt mit der Dame (der König war hinter eigenen Bauern eingesperrt) | ab Zug 22: Matt in 2, du brauchtest 2 | keins | +8.9 → Matt bei Zug 21 |
+| 1 | Weiß | 1222 | 33 | Grundreihenmatt mit der Dame (der König stand auf der Grundreihe) | ab Zug 33: Matt in 1, du brauchtest 1 | keins | -27.0 → -3.5 bei Zug 26 |
+| 3 | Weiß | 1227 | 36 | Grundreihenmatt mit der Dame (der König stand auf der Grundreihe) | ab Zug 34: Matt in 4, du brauchtest 3 | Zug 35 (Matt in 3) | -13.3 → Matt bei Zug 35 |
+| 5 | Schwarz | 1252 | 37 | Grundreihenmatt mit der Dame (der König stand auf der Grundreihe) | ab Zug 27: Matt in 7, du brauchtest 11 (4 mehr als nötig) | Zug 30 (Matt in 4), Zug 32 (Matt in 5), Zug 34 (Matt in 3) | +12.6 → Matt bei Zug 35 |
+| 13 | Schwarz | 1226 | 24 | Grundreihenmatt mit der Dame (der König stand auf der Grundreihe) | ab Zug 24: Matt in 1, du brauchtest 1 | keins | +5.8 → Matt bei Zug 24 |
+| 14 | Schwarz | 1277 | 48 | Grundreihenmatt mit der Dame (der König stand auf der Grundreihe) | ab Zug 40: Matt in 9, du brauchtest 9 | keins | +17.7 → +30.0 bei Zug 38 |
+| 17 | Schwarz | 1270 | 41 | Damenmatt | ab Zug 34: Matt in 4, du brauchtest 8 (4 mehr als nötig) | keins | -0.0 → +12.3 bei Zug 29 |
+| 19 | Weiß | 1259 | 23 | Grundreihenmatt mit der Dame (der König stand auf der Grundreihe) | ab Zug 22: Matt in 2, du brauchtest 2 | keins | +8.9 → Matt bei Zug 21 |
 
 ### Was daraus folgt
 
