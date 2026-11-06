@@ -15,7 +15,7 @@
 
   // ---------- Stil ----------
   const css = `
-.og-card{border:1px solid var(--border,#e0e4e8);border-radius:16px;background:var(--card-bg,#fff);padding:12px;max-width:520px;width:100%;box-shadow:var(--shadow-sm,none);font-family:inherit}
+.og-card{container-type:inline-size;border:1px solid var(--border,#e0e4e8);border-radius:16px;background:var(--card-bg,#fff);padding:12px;max-width:860px;width:100%;box-shadow:var(--shadow-sm,none);font-family:inherit}
 .og-title{font-weight:700;font-size:1rem;display:flex;align-items:center;gap:8px;margin-bottom:8px}
 .og-badge{font-size:.68rem;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--active-bg,#d3e3fd);color:var(--active-text,#0842a0)}
 .og-row{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;align-items:center}
@@ -28,7 +28,12 @@
 .og-select{border:1px solid var(--border,#e0e4e8);background:var(--input-bg,#f0f4f9);color:var(--text,#1f1f1f);border-radius:10px;padding:7px 9px;font:inherit;font-size:.8rem}
 .og-note{font-size:.76rem;color:var(--text-muted,#5e5e5e);line-height:1.4}
 .og-status{font-size:.85rem;font-weight:600;margin:6px 0}
-.og-board{position:relative;display:grid;grid-template-columns:repeat(8,1fr);aspect-ratio:1/1;width:100%;max-width:480px;border-radius:8px;overflow:hidden;user-select:none;touch-action:none;margin:0 auto}
+.og-play{display:grid;grid-template-columns:min(500px,max(260px,calc(100dvh - 345px))) minmax(0,1fr);gap:14px;align-items:start}
+.og-left,.og-right{min-width:0}
+.og-right .og-status{margin-top:0}
+@container (max-width:560px){.og-play{grid-template-columns:minmax(0,1fr)}.og-left{width:100%;max-width:max(240px,calc(100dvh - 360px));margin:0 auto}}
+.analysis-context.collapsed{padding:6px 14px!important;margin-bottom:8px!important}.analysis-context.collapsed .analysis-context-status{display:none}
+.og-board{position:relative;display:grid;grid-template-columns:repeat(8,1fr);aspect-ratio:1/1;width:100%;max-width:100%;border-radius:8px;overflow:hidden;user-select:none;touch-action:none;margin:0 auto}
 .og-sq{position:relative;display:flex;align-items:center;justify-content:center;container-type:size;cursor:default}
 .og-sq.l{background:#f0d9b5}.og-sq.d{background:#b58863}
 .og-sq.last::before{content:"";position:absolute;inset:0;background:rgba(255,215,0,.38)}
@@ -80,7 +85,8 @@
     const row = el('div', 'msg assistant', '<div class="msg-avatar"><i class="bi bi-stars"></i></div><div class="msg-bubble"></div>');
     row.querySelector('.msg-bubble').appendChild(node);
     stream.appendChild(row);
-    try { if (window.__orbitronBridge) window.__orbitronBridge.scrollBottom(); } catch (e) { /* ignorieren */ }
+    try { const ap = $('analysisContext'); if (ap && !ap.classList.contains('collapsed') && window.toggleAnalysisContext) window.toggleAnalysisContext(); } catch (e) { /* ignorieren */ }
+    try { requestAnimationFrame(() => row.scrollIntoView({ block: 'start', behavior: 'smooth' })); } catch (e) { /* ignorieren */ }
     try { if (typeof closeSidebar === 'function') closeSidebar(); } catch (e) { /* ignorieren */ }
     return row;
   }
@@ -280,7 +286,7 @@
     const lv = K.levelById(S.level);
 
     card.innerHTML = `<div class="og-title"><i class="bi bi-controller"></i> Partie gegen Orbitron <span class="og-badge">${S.mode === 'gemini' ? 'Gemini zieht' : 'Stockfish zieht · ' + esc(lv.label)}</span></div>
-      <div class="og-status" data-status></div><div data-boardwrap></div>
+      <div class="og-play"><div class="og-left" data-boardwrap></div><div class="og-right"><div class="og-status" data-status></div>
       <div class="og-say" data-say><b>Viel Erfolg!</b><span class="og-sub">Zieh mit Klick oder Ziehen. Der Bot sagt jeden Zug an.</span></div>
       <div class="og-row" data-tools>
         <button class="og-btn" data-flip title="Brett drehen"><i class="bi bi-arrow-down-up"></i></button>
@@ -289,7 +295,7 @@
         <button class="og-btn" data-back>Zug zurück</button>
         <button class="og-btn" data-draw>Remis anbieten</button>
         <button class="og-btn" data-resign>Aufgeben</button></div>
-      <div data-panel></div><div class="og-moves" data-moves></div><div data-end></div>`;
+      <div data-panel></div><div class="og-moves" data-moves></div><div data-end></div></div></div>`;
     const q = (s) => card.querySelector(s);
     const board = makeBoard({
       getTargets: (sq) => {
@@ -358,7 +364,7 @@
 
     async function botTurn() {
       if (S.over || S.busy || S.disposed) return;
-      S.busy = true; refresh(); scrollIntoChat();
+      S.busy = true; refresh();
       const ply0 = S.chess.history().length;
       let res;
       try { res = S.mode === 'gemini' ? await geminiMove() : await engineMove(); } catch (e) { res = Object.assign(fallbackMove(S.chess, true), { note: 'Fehler bei der Zugsuche, Notfall-Zug.' }); }
@@ -449,7 +455,7 @@
       <div class="og-note">Stellung als FEN oder PGN einfügen. Der Check sucht hängende Figuren, Mattdrohungen und ein Matt in 1 für die Seite am Zug. Das ist dein häufigster Fehlerbereich.</div>
       <textarea class="og-input" rows="2" data-in placeholder="FEN oder PGN einfügen"></textarea>
       <div class="og-row"><button class="og-btn primary" data-go>Prüfen</button><button class="og-btn" data-start>Startstellung</button><button class="og-btn" data-flip><i class="bi bi-arrow-down-up"></i></button></div>
-      <div data-boardwrap></div><div data-out></div>`;
+      <div class="og-play"><div class="og-left" data-boardwrap></div><div class="og-right" data-out></div></div>`;
     const q = (s) => card.querySelector(s);
     const board = makeBoard({}); q('[data-boardwrap]').appendChild(board.el);
     let flip = false;
@@ -480,9 +486,9 @@
     let filter = 0, pool = [], cur = null, chess = null, remaining = 0, fails = 0, done = false, busy = false;
     card.innerHTML = `<div class="og-title"><i class="bi bi-bullseye"></i> Mattjäger <span class="og-badge">aus deinen Partien</span></div>
       <div class="og-note">Stellungen aus deinen eigenen Partien, in denen ein Matt in 1 bis 3 Zügen möglich war. Finde den Zug.</div>
-      <div class="og-row" data-filter></div><div class="og-status" data-status></div><div data-boardwrap></div>
+      <div class="og-row" data-filter></div><div class="og-play"><div class="og-left" data-boardwrap></div><div class="og-right"><div class="og-status" data-status></div>
       <div class="og-say" data-say><b>Los geht's</b><span class="og-sub">Wähle eine Aufgabe.</span></div>
-      <div class="og-row"><button class="og-btn" data-hint>Hinweis</button><button class="og-btn" data-sol>Lösung</button><button class="og-btn primary" data-next>Nächste Aufgabe</button></div><div class="og-note" data-stats></div>`;
+      <div class="og-row"><button class="og-btn" data-hint>Hinweis</button><button class="og-btn" data-sol>Lösung</button><button class="og-btn primary" data-next>Nächste Aufgabe</button></div><div class="og-note" data-stats></div></div></div>`;
     const q = (s) => card.querySelector(s);
     function sayT(a, b) { q('[data-say]').innerHTML = `<b>${esc(a)}</b>${b ? `<span class="og-sub">${esc(b)}</span>` : ''}`; }
     const board = makeBoard({
