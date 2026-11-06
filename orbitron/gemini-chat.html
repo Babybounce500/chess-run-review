@@ -1579,16 +1579,22 @@ Arbeite evidenzbasiert:
 - Opening-/Eröffnungsurteile darfst du nur aus der tatsächlichen Startposition oder einer Evaluation mit ply=0 ableiten. Bei Kontextabweichung keine Eröffnungsbehauptung.
 - Behaupte "Matt in N" nur bei scoreType=mate/mateIn in der passenden Evaluation oder bei unabhängig bestätigter terminaler Stellung. Eine numerische Bewertung oder ein Resultat belegt kein Matt in N.
 - playedMove ist der tatsächlich gespielte Zug; bestmove ist der Engine-Vorschlag derselben Stellung. Sage bei Stichproben nicht ohne passende Vorher-/Nachher-Evidence "Blunder", sondern "möglicher kritischer Moment".
-- Trenne strikt: (1) Engine-Fakt, (2) menschliche Schachinterpretation, (3) Trainingshypothese.
+- Trenne strikt: (1) Engine-Fakt, (2) menschliche Schachinterpretation (dein eigenes Schachwissen, im Partiebild), (3) Trainingshypothese.
 - Bei PGN: finde konkrete Critical Moments und erkläre den Unterschied zwischen gespielt, best und praktisch gut.
 - Bei FEN oder Screenshot: bestätige zuerst Stellung/Seite am Zug und markiere Unsicherheit bei Bildauslesung.
 - Sprich Deutsch, direkt und präzise. Kein generisches Motivationsgerede.
-Standardmäßig kurz und fokussiert antworten (ca. 350–600 Wörter, keine langen Essays).
-Verwende genau diese vier sichtbaren Abschnitte:
+Standardmäßig fokussiert antworten (ca. 450–750 Wörter, keine langen Essays).
+Verwende genau diese fünf sichtbaren Abschnitte:
 ## Kurzurteil
+## Partiebild
 ## Engine-Höhepunkte
 ## 3 Schlüsselmomente
 ## Nächster Fokus
+- Partiebild: Hier setzt du dein eigenes Schachwissen ein und erzählst die ganze Partie, nicht nur die gemessenen Stellen. Beschreibe Eröffnung und ihre Grundidee (aus der tatsächlichen Zugfolge), den Charakter der Phasen (Aufbau, Mittelspiel, Endspiel), Bauernstruktur, offene Linien, Königssicherheit, Figurenaktivität, typische Pläne beider Seiten, wiederkehrende taktische Motive (Gabel, Fesselung, Abzug, Grundreihe, Doppelangriff) und wo ein Plan gescheitert oder gelungen ist. Nenne Züge mit Figur und Feld in Worten, Notation nur ergänzend. Kennzeichne diesen Abschnitt als deine Einschätzung (z. B. "Meine Einschätzung:"). 4 bis 7 Sätze oder Bulletpoints.
+- Die Stockfish-Evidence ist eine Stütze für Zahlen, Bestzüge und Matt-Aussagen, nicht der Rahmen deiner Analyse. Beschreibe Stellungen und Situationen auch dann inhaltlich, wenn zu ihnen kein Messwert vorliegt, und sage dann klar "nicht engine-geprüft". Du darfst und sollst erklären, warum ein Zug strategisch sinnvoll oder schwach ist, ohne eine Zahl zu nennen.
+- Ist ein [PARTIE-FAKTEN]-Block vorhanden, nutze ihn für alle Aussagen über Schlagzüge, Material, Rochaden, Schachgebote und die Endstellung. Er ist mit chess.js geprüft und hat Vorrang vor deiner Erinnerung an die PGN. Er enthält keine Engine-Bewertungen.
+- Eigenes Wissen darf keine Zahlen, Varianten oder Matt-Ansagen erfinden. Plänen und Ideen gibst du Namen ("typischer Plan", "naheliegende Idee"), du präsentierst sie nicht als berechnete Variante. Widerspricht deine Einschätzung der Engine, gilt die Engine und du benennst den Widerspruch kurz.
+- Sorgfalt beim eigenen Wissen: Nenne einen Eröffnungsnamen nur, wenn die Zugfolge eindeutig dazu passt. Bist du unsicher, beschreibe stattdessen die Idee (z. B. \"Läuferentwicklung nach f4 mit solidem Bauernaufbau\"). Jede Aussage über Figurenstandorte, Schlagzüge und Bauernstrukturen muss zur PGN passen; gehe die Züge dafür gedanklich durch. Wenn du eine Behauptung nicht aus der PGN ableiten kannst, lass sie weg.
 - Nutze pro Abschnitt kurze Absätze oder Bulletpoints. Hebe höchstens eine kurze Kernaussage pro Abschnitt mit **...** hervor; niemals einen ganzen Absatz oder mehrere Sätze vollständig fett.
 - Engine-Höhepunkte: maximal 4 verifizierte Werte/Züge aus der Evidence; keine Wiederholung derselben Zahl.
 - 3 Schlüsselmomente: genau bis zu 3 Momente mit Gespielt / Besser / Warum.
@@ -2364,6 +2370,40 @@ window.runFullChessAnalysis=async function(){
   }
 };
 
+// Geprueftes Partieprotokoll aus chess.js. Das Modell nutzt es fuer Aussagen ueber Schlaege, Material, Rochaden und Matt,
+// damit sein eigenes Schachwissen auf nachpruefbaren Fakten aufbaut und nicht auf Erinnerung an die PGN.
+function buildGameFacts(src){
+  try{
+    const raw=String(src||'');const g=new Chess();
+    if(!g.load_pgn(raw,{sloppy:true}))return '';
+    const mv=g.history({verbose:true});if(!mv.length)return '';
+    const V={p:1,n:3,b:3,r:5,q:9},NAME={p:'Bauer',n:'Springer',b:'Läufer',r:'Turm',q:'Dame',k:'König'};
+    const mat=c=>{let s=0;for(const row of c.board())for(const x of row)if(x&&x.type!=='k')s+=(x.color==='w'?1:-1)*V[x.type];return s};
+    const words=d=>d>0?'Weiß +'+d:d<0?'Schwarz +'+(-d):'ausgeglichen';
+    const r=new Chess(),caps=[],checks=[],cast=[],bals=[],promos=[];
+    mv.forEach((m,i)=>{
+      const tag=(Math.floor(i/2)+1)+(m.color==='w'?'.':'...');r.move(m);
+      if(m.captured)caps.push(tag+' '+m.san+': '+NAME[m.piece]+' schlägt '+NAME[m.captured]+' auf '+m.to);
+      if(m.promotion)promos.push(tag+' '+m.san+': Umwandlung zur '+NAME[m.promotion]);
+      if(/[+#]/.test(m.san))checks.push(tag+' '+m.san);
+      if(/^O-O/.test(m.san))cast.push(tag+' '+m.san+' ('+(m.color==='w'?'Weiß':'Schwarz')+')');
+      if((i+1)%10===0||i===mv.length-1)bals.push('nach '+tag+' '+m.san+': '+words(mat(r)));
+    });
+    const last=mv[mv.length-1],H=g.header()||{};
+    const out=['[PARTIE-FAKTEN, mit chess.js aus der PGN berechnet und geprüft]',
+      'Halbzüge: '+mv.length+(H.White?' · Weiß: '+H.White:'')+(H.Black?' · Schwarz: '+H.Black:'')+(H.Result?' · Ergebnis: '+H.Result:''),
+      'Schlagzüge ('+caps.length+'): '+(caps.length?caps.slice(0,28).join('; ')+(caps.length>28?'; …':''):'keine'),
+      'Rochaden: '+(cast.length?cast.join('; '):'keine'),
+      'Schachgebote ('+checks.length+'): '+(checks.length?checks.slice(0,20).join(', ')+(checks.length>20?', …':''):'keine'),
+      promos.length?'Umwandlungen: '+promos.join('; '):'',
+      'Materialbilanz (ohne König, Bauerneinheiten): '+bals.join(' | ')];
+    if(r.in_checkmate())out.push('Endstellung: Schachmatt durch '+NAME[last.piece]+' auf '+last.to+' ('+last.san+'), '+(last.color==='w'?'Weiß':'Schwarz')+' gewinnt.');
+    else if(r.game_over())out.push('Endstellung: Remis (Patt, Wiederholung oder zu wenig Material).');
+    else out.push('Endstellung: Partie nicht zu Ende gespielt.');
+    out.push('Endstellung FEN: '+r.fen(),'[ENDE PARTIE-FAKTEN]');
+    return '\n'+out.filter(Boolean).join('\n')+'\n';
+  }catch(e){return ''}
+}
 async function doSend(text, files, fileContext){
   isProcessing=true;sendBtn.disabled=true;
   if(!activeConvoId)createConvo();
@@ -2387,8 +2427,10 @@ async function doSend(text, files, fileContext){
     const analyzedChess=cachedFull||await buildChessContext(chessSource,fileContext);
     if(analyzedChess){
        const evidence=compactChessEvidence(analyzedChess);
-      input[input.length-1].content.push({type:'text',text:`\n[DEEP ORBITRON CHESS EVIDENCE]\n${JSON.stringify(evidence)}\n[END CHESS EVIDENCE]\nAnalysiere im Modus: ${chessMode}. Bei Screenshot zuerst Brettstellung verifizieren.`});
+      input[input.length-1].content.push({type:'text',text:`\n[DEEP ORBITRON CHESS EVIDENCE]\n${JSON.stringify(evidence)}\n[END CHESS EVIDENCE]\nAnalysiere im Modus: ${chessMode}. Beschreibe zusätzlich im Abschnitt Partiebild mit deinem eigenen Schachwissen den Verlauf der Partie und die Situationen in Worten, auch zwischen den Engine-Messpunkten (als Einschätzung markiert, ohne erfundene Zahlen). Bei Screenshot zuerst Brettstellung verifizieren.`});
     }
+    const gameFacts=analyzedChess?buildGameFacts(chessSource):'';
+    if(gameFacts)input[input.length-1].content.push({type:'text',text:gameFacts});
     if(fileContext&&fileContext.length){
       for(const m of fileContext){
         if(m.kind==='image')input[input.length-1].content.push({type:'image',mime_type:m.mimeType,data:m.data});
@@ -2553,10 +2595,10 @@ function markdownToHtml(text){
   if(!text)return '';
   text=dedupeAdjacentResponseBlocks(text);
   text=normalizeAssistantEmphasis(text);
-  text=text.replace(/^(Kurzurteil|Engine-Höhepunkte|3 Schlüsselmomente|Nächster Fokus)\s*:?\s*$/gim,'## $1');
+  text=text.replace(/^(Kurzurteil|Partiebild|Engine-Höhepunkte|3 Schlüsselmomente|Nächster Fokus)\s*:?\s*$/gim,'## $1');
   // A model may place the first paragraph directly on the line after a
   // heading. Keep that paragraph out of the heading even without a blank line.
-  text=text.replace(/^(##\s+(?:Kurzurteil|Engine-Höhepunkte|3 Schlüsselmomente|Nächster Fokus))\s*\n(?!\n)/gim,'$1\n\n');
+  text=text.replace(/^(##\s+(?:Kurzurteil|Partiebild|Engine-Höhepunkte|3 Schlüsselmomente|Nächster Fokus))\s*\n(?!\n)/gim,'$1\n\n');
   let h = escapeHtml(text);
   h = h.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
     const l = lang || 'code';
@@ -2580,7 +2622,7 @@ function markdownToHtml(text){
 // nur eine kurze Kernaussage hervorgehoben werden soll. Solche Blöcke werden
 // bewusst als normaler Fließtext dargestellt; kurze echte Hervorhebungen bleiben.
 function normalizeAssistantEmphasis(text){
-  const sectionHeadings=/^(Kurzurteil|Engine-Höhepunkte|3 Schlüsselmomente|Nächster Fokus)\s*:?\s*$/i;
+  const sectionHeadings=/^(Kurzurteil|Partiebild|Engine-Höhepunkte|3 Schlüsselmomente|Nächster Fokus)\s*:?\s*$/i;
   return String(text||'').replace(/\*\*([\s\S]*?)\*\*/g,(match,inner)=>{
     const value=String(inner).trim();
     if(sectionHeadings.test(value))return `\n## ${value}\n`;
