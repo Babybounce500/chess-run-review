@@ -1,5 +1,8 @@
 # Änderungsprotokoll
 
+## 2026-11-06 (Korrektur)
+- **Mattbild-Zuordnung im Finale korrigiert:** Die erste Fassung von [docs/FINALRUN-1300.md](docs/FINALRUN-1300.md) hatte bei der Mattbild-Erkennung die Position vor dem Mattzug ausgewertet und damit den falschen König angesehen. Richtig sind 6 Grundreihenmatts mit der Dame und 1 Damenmatt (Partie 17), nicht 5 und 2.
+
 ## 2026-11-05 (sechste Aktualisierung: Finale, 1300)
 - **Teil 5 bis 7 vom 05.11.** eingerechnet: Teil 5 (50 Partien, 28–1–21, Header 1100 → 1150), Teil 6 (13 Partien, 10–0–3, 1158 → 1206) und das **Finale** (20 Partien, 14–0–6, **1249 → 1303**). Die Teile 5 und 6 waren zuvor nur im Chat ausgewertet und werden hier erstmals dokumentiert.
 - **Neu: [docs/FINALRUN-1300.md](docs/FINALRUN-1300.md):** Auswertung des Finales mit Schwerpunkt auf den 7 Matt-Siegen (alle mit der Dame, 6× Grundreihe).
