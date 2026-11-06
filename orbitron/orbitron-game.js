@@ -31,7 +31,7 @@
 .og-play{display:grid;grid-template-columns:min(500px,max(260px,calc(100dvh - 345px))) minmax(0,1fr);gap:14px;align-items:start}
 .og-left,.og-right{min-width:0}
 .og-right .og-status{margin-top:0}
-@container (max-width:560px){.og-play{grid-template-columns:minmax(0,1fr)}.og-left{width:100%;max-width:max(240px,calc(100dvh - 360px));margin:0 auto}}
+@container (max-width:560px){.og-play{grid-template-columns:minmax(0,1fr)}.og-left{width:100%;max-width:max(240px,calc(100dvh - 300px));margin:0 auto}}
 .analysis-context.collapsed{padding:6px 14px!important;margin-bottom:8px!important}.analysis-context.collapsed .analysis-context-status{display:none}
 .og-board{position:relative;display:grid;grid-template-columns:repeat(8,1fr);aspect-ratio:1/1;width:100%;max-width:100%;border-radius:8px;overflow:hidden;user-select:none;touch-action:none;margin:0 auto}
 .og-sq{position:relative;display:flex;align-items:center;justify-content:center;container-type:size;cursor:default}
@@ -62,7 +62,43 @@
 .og-panel li{margin:2px 0}
 .og-input{width:100%;box-sizing:border-box;border:1px solid var(--border,#e0e4e8);background:var(--input-bg,#f0f4f9);color:var(--text,#1f1f1f);border-radius:10px;padding:8px 10px;font:inherit;font-size:.8rem}
 .og-win{color:#2e9d4f}.og-lose{color:#e53935}
-@media(max-width:600px){.og-card{padding:9px}.og-btn{padding:6px 8px}}
+/* ---- Mobil und Touch ---- */
+.og-card{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+.og-btn,.og-select,.og-promo button{touch-action:manipulation}
+@media(max-width:600px){
+ .og-card{padding:8px;border-radius:12px}
+ .og-title{font-size:.9rem;flex-wrap:wrap;gap:6px}
+ .og-btn{padding:8px 10px;font-size:.8rem;min-height:38px}
+ .og-row{gap:5px}
+ .og-board{border-radius:6px}
+ .og-sq .og-coord{font-size:8px}
+ .og-say{font-size:.82rem;padding:8px 9px}
+ .og-moves{font-size:.7rem;max-height:3.6em;overflow:auto}
+ .og-promo button{width:54px;height:54px}
+ .og-panel{font-size:.78rem}
+}
+@media(max-width:380px){
+ .og-card{padding:6px}
+ .og-btn{padding:7px 8px;font-size:.76rem}
+ .og-row .og-btn{flex:1 1 calc(50% - 5px)}
+ .og-title .og-badge{font-size:.62rem}
+}
+@media(hover:none) and (pointer:coarse){
+ .og-btn{min-height:44px}
+ .og-select{min-height:44px}
+ .og-sq.tgt::after{width:34%;height:34%}
+ .og-input{font-size:16px}
+}
+@media(orientation:landscape) and (max-height:520px){
+ .og-card{padding:6px}
+ .og-title{margin-bottom:4px}
+ .og-title{display:none}
+ .og-play{grid-template-columns:min(max(170px,calc(100dvh - 215px)),52%) minmax(0,1fr)}
+ .og-left{max-width:none!important}
+ .og-say{margin:6px 0 2px}
+}
+@media(max-width:700px),(max-height:560px){body.og-active .analysis-context{display:none!important}}
+@supports(padding:max(0px)){.og-card{padding-bottom:max(12px,env(safe-area-inset-bottom))}}
 `;
   const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 
@@ -569,6 +605,12 @@
       return origSend.apply(this, arguments);
     };
   }
+
+  (function watch() {
+    const stream = $('chatStream'); if (!stream) return;
+    const upd = () => document.body.classList.toggle('og-active', !!stream.querySelector('.og-card'));
+    new MutationObserver(upd).observe(stream, { childList: true, subtree: false }); upd();
+  })();
 
   window.OrbitronGame = { openSetup, openPatzerCheck, openMateTrainer, Engine, matchTrigger, version: '1.0' };
 })();
