@@ -1,5 +1,9 @@
 # Änderungsprotokoll
 
+## 2026-11-08 (Chess.com-Gesamtarchiv)
+- **Neu: [docs/CHESSCOM-GESAMT.md](docs/CHESSCOM-GESAMT.md):** alle öffentlichen Live-Partien von Chess.com (3846, 19.08.2023 bis 08.11.2026) als Zusammenfassung: Bilanz, Rating je Zeitklasse, Monatsübersicht, Endarten, häufigste Eröffnungen. Gegnernamen und Links sind nicht enthalten.
+- Die lokale Auswertung kannte bis dahin nur etwa die Hälfte der Partien ab August 2026; die Stockfish-Analyse der übrigen Partien läuft.
+
 ## 2026-11-06 (Korrektur)
 - **Mattbild-Zuordnung im Finale korrigiert:** Die erste Fassung von [docs/FINALRUN-1300.md](docs/FINALRUN-1300.md) hatte bei der Mattbild-Erkennung die Position vor dem Mattzug ausgewertet und damit den falschen König angesehen. Richtig sind 6 Grundreihenmatts mit der Dame und 1 Damenmatt (Partie 17), nicht 5 und 2.
 
