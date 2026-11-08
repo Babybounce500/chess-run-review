@@ -6,7 +6,7 @@ Stockfish-Analyse eigener Chess.com-Partien mit Bericht, Lernviewer und Training
 - **Viewer** (Musterpartien, Matt & Taktik, Konterspiel, Computer-Turnier, Tal, Bauernsturm): https://babybounce500.github.io/chess-run-review/musterpartien/
 - Direktlinks im Viewer: `#turnier`, `#mate`, `#konter`, `#tal`, `#games`.
 
-**Runs im Detail** (Sessions, eine Zeile pro Partie): [docs/RUNS.md](docs/RUNS.md) · **Elo-Sprung vom 05.11.:** [docs/ELO-SPRUNG-05-11.md](docs/ELO-SPRUNG-05-11.md) · **Finale (1300):** [docs/FINALRUN-1300.md](docs/FINALRUN-1300.md) · **Chess.com gesamt (3846 Partien):** [docs/CHESSCOM-GESAMT.md](docs/CHESSCOM-GESAMT.md)
+**Runs im Detail** (Sessions, eine Zeile pro Partie): [docs/RUNS.md](docs/RUNS.md) · **Elo-Sprung vom 05.11.:** [docs/ELO-SPRUNG-05-11.md](docs/ELO-SPRUNG-05-11.md) · **Finale (1300):** [docs/FINALRUN-1300.md](docs/FINALRUN-1300.md) · **Chess.com gesamt (3846 Partien):** [docs/CHESSCOM-GESAMT.md](docs/CHESSCOM-GESAMT.md) · **Zeitprofil:** [docs/ZEITPROFIL.md](docs/ZEITPROFIL.md) · **Gewinnzüge und Comebacks:** [docs/GEWINNZUEGE.md](docs/GEWINNZUEGE.md)
 
 ## Datenbasis
 

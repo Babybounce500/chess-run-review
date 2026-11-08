@@ -1,5 +1,10 @@
 # Änderungsprotokoll
 
+## 2026-11-08 (Zeitprofil, Fehler-Trainer, Chess.com in Orbitron)
+- **Neu: [docs/ZEITPROFIL.md](docs/ZEITPROFIL.md):** Bedenkzeit pro Zug und Phase aus den Uhrzeiten von 1954 Blitzpartien, verknüpft mit der Stockfish-Auswertung (Zeitverluste, Zeitvorsprung, Fehler nach Restzeit).
+- **Neu: [docs/GEWINNZUEGE.md](docs/GEWINNZUEGE.md):** welche starken Züge deine Siege entscheiden (Mattangriffe, Opfer, Doppelangriffe, Materialgewinn) und wo, mit welchen Figuren und wann die Comebacks aus schlechter Stellung kippen.
+- **Orbitron-Live (Pfad /orbitron/):** Fehler-Trainer mit Aufgaben aus eigenen Partien, Trainings-Menü und „Meine Partien“ (Partien direkt von Chess.com laden und per Klick analysieren).
+
 ## 2026-11-08 (Chess.com-Gesamtarchiv)
 - **Neu: [docs/CHESSCOM-GESAMT.md](docs/CHESSCOM-GESAMT.md):** alle öffentlichen Live-Partien von Chess.com (3846, 19.08.2023 bis 08.11.2026) als Zusammenfassung: Bilanz, Rating je Zeitklasse, Monatsübersicht, Endarten, häufigste Eröffnungen. Gegnernamen und Links sind nicht enthalten.
 - **Bericht und Viewer auf alle Partien ab 10.08.2026 erweitert:** Die Stockfish-Analyse (Tiefe 12) der bisher fehlenden 1874 Partien wurde mit der bisherigen Auswertung zusammengeführt. Grundlage sind jetzt **3038 Partien**, 1503–117–1418, vom 10.08. bis 08.11.2026. Die Tiefe der neu hinzugekommenen Partien (12) ist etwas geringer als bei den früheren (13 bis 14), Einzelwerte können deshalb um wenige Zehntel abweichen.
