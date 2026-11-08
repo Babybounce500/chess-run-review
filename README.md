@@ -12,11 +12,11 @@ Stockfish-Analyse eigener Chess.com-Partien mit Bericht, Lernviewer und Training
 
 | | |
 |---|---|
-| Partien | **1164** (Chess.com-PGN-Exporte, 23.09.–05.11.2026) |
-| Bilanz | 608 Siege – 40 Remis – 516 Niederlagen (52.2 % Siege) |
-| Zeitkontrollen | Bullet 60 s: 476 Partien (56.5 % Siege) · Blitz 5+0: 688 Partien (49.3 % Siege) |
-| Rating (Tageswerte) | Blitz 1269 → 1434 · Bullet 712 → 1303 |
-| Analysierte eigene Züge | 39598 |
+| Partien | **3038** (Chess.com-PGN-Exporte, 23.09.–05.11.2026) |
+| Bilanz | 1503 Siege – 117 Remis – 1418 Niederlagen (49.5 % Siege) |
+| Zeitkontrollen | Bullet 60 s: 1009 Partien (51.6 % Siege) · Blitz 5+0: 2029 Partien (48.4 % Siege) |
+| Rating (Tageswerte) | Blitz 1148 → 1420 · Bullet 565 → 1060 |
+| Analysierte eigene Züge | 106691 |
 
 Gegnernamen und Chess.com-Links werden nicht veröffentlicht.
 
@@ -43,10 +43,10 @@ Die Werte sind deshalb **nicht exakt vergleichbar**: Bei geringerer Tiefe schwan
 
 ## Wichtige Definitionen (Bericht und Viewer)
 
-- **Verlorene Stellung:** Die Engine bewertet die Partie irgendwann mit ≤ −300 cp aus deiner Sicht. Aktuell 849 Partien, davon 342 gewonnen (40 %), 24 remis, 483 verloren. Mit Remis 43 % gerettet.
-- **Gegnerfehler bestraft:** Der Gegner verschlechtert seine Stellung um ≥ 200 cp, du stehst danach ≥ +300 und spielst einen Zug mit höchstens 50 cp Verlust. Quote: 917 von 1988.
-- **Vorteil verspielt:** Eigener Vorteil ≥ +300 sinkt durch einen eigenen Zug auf unter +100 (642-mal).
-- **Verpasstes Matt / zugelassenes Matt:** Die Engine sieht Matt in n Zügen für dich bzw. gegen dich und der gespielte Zug lässt es zu bzw. nicht aus (223 bzw. 500).
+- **Verlorene Stellung:** Die Engine bewertet die Partie irgendwann mit ≤ −300 cp aus deiner Sicht. Aktuell 2245 Partien, davon 825 gewonnen (37 %), 83 remis, 1337 verloren. Mit Remis 40 % gerettet.
+- **Gegnerfehler bestraft:** Der Gegner verschlechtert seine Stellung um ≥ 200 cp, du stehst danach ≥ +300 und spielst einen Zug mit höchstens 50 cp Verlust. Quote: 2233 von 4961.
+- **Vorteil verspielt:** Eigener Vorteil ≥ +300 sinkt durch einen eigenen Zug auf unter +100 (1635-mal).
+- **Verpasstes Matt / zugelassenes Matt:** Die Engine sieht Matt in n Zügen für dich bzw. gegen dich und der gespielte Zug lässt es zu bzw. nicht aus (522 bzw. 1456).
 - **Brillanz-Kandidat (eigene Heuristik, kein offizielles Chess.com-Urteil):** Engine-Bestzug (≤ 15 cp Verlust), mindestens 2 Punkte Material geopfert, danach nicht schlechter als −50 cp, vorher nicht klar gewonnen. Viele Königsopfer sind Fehlalarme.
 - **Schlüsselzug „einziger Zug“ (Konter-Tab):** Du stehst schlechter, spielst den Bestzug, und der zweitbeste Zug ist laut Engine (zwei Varianten, Tiefe 14) mindestens 200 cp schlechter.
 
@@ -73,7 +73,7 @@ Die Werte sind deshalb **nicht exakt vergleichbar**: Bei geringerer Tiefe schwan
 ## Einschränkungen
 
 - Keine Uhrdaten in den Massendaten: **Zeitnot kann nicht belegt werden** (nur in einzelnen Live-Partien mit Uhrzeiten).
-- Remis durch „Zeit + zu wenig Material“: Wer geflaggt hat, geht aus dem PGN nicht hervor. Die Aussage „vermutlich verschenkte Siege“ (12 von 18) ist eine Ableitung aus der letzten Engine-Bewertung, nicht belegt.
+- Remis durch „Zeit + zu wenig Material“: Wer geflaggt hat, geht aus dem PGN nicht hervor. Die Aussage „vermutlich verschenkte Siege“ (26 von 47) ist eine Ableitung aus der letzten Engine-Bewertung, nicht belegt.
 - Die Turnier- und Duell-Ergebnisse sind wegen sehr kurzer Bedenkzeit (0,6–2 s) auf einem 2-Kern-Laptop nur grobe Rangfolgen. Lc0 lief mit einem kleinen Netz auf der CPU und ist dort deutlich schwächer als in Turnieren.
 - Brillanz-, Matt- und Opfererkennung sind eigene Näherungen.
 - Kleine Stichproben (Eröffnungen mit < 30 Partien) sind nicht belastbar.
