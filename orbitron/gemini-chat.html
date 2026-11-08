@@ -515,7 +515,8 @@ html,body,button,input,select,textarea{font-family:var(--neural-font)!important;
         <button class="nav-item" onclick="openChessModule('neural-chess.html','Neural Chess')"><i class="bi bi-cpu"></i><span class="chess-nav-label">Neural Chess</span></button>
         <button class="nav-item" onclick="openChessModule('mobile-chess.html','Mobile Chess')"><i class="bi bi-controller"></i><span class="chess-nav-label">Mobile Chess</span></button>
         <button class="nav-item" onclick="OrbitronGame.openSetup('stockfish')"><i class="bi bi-joystick"></i><span class="chess-nav-label">Partie spielen</span></button>
-        <button class="nav-item" onclick="OrbitronGame.openMateTrainer()"><i class="bi bi-crosshair"></i><span class="chess-nav-label">Mattjäger</span></button>
+        <button class="nav-item" onclick="OrbitronTrain.openMenu()"><i class="bi bi-crosshair"></i><span class="chess-nav-label">Training</span></button>
+        <button class="nav-item" onclick="OrbitronTrain.openChessCom()"><i class="bi bi-cloud-download"></i><span class="chess-nav-label">Meine Partien</span></button>
         <button class="nav-item" onclick="window.location.href='CLAUDE-ADDONS/library-index.html'"><i class="bi bi-collection"></i><span class="chess-nav-label">Chess Library</span></button>
         <button class="nav-item" onclick="openChessModule('https://babybounce500.github.io/chess-run-review/musterpartien/','Lernviewer')"><i class="bi bi-mortarboard"></i><span class="chess-nav-label">Lernviewer</span></button>
       </div>
@@ -2993,6 +2994,8 @@ $('ttsSingle').style.display='';$('ttsDialogPanel').style.display='none';
 <script src="orbitron-game-core.js"></script>
 <script src="orbitron-mate-puzzles.js"></script>
 <script src="orbitron-game.js"></script>
+<script src="orbitron-blunders.js"></script>
+<script src="orbitron-train.js"></script>
 <script>
 /* Auf der oeffentlichen Live-Seite (github.io) werden Bereiche mit persoenlichen Daten ausgeblendet. */
 </script>

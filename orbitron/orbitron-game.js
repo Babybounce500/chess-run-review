@@ -77,6 +77,8 @@
  .og-promo button{width:54px;height:54px}
  .og-panel{font-size:.78rem}
 }
+@media(max-width:600px),(max-height:520px){.og-desc{display:none}}
+.og-row .og-select{flex:1 1 130px;min-width:0;max-width:100%;text-overflow:ellipsis}
 @media(max-width:380px){
  .og-card{padding:6px}
  .og-btn{padding:7px 8px;font-size:.76rem}
@@ -596,10 +598,10 @@
   if (typeof origSend === 'function') {
     window.sendMessage = function () {
       const inp = $('promptInput'); const t = inp ? inp.value.trim() : '';
-      const m = matchTrigger(t);
+      const m = matchTrigger(t) || (window.OrbitronTrain && window.OrbitronTrain.match ? window.OrbitronTrain.match(t) : null);
       if (m && t.length < 80 + (m.fen ? 100 : 0)) {
         inp.value = ''; try { autoResize(inp); updateSendBtn(); } catch (e) { /* ignorieren */ }
-        if (m.fn === 'game') openSetup(m.mode); else if (m.fn === 'mate') openMateTrainer(); else openPatzerCheck(m.fen);
+        if (m.run) m.run(); else if (m.fn === 'game') openSetup(m.mode); else if (m.fn === 'mate') openMateTrainer(); else openPatzerCheck(m.fen);
         return;
       }
       return origSend.apply(this, arguments);
@@ -612,5 +614,6 @@
     new MutationObserver(upd).observe(stream, { childList: true, subtree: false }); upd();
   })();
 
-  window.OrbitronGame = { openSetup, openPatzerCheck, openMateTrainer, Engine, matchTrigger, version: '1.0' };
+  window.OrbitronGame = { openSetup, openPatzerCheck, openMateTrainer, Engine, matchTrigger, version: '1.1', _kit: { makeBoard, Engine, addCard, newCard, pieceSpan, el, esc, lsGet, lsSet, sleep, askGemini } };
+  document.dispatchEvent(new Event('orbitron-game-ready'));
 })();
