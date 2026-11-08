@@ -2,6 +2,7 @@
 
 ## 2026-11-08 (Zeitprofil, Fehler-Trainer, Chess.com in Orbitron)
 - **Neu: [docs/ZEITPROFIL.md](docs/ZEITPROFIL.md):** Bedenkzeit pro Zug und Phase aus den Uhrzeiten von 1954 Blitzpartien, verknüpft mit der Stockfish-Auswertung (Zeitverluste, Zeitvorsprung, Fehler nach Restzeit).
+- **Neu: [docs/EROEFFNUNGEN-ENDSPIELE.md](docs/EROEFFNUNGEN-ENDSPIELE.md):** Stabilität jeder Eröffnung (Stand nach Zug 12, frühe Fehler, Ergebnis) und die Endspiel-Lage nach Endspielart (Eintrittsstand, Fehler, Gewinn gehalten, Zeitverluste).
 - **Neu: [docs/GEWINNZUEGE.md](docs/GEWINNZUEGE.md):** welche starken Züge deine Siege entscheiden (Mattangriffe, Opfer, Doppelangriffe, Materialgewinn) und wo, mit welchen Figuren und wann die Comebacks aus schlechter Stellung kippen.
 - **Orbitron-Live (Pfad /orbitron/):** Fehler-Trainer mit Aufgaben aus eigenen Partien, Trainings-Menü und „Meine Partien“ (Partien direkt von Chess.com laden und per Klick analysieren).
 
