@@ -5,11 +5,29 @@
 - **Stabile Eröffnungen:** Weiß · Scotch Game (100 Partien, 54 %); Weiß · Philidor Defense (50 Partien, 53 %); Schwarz · Hungarian Opening (25 Partien, 62 %).
 - **Wackelig:** Weiß · Zukertort Opening (nach Zug 12 Median −2,1, 58 % klar schlechter); Weiß · Caro-Kann Defense (nach Zug 12 Median −1,3, 49 % klar schlechter); Weiß · Owen Defense (nach Zug 12 Median −1,2, 41 % klar schlechter); Schwarz · Caro-Kann Defense (nach Zug 12 Median −0,8, 25 % klar schlechter); Schwarz · Old Indian Defense (nach Zug 12 Median −0,7, 33 % klar schlechter). Die schlechteste Anfangsstellung hat Weiß · Caro-Kann Defense (Median −1,3).
 - **Ergebnis besser als die Stellung** (Punkte trotz Rückstand nach Zug 12): Weiß · Sicilian Defense (65 %, Median −0,4); Weiß · Caro-Kann Defense (63 %, Median −1,3); Weiß · Bird Opening (56 %, Median −0,4). Hier gewinnst du durch Fehler des Gegners, nicht durch die Eröffnung.
-- **Hauptwaffe Schwarz · Pirc Defense:** 419 Partien, 47 % Punkte, nach Zug 12 im Median −0,5, in 30 % der Partien schon klar schlechter.
+- **Hauptwaffe Schwarz · Pirc Defense:** 419 Blitz-Partien, 47 % Punkte. Das ist so gut wie dein übriges Schwarz-Repertoire, im Bullet sogar deutlich besser (siehe Abschnitt „Pirc im Vergleich“).
 - **Endspiele:** In 49 % der Partien wird ein Endspiel erreicht, meist als der Spieler mit Nachteil. Bei Vorteil gewinnst du nur 67 % dieser Endspiele; von den 269 Endspielen mit Vorteil gehen 88 nicht an dich: 44 durch Zeitverlust, 31 durch einen großen Fehler, 13 sonst.
 - **Fehleranfälligste Endspielart:** Damenendspiel mit 9,7 großen Fehlern pro 100 Zügen; am saubersten Turmendspiel mit 4,4.
 
 Grundlage: **1995 Blitz- und Rapid-Partien** (ohne Bullet) mit Stockfish-Auswertung. In **969** (49 %) wird ein Endspiel erreicht (ab Zug 15 höchstens 4 Figuren ohne Bauern und Könige zusammen auf dem Brett). Bewertungen in Bauerneinheiten aus deiner Sicht, Tiefe 11 bis 14.
+
+## Pirc im Vergleich (nur deine Partien mit Schwarz)
+
+Prüfung der These „Pirc ist die solideste Eröffnung: man verliert nicht am Anfang, kann viel vorziehen und später kontern“.
+
+| Zeitklasse | Eröffnung | Partien | Punkte | Niederlage in höchstens 20 Zügen | nach Zug 12 klar schlechter | Punkte, wenn klar schlechter | große Fehler in Zug 1 bis 12 pro Partie | Bedenkzeit in den ersten 10 Zügen | Züge unter 1 s |
+|---|---|---|---|---|---|---|---|---|---|
+| Blitz | Pirc | 419 | 47 % | 5 % | 30 % | 37 % | 0,3 | 19,8 s | 48 % |
+| Blitz | andere Eröffnungen | 582 | 49 % | 3 % | 31 % | 38 % | 0,3 | 22,1 s | 42 % |
+| Bullet | Pirc | 245 | 58 % | 2 % | 35 % | 51 % | 0,5 | 8,8 s | 65 % |
+| Bullet | andere Eröffnungen | 274 | 53 % | 3 % | 40 % | 45 % | 0,5 | 9,3 s | 63 % |
+
+**Was die Zahlen sagen:**
+- **Im Bullet stimmt die These:** Pirc holt dort die meisten Punkte, du stehst seltener klar schlechter und kommst öfter zurück. Zwei Drittel der ersten Züge gehen als Premove.
+- **Im Blitz ist Pirc ungefähr so gut wie dein übriges Schwarz-Repertoire,** weder besser noch schlechter. Der Anteil klar schlechter Stellungen nach Zug 12 liegt in beiden Gruppen bei etwa 30 Prozent, und das Zurückkommen (Punkte aus schlechter Stellung) ist gleich.
+- **Der Premove-Vorteil ist belegt:** Du brauchst für die ersten 10 Züge etwas weniger Zeit, und ein größerer Teil der Züge fällt unter eine Sekunde.
+- **Frühe Niederlagen** (in höchstens 20 Zügen) sind bei allen Schwarz-Eröffnungen selten, bei Pirc im Blitz minimal häufiger (5 statt 3 Prozent).
+- Die Einstufung „wackelig“ in der Tabelle unten kommt von festen Schwellenwerten. Fast alle deine Schwarz-Eröffnungen liegen darüber. Pirc ist also nicht schlechter als der Rest, aber auch kein Ausreißer nach oben.
 
 ## Eröffnungen: wie stabil sind sie?
 
