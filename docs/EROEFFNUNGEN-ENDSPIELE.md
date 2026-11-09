@@ -2,14 +2,14 @@
 
 ## Kurzfazit
 
-- **Stabile Eröffnungen:** Weiß · Scotch Game (100 Partien, 54 %); Weiß · Philidor Defense (50 Partien, 53 %); Schwarz · Hungarian Opening (25 Partien, 62 %).
+- **Stabile Eröffnungen:** Weiß · Scotch Game (102 Partien, 53 %); Weiß · Philidor Defense (51 Partien, 54 %); Schwarz · Hungarian Opening (25 Partien, 62 %).
 - **Wackelig:** Weiß · Zukertort Opening (nach Zug 12 Median −2,1, 58 % klar schlechter); Weiß · Caro-Kann Defense (nach Zug 12 Median −1,3, 49 % klar schlechter); Weiß · Owen Defense (nach Zug 12 Median −1,2, 41 % klar schlechter); Schwarz · Caro-Kann Defense (nach Zug 12 Median −0,8, 25 % klar schlechter); Schwarz · Old Indian Defense (nach Zug 12 Median −0,7, 33 % klar schlechter). Die schlechteste Anfangsstellung hat Weiß · Caro-Kann Defense (Median −1,3).
-- **Ergebnis besser als die Stellung** (Punkte trotz Rückstand nach Zug 12): Weiß · Sicilian Defense (65 %, Median −0,4); Weiß · Caro-Kann Defense (63 %, Median −1,3); Weiß · Bird Opening (56 %, Median −0,4). Hier gewinnst du durch Fehler des Gegners, nicht durch die Eröffnung.
-- **Hauptwaffe Schwarz · Pirc Defense:** 419 Blitz-Partien, 47 % Punkte. Das ist so gut wie dein übriges Schwarz-Repertoire, im Bullet sogar deutlich besser (siehe Abschnitt „Pirc im Vergleich“).
-- **Endspiele:** In 49 % der Partien wird ein Endspiel erreicht, meist als der Spieler mit Nachteil. Bei Vorteil gewinnst du nur 67 % dieser Endspiele; von den 269 Endspielen mit Vorteil gehen 88 nicht an dich: 44 durch Zeitverlust, 31 durch einen großen Fehler, 13 sonst.
+- **Ergebnis besser als die Stellung** (Punkte trotz Rückstand nach Zug 12): Weiß · Sicilian Defense (65 %, Median −0,4); Weiß · Caro-Kann Defense (63 %, Median −1,3); Weiß · Bird Opening (56 %, Median −0,4); Weiß · French Defense (55 %, Median −0,3). Hier gewinnst du durch Fehler des Gegners, nicht durch die Eröffnung.
+- **Hauptwaffe Schwarz · Pirc Defense:** 424 Blitz-Partien, 47 % Punkte. Das ist so gut wie dein übriges Schwarz-Repertoire, im Bullet sogar deutlich besser (siehe Abschnitt „Pirc im Vergleich“).
+- **Endspiele:** In 48 % der Partien wird ein Endspiel erreicht, meist als der Spieler mit Nachteil. Bei Vorteil gewinnst du nur 68 % dieser Endspiele; von den 271 Endspielen mit Vorteil gehen 88 nicht an dich: 44 durch Zeitverlust, 31 durch einen großen Fehler, 13 sonst.
 - **Fehleranfälligste Endspielart:** Damenendspiel mit 9,7 großen Fehlern pro 100 Zügen; am saubersten Turmendspiel mit 4,4.
 
-Grundlage: **1995 Blitz- und Rapid-Partien** (ohne Bullet) mit Stockfish-Auswertung. In **969** (49 %) wird ein Endspiel erreicht (ab Zug 15 höchstens 4 Figuren ohne Bauern und Könige zusammen auf dem Brett). Bewertungen in Bauerneinheiten aus deiner Sicht, Tiefe 11 bis 14.
+Grundlage: **2012 Blitz- und Rapid-Partien** (ohne Bullet) mit Stockfish-Auswertung. In **975** (48 %) wird ein Endspiel erreicht (ab Zug 15 höchstens 4 Figuren ohne Bauern und Könige zusammen auf dem Brett). Bewertungen in Bauerneinheiten aus deiner Sicht, Tiefe 11 bis 14.
 
 ## Pirc im Vergleich (nur deine Partien mit Schwarz)
 
@@ -37,18 +37,18 @@ Für jede Eröffnung mit mindestens 25 Partien: Wie stehst du nach 12 Zügen, wi
 
 | Eröffnung | Partien | S–R–N | Punkte | Stand nach Zug 12 (Median) | nicht schlechter als −0,5 | klar schlechter (≤ −1,5) | Siege bei Vorteil (≥ +0,5) | große Fehler bis Zug 12 pro Partie | Einschätzung |
 |---|---|---|---|---|---|---|---|---|---|
-| Schwarz · Pirc Defense | 419 | 184–26–209 | 47 % | −0,5 | 50 % | 30 % | 60 % | 0,3 | wackelig |
-| Schwarz · Queen's Pawn Game | 140 | 70–9–61 | 53 % | −0,5 | 49 % | 31 % | 68 % | 0,2 | wackelig |
-| Weiß · Sicilian Defense | 105 | 65–7–33 | 65 % | −0,4 | 53 % | 30 % | 87 % | 0,3 | Ergebnis besser als Stellung |
-| Weiß · Scotch Game | 100 | 51–5–44 | 54 % | −0,0 | 60 % | 27 % | 69 % | 0,4 | stabil |
+| Schwarz · Pirc Defense | 424 | 186–26–212 | 47 % | −0,5 | 50 % | 30 % | 60 % | 0,3 | wackelig |
+| Schwarz · Queen's Pawn Game | 141 | 70–9–62 | 53 % | −0,5 | 49 % | 31 % | 68 % | 0,2 | wackelig |
+| Weiß · Sicilian Defense | 107 | 66–7–34 | 65 % | −0,4 | 54 % | 29 % | 87 % | 0,3 | Ergebnis besser als Stellung |
+| Weiß · Scotch Game | 102 | 52–5–45 | 53 % | −0,0 | 60 % | 27 % | 69 % | 0,4 | stabil |
 | Weiß · Queen's Pawn Game | 83 | 35–5–43 | 45 % | −0,1 | 56 % | 25 % | 55 % | 0,3 | solide |
-| Weiß · French Defense | 78 | 42–1–35 | 54 % | −0,3 | 53 % | 32 % | 58 % | 0,3 | Ergebnis besser als Stellung |
+| Weiß · French Defense | 79 | 43–1–35 | 55 % | −0,3 | 53 % | 32 % | 58 % | 0,3 | Ergebnis besser als Stellung |
 | Schwarz · Caro-Kann Defense | 59 | 29–1–29 | 50 % | −0,8 | 44 % | 25 % | 78 % | 0,2 | wackelig |
 | Weiß · Scandinavian Defense | 58 | 23–1–34 | 41 % | −0,2 | 54 % | 30 % | 68 % | 0,3 | solide |
 | Weiß · Center Game | 57 | 29–3–25 | 54 % | +0,2 | 59 % | 30 % | 68 % | 0,4 | solide |
 | Weiß · Caro-Kann Defense | 57 | 35–2–20 | 63 % | −1,3 | 43 % | 49 % | 73 % | 0,3 | wackelig |
-| Schwarz · Old Indian Defense | 54 | 28–2–24 | 54 % | −0,7 | 44 % | 33 % | 40 % | 0,2 | wackelig |
-| Weiß · Philidor Defense | 50 | 26–1–23 | 53 % | +0,2 | 64 % | 22 % | 67 % | 0,4 | stabil |
+| Schwarz · Old Indian Defense | 55 | 29–2–24 | 55 % | −0,7 | 45 % | 33 % | 40 % | 0,2 | wackelig |
+| Weiß · Philidor Defense | 51 | 27–1–23 | 54 % | +0,2 | 64 % | 22 % | 67 % | 0,4 | stabil |
 | Schwarz · Sicilian Defense | 47 | 16–2–29 | 36 % | −0,2 | 61 % | 24 % | 54 % | 0,2 | solide |
 | Weiß · Bird Opening | 41 | 23–0–18 | 56 % | −0,4 | 50 % | 39 % | 67 % | 0,4 | wackelig |
 | Weiß · Zukertort Opening | 38 | 16–1–21 | 43 % | −2,1 | 29 % | 58 % | 80 % | 0,8 | wackelig |
@@ -57,29 +57,29 @@ Für jede Eröffnung mit mindestens 25 Partien: Wie stehst du nach 12 Zügen, wi
 | Weiß · Pirc Defense | 30 | 16–3–11 | 58 % | −0,9 | 40 % | 37 % | 80 % | 0,4 | wackelig |
 | Weiß · Modern Defense | 30 | 17–0–13 | 57 % | −0,4 | 50 % | 40 % | 78 % | 0,4 | wackelig |
 | Schwarz · English Opening | 29 | 16–1–12 | 57 % | −0,6 | 48 % | 22 % | 67 % | 0,1 | wackelig |
-| Schwarz · Rat Defense | 28 | 13–3–12 | 52 % | −0,7 | 44 % | 37 % | 100 % | 0,3 | wackelig |
+| Schwarz · Rat Defense | 29 | 13–3–13 | 50 % | −0,6 | 46 % | 36 % | 100 % | 0,3 | wackelig |
 | Weiß · Bishop's Opening | 28 | 16–1–11 | 59 % | −0,5 | 48 % | 44 % | 88 % | 0,6 | wackelig |
 | Schwarz · Hungarian Opening | 25 | 15–1–9 | 62 % | −0,1 | 64 % | 28 % | 75 % | 0,3 | stabil |
 
 ### Einschätzung
-- **Stabil** (Punkte ≥ 52 %, nach Zug 12 meist nicht schlechter, selten klar schlechter): Weiß · Scotch Game (100 Partien, 54 %); Weiß · Philidor Defense (50 Partien, 53 %); Schwarz · Hungarian Opening (25 Partien, 62 %)
+- **Stabil** (Punkte ≥ 52 %, nach Zug 12 meist nicht schlechter, selten klar schlechter): Weiß · Scotch Game (102 Partien, 53 %); Weiß · Philidor Defense (51 Partien, 54 %); Schwarz · Hungarian Opening (25 Partien, 62 %)
 - **Solide:** Weiß · Queen's Pawn Game (83 Partien, 45 %); Weiß · Scandinavian Defense (58 Partien, 41 %); Weiß · Center Game (57 Partien, 54 %); Schwarz · Sicilian Defense (47 Partien, 36 %); Weiß · King's Pawn Game (37 Partien, 61 %)
-- **Wackelig** (oft schon nach Zug 12 klar schlechter): Schwarz · Pirc Defense (419 Partien, 47 %); Schwarz · Queen's Pawn Game (140 Partien, 53 %); Schwarz · Caro-Kann Defense (59 Partien, 50 %); Weiß · Caro-Kann Defense (57 Partien, 63 %); Schwarz · Old Indian Defense (54 Partien, 54 %); Weiß · Bird Opening (41 Partien, 56 %); Weiß · Zukertort Opening (38 Partien, 43 %); Weiß · Owen Defense (36 Partien, 46 %); Weiß · Pirc Defense (30 Partien, 58 %); Weiß · Modern Defense (30 Partien, 57 %); Schwarz · English Opening (29 Partien, 57 %); Schwarz · Rat Defense (28 Partien, 52 %); Weiß · Bishop's Opening (28 Partien, 59 %)
+- **Wackelig** (oft schon nach Zug 12 klar schlechter): Schwarz · Pirc Defense (424 Partien, 47 %); Schwarz · Queen's Pawn Game (141 Partien, 53 %); Schwarz · Caro-Kann Defense (59 Partien, 50 %); Weiß · Caro-Kann Defense (57 Partien, 63 %); Schwarz · Old Indian Defense (55 Partien, 55 %); Weiß · Bird Opening (41 Partien, 56 %); Weiß · Zukertort Opening (38 Partien, 43 %); Weiß · Owen Defense (36 Partien, 46 %); Weiß · Pirc Defense (30 Partien, 58 %); Weiß · Modern Defense (30 Partien, 57 %); Schwarz · English Opening (29 Partien, 57 %); Schwarz · Rat Defense (29 Partien, 50 %); Weiß · Bishop's Opening (28 Partien, 59 %)
 - **Stellung gut, Ergebnis schwach** (nach Zug 12 etwa gleich oder besser, trotzdem unter 50 %): –
-- **Ergebnis besser als Stellung** (nach Zug 12 schlechter, aber über 52 % Punkte): Weiß · Sicilian Defense (105 Partien, 65 %); Weiß · French Defense (78 Partien, 54 %)
+- **Ergebnis besser als Stellung** (nach Zug 12 schlechter, aber über 52 % Punkte): Weiß · Sicilian Defense (107 Partien, 65 %); Weiß · French Defense (79 Partien, 55 %)
 
 ## Endspiele: wie sieht die Lage aus?
 
 | Endspielart (bei Eintritt) | Partien | S–R–N | Punkte | Stand bei Eintritt (Median) | Ø Verlust pro Zug (cp, gedeckelt) | große Fehler pro 100 Züge | Siege bei Vorteil (≥ +1,5) | Punkte bei Gleichstand | gerettet bei Nachteil (≤ −1,5) | Niederlagen auf Zeit |
 |---|---|---|---|---|---|---|---|---|---|---|
-| Damenendspiel | 452 | 160–17–275 | 37 % | −3,8 | 77,0 | 9,7 % | 75 % | 44 % | 18 % | 27 % |
-| Turm und Leichtfigur | 429 | 133–50–246 | 37 % | −2,4 | 62,7 | 6,5 % | 60 % | 44 % | 20 % | 38 % |
+| Damenendspiel | 453 | 160–17–276 | 37 % | −3,8 | 77,1 | 9,7 % | 75 % | 44 % | 17 % | 27 % |
+| Turm und Leichtfigur | 434 | 135–50–249 | 37 % | −1,8 | 62,6 | 6,5 % | 61 % | 42 % | 20 % | 39 % |
 | Turmendspiel | 76 | 30–8–38 | 45 % | −0,3 | 54,2 | 4,4 % | 65 % | 46 % | 33 % | 37 % |
 | Leichtfigurenendspiel | 12 | 4–4–4 | 50 % | +0,4 | 59,2 | 5,6 % | 67 % | 42 % | 67 % | 75 % |
 
 ### Gewinn gehalten oder nicht
-- In **269 Endspielen** hast du bei Eintritt mindestens 1,5 Bauern Vorteil. Davon nicht gewonnen: **88**. Ursache: 31 mit einem großen Fehler im Endspiel, 44 durch Zeitverlust, 13 ohne großen Fehler (Remis oder Verlust durch viele kleine).
-- So enden die Endspiele: Niederlage: Matt 344, Niederlage: Zeit 185, Sieg: Aufgabe 127, Sieg: Matt 103, Sieg: Zeit 97, Remis: Remis 77, Niederlage: Aufgabe 34, Remis: Matt 2.
+- In **271 Endspielen** hast du bei Eintritt mindestens 1,5 Bauern Vorteil. Davon nicht gewonnen: **88**. Ursache: 31 mit einem großen Fehler im Endspiel, 44 durch Zeitverlust, 13 ohne großen Fehler (Remis oder Verlust durch viele kleine).
+- So enden die Endspiele: Niederlage: Matt 345, Niederlage: Zeit 188, Sieg: Aufgabe 128, Sieg: Matt 104, Sieg: Zeit 97, Remis: Remis 77, Niederlage: Aufgabe 34, Remis: Matt 2.
 
 ## Einschränkungen
 - Die Eröffnungen sind die Namen aus der ECO-Liste (nach Familie zusammengefasst). Varianten innerhalb einer Familie können sich stark unterscheiden.

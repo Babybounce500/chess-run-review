@@ -1,19 +1,19 @@
 # Zeitprofil: wie du deine Bedenkzeit einsetzt
 
-Grundlage: **1954 Blitzpartien (5 Minuten)** vom 10.08. bis 08.11.2026 mit Uhrzeiten aus dem Chess.com-Archiv. Für 1954 davon liegt auch die Stockfish-Auswertung vor. Bullet ist am Ende kurz behandelt, weil es für dich Geschwindigkeitstraining ist.
+Grundlage: **1971 Blitzpartien (5 Minuten)** vom 10.08. bis 08.11.2026 mit Uhrzeiten aus dem Chess.com-Archiv. Für 1971 davon liegt auch die Stockfish-Auswertung vor. Bullet ist am Ende kurz behandelt, weil es für dich Geschwindigkeitstraining ist.
 
 ## Wie viel Zeit pro Zug
 
 | Phase | Deine Züge | Ø Sekunden | Median | Züge über 15 s |
 |---|---|---|---|---|
-| Züge 1–10 | 19341 | 2,6 | 1,5 | 1,3 % |
-| Züge 11–20 | 18100 | 6,5 | 4,4 | 8,7 % |
-| Züge 21–30 | 14781 | 8,2 | 5,7 | 14,6 % |
-| ab Zug 31 | 19795 | 4,4 | 2,5 | 4,9 % |
+| Züge 1–10 | 19510 | 2,6 | 1,5 | 1,4 % |
+| Züge 11–20 | 18232 | 6,5 | 4,4 | 8,7 % |
+| Züge 21–30 | 14898 | 8,2 | 5,7 | 14,6 % |
+| ab Zug 31 | 19956 | 4,4 | 2,5 | 4,9 % |
 
-- Im Schnitt nutzt du **192,3 von 300 Sekunden** pro Partie, davon **25,4 Sekunden** in den ersten 10 Zügen.
-- Restzeit im Schnitt nach Zug 20: **209,7 s**, nach Zug 30: **128,9 s**, nach Zug 40: **75,9 s**.
-- Lange Denkpausen (mindestens 15 s): 4950. Davon folgte direkt ein großer Fehler in 728 Fällen (14,7 %).
+- Im Schnitt nutzt du **192,2 von 300 Sekunden** pro Partie, davon **25,5 Sekunden** in den ersten 10 Zügen.
+- Restzeit im Schnitt nach Zug 20: **209,6 s**, nach Zug 30: **128,8 s**, nach Zug 40: **75,9 s**.
+- Lange Denkpausen (mindestens 15 s): 4998. Davon folgte direkt ein großer Fehler in 735 Fällen (14,7 %).
 
 ## Fehler und Bedenkzeit
 
@@ -21,18 +21,18 @@ Ein großer Fehler ist ein Zug, der mindestens 3 Bauerneinheiten gegenüber dem 
 
 | Bedenkzeit für den Zug | Züge | große Fehler | Anteil |
 |---|---|---|---|
-| unter 1 s | 11089 | 358 | 3,2 % |
-| 1–3 s | 24747 | 1321 | 5,3 % |
-| 3–7 s | 19247 | 1364 | 7,1 % |
-| 7–15 s | 11984 | 1176 | 9,8 % |
-| über 15 s | 4950 | 728 | 14,7 % |
+| unter 1 s | 11200 | 359 | 3,2 % |
+| 1–3 s | 24919 | 1331 | 5,3 % |
+| 3–7 s | 19403 | 1377 | 7,1 % |
+| 7–15 s | 12076 | 1182 | 9,8 % |
+| über 15 s | 4998 | 735 | 14,7 % |
 
-- Bei **weniger als 30 Sekunden Restzeit** machst du in 11,3 % der Züge einen großen Fehler (628 von 5553), bei mehr Restzeit in 6,5 % (4319 von 66464).
+- Bei **weniger als 30 Sekunden Restzeit** machst du in 11,4 % der Züge einen großen Fehler (636 von 5602), bei mehr Restzeit in 6,5 % (4348 von 66994).
 
 ## Zeitverluste
 
-- Von 916 verlorenen Blitzpartien gingen **262 auf Zeit verloren** (28,6 %).
-- Bei 262 davon gibt es die Engine-Auswertung: In **90** (34,4 %) standest du am Ende nicht schlechter, in **58** (22,1 %) sogar klar besser (mindestens +1).
+- Von 925 verlorenen Blitzpartien gingen **265 auf Zeit verloren** (28,6 %).
+- Bei 265 davon gibt es die Engine-Auswertung: In **91** (34,3 %) standest du am Ende nicht schlechter, in **58** (21,9 %) sogar klar besser (mindestens +1).
 
 ## Zeitvorsprung und Ergebnis
 
@@ -41,9 +41,9 @@ Zeitvorsprung = deine Restzeit minus die Restzeit des Gegners nach Zug 20.
 | Zeitvorsprung nach Zug 20 | Partien | Punkte |
 |---|---|---|
 | über 60 s Rückstand | 70 | 37,1 % |
-| 20–60 s Rückstand | 380 | 40,7 % |
-| etwa gleich (±20 s) | 750 | 44,6 % |
-| 20–60 s Vorsprung | 365 | 53,6 % |
+| 20–60 s Rückstand | 383 | 40,6 % |
+| etwa gleich (±20 s) | 757 | 44,6 % |
+| 20–60 s Vorsprung | 368 | 53,7 % |
 | über 60 s Vorsprung | 116 | 67,2 % |
 
 ## Bullet kurz

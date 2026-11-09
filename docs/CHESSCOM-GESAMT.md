@@ -1,23 +1,23 @@
 # Chess.com gesamt: alle öffentlichen Partien
 
-Quelle: öffentliche Chess.com-Schnittstelle, abgerufen am 2026-11-08. Enthalten sind **3846 Live-Partien** vom 2023-08-19 bis 2026-11-08. Gegnernamen und Partielinks stehen in dieser Datei nicht.
+Quelle: öffentliche Chess.com-Schnittstelle, abgerufen am 2026-11-09. Enthalten sind **3863 Live-Partien** vom 2023-08-19 bis 2026-11-09. Gegnernamen und Partielinks stehen in dieser Datei nicht.
 
 ## Gesamtbild
 
 | | |
 |---|---|
-| Partien | 3846 |
-| Bilanz | **1880 Siege, 151 Remis, 1815 Niederlagen** (50,8 %) |
-| Zeitklassen | blitz 2691 (1294–125–1272), bullet 1062 (544–21–497), daily 1 (1–0–0), rapid 92 (41–5–46) |
-| Weiß / Schwarz | Weiß 1922 (51,9 %), Schwarz 1924 (49,8 %) |
-| Mit Genauigkeitswert (Game Review) | 252, Ø du 70,4, Ø Gegner 73,5 |
+| Partien | 3863 |
+| Bilanz | **1888 Siege, 151 Remis, 1824 Niederlagen** (50,8 %) |
+| Zeitklassen | blitz 2708 (1302–125–1281), bullet 1062 (544–21–497), daily 1 (1–0–0), rapid 92 (41–5–46) |
+| Weiß / Schwarz | Weiß 1930 (51,9 %), Schwarz 1933 (49,7 %) |
+| Mit Genauigkeitswert (Game Review) | 254, Ø du 70,4, Ø Gegner 73,4 |
 
 ## Rating je Zeitklasse (nur bewertete Partien)
 
 | Klasse | Partien | erste | höchste | niedrigste | letzte |
 |---|---|---|---|---|---|
 | bullet | 1062 | 1055 | 1318 (2026-11-05) | 446 | 1052 |
-| blitz | 2691 | 1296 | 1452 (2026-11-07) | 1034 | 1420 |
+| blitz | 2708 | 1296 | 1452 (2026-11-07) | 1034 | 1414 |
 | rapid | 92 | 1422 | 1750 (2026-07-25) | 1422 | 1544 |
 
 ## Pro Monat
@@ -43,16 +43,16 @@ Die letzte Spalte zeigt, wie viele dieser Partien in der lokalen Auswertung (PGN
 | 2026-08 | 878 | 439–39–400 | 52,2 % | 500 |
 | 2026-09 | 753 | 346–39–368 | 48,5 % | 188 |
 | 2026-10 | 640 | 336–20–284 | 54,1 % | 615 |
-| 2026-11 | 815 | 405–24–386 | 51,2 % | 339 |
+| 2026-11 | 832 | 413–24–395 | 51,1 % | 339 |
 
 ## Wie die Partien enden
 
 | Ergebnis | Art | Partien |
 |---|---|---|
-| Niederlage | Matt | 930 |
-| Niederlage | Zeit | 739 |
-| Sieg | Matt | 682 |
-| Sieg | Aufgabe | 610 |
+| Niederlage | Matt | 936 |
+| Niederlage | Zeit | 742 |
+| Sieg | Matt | 687 |
+| Sieg | Aufgabe | 613 |
 | Sieg | Zeit | 481 |
 | Niederlage | Aufgabe | 128 |
 | Sieg | Verlassen | 107 |
@@ -64,14 +64,14 @@ Die letzte Spalte zeigt, wie viele dieser Partien in der lokalen Auswertung (PGN
 
 | Eröffnung | Partien | S–R–N | Punkte |
 |---|---|---|---|
-| Schwarz · Pirc Defense | 318 | 154–8–156 | 49,7 % |
+| Schwarz · Pirc Defense | 322 | 156–8–158 | 49,7 % |
 | Schwarz · Queens Pawn Opening | 206 | 122–7–77 | 60,9 % |
 | Schwarz · Modern Defense with | 183 | 96–13–74 | 56,0 % |
 | Weiß · Queens Pawn Opening | 155 | 73–9–73 | 50,0 % |
 | Weiß · Scandinavian Defense | 154 | 73–2–79 | 48,1 % |
 | Weiß · Scotch Game | 124 | 58–6–60 | 49,2 % |
 | Weiß · Caro Kann Defense | 124 | 66–4–54 | 54,8 % |
-| Schwarz · Pirc Defense Classical | 118 | 50–9–59 | 46,2 % |
+| Schwarz · Pirc Defense Classical | 119 | 50–9–60 | 45,8 % |
 | Weiß · Kings Pawn Opening | 116 | 66–5–45 | 59,1 % |
 | Schwarz · Pirc Defense Modern | 105 | 47–5–53 | 47,1 % |
 | Schwarz · Modern Defense Standard | 76 | 38–1–37 | 50,7 % |
