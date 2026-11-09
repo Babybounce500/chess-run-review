@@ -1,7 +1,7 @@
 # Änderungsprotokoll
 
 ## 2026-11-09 (Aktualisierung)
-- 17 weitere Partien vom 08. und 09.11. mit Stockfish ausgewertet und eingerechnet. Jetzt **3056 Partien**, 1512–117–1427. Zeitprofil, Gewinnzüge, Eröffnungen/Endspiele und Chess.com-Gesamtübersicht sind neu berechnet.
+- 17 weitere Partien vom 08. und 09.11. mit Stockfish ausgewertet und eingerechnet. Jetzt **3091 Partien**, 1530–118–1443. Zeitprofil, Gewinnzüge, Eröffnungen/Endspiele und Chess.com-Gesamtübersicht sind neu berechnet.
 
 ## 2026-11-08 (Zeitprofil, Fehler-Trainer, Chess.com in Orbitron)
 - **Neu: [docs/ZEITPROFIL.md](docs/ZEITPROFIL.md):** Bedenkzeit pro Zug und Phase aus den Uhrzeiten von 1954 Blitzpartien, verknüpft mit der Stockfish-Auswertung (Zeitverluste, Zeitvorsprung, Fehler nach Restzeit).
@@ -11,7 +11,7 @@
 
 ## 2026-11-08 (Chess.com-Gesamtarchiv)
 - **Neu: [docs/CHESSCOM-GESAMT.md](docs/CHESSCOM-GESAMT.md):** alle öffentlichen Live-Partien von Chess.com (3846, 19.08.2023 bis 08.11.2026) als Zusammenfassung: Bilanz, Rating je Zeitklasse, Monatsübersicht, Endarten, häufigste Eröffnungen. Gegnernamen und Links sind nicht enthalten.
-- **Bericht und Viewer auf alle Partien ab 10.08.2026 erweitert:** Die Stockfish-Analyse (Tiefe 12) der bisher fehlenden 1874 Partien wurde mit der bisherigen Auswertung zusammengeführt. Grundlage sind jetzt **3056 Partien**, 1512–117–1427, vom 10.08. bis 08.11.2026. Die Tiefe der neu hinzugekommenen Partien (12) ist etwas geringer als bei den früheren (13 bis 14), Einzelwerte können deshalb um wenige Zehntel abweichen.
+- **Bericht und Viewer auf alle Partien ab 10.08.2026 erweitert:** Die Stockfish-Analyse (Tiefe 12) der bisher fehlenden 1874 Partien wurde mit der bisherigen Auswertung zusammengeführt. Grundlage sind jetzt **3091 Partien**, 1530–118–1443, vom 10.08. bis 08.11.2026. Die Tiefe der neu hinzugekommenen Partien (12) ist etwas geringer als bei den früheren (13 bis 14), Einzelwerte können deshalb um wenige Zehntel abweichen.
 
 ## 2026-11-06 (Korrektur)
 - **Mattbild-Zuordnung im Finale korrigiert:** Die erste Fassung von [docs/FINALRUN-1300.md](docs/FINALRUN-1300.md) hatte bei der Mattbild-Erkennung die Position vor dem Mattzug ausgewertet und damit den falschen König angesehen. Richtig sind 6 Grundreihenmatts mit der Dame und 1 Damenmatt (Partie 17), nicht 5 und 2.
@@ -20,12 +20,12 @@
 - **Teil 5 bis 7 vom 05.11.** eingerechnet: Teil 5 (50 Partien, 28–1–21, Header 1100 → 1150), Teil 6 (13 Partien, 10–0–3, 1158 → 1206) und das **Finale** (20 Partien, 14–0–6, **1249 → 1303**). Die Teile 5 und 6 waren zuvor nur im Chat ausgewertet und werden hier erstmals dokumentiert.
 - **Neu: [docs/FINALRUN-1300.md](docs/FINALRUN-1300.md):** Auswertung des Finales mit Schwerpunkt auf den 7 Matt-Siegen (alle mit der Dame, 6× Grundreihe).
 - [docs/ELO-SPRUNG-05-11.md](docs/ELO-SPRUNG-05-11.md) und [docs/RUNS.md](docs/RUNS.md) auf alle sieben Teile erweitert.
-- Jetzt **3056 Partien**, 1512–117–1427.
+- Jetzt **3091 Partien**, 1530–118–1443.
 
 ## 2026-11-05 (fünfte Aktualisierung)
 - **Bullet-Run Teil 4 vom 05.11.** (10 Partien, 6–0–4, Rating laut Header 1078 → 1101, über 1100) eingerechnet und in [docs/RUNS.md](docs/RUNS.md) dokumentiert.
 - **Neu: [docs/ELO-SPRUNG-05-11.md](docs/ELO-SPRUNG-05-11.md):** Dokumentation des Rating-Sprungs vom 05.11. (51 Bullet-Partien, 33–1–17, Header-Rating 979 → 1101) mit Verlaufsgrafik.
-- Jetzt **3056 Partien**, 1512–117–1427.
+- Jetzt **3091 Partien**, 1530–118–1443.
 
 ## 2026-11-05 (vierte Aktualisierung)
 - **Bullet-Run Teil 3 vom 05.11.** (23 Partien, 13–1–9, Rating laut Header 1045 → 1086, **Höchstwert 1094**, neuer Bestwert) eingerechnet und in [docs/RUNS.md](docs/RUNS.md) dokumentiert.
@@ -41,7 +41,7 @@
 
 ## 2026-11-05
 - Fünf neue Live-Partien eingerechnet (damals 1030 Partien). Zwei Siege durch Gegnerfehler bzw. Zeit, ein Remis durch Timeout gegen ungenügendes Material, ein Matt nach Springeropfer und ein Remis durch Patt aus verlorener Stellung (Matt in 4 für den Gegner).
-- Remis-Aufteilung berechnet statt fest eingetragen: Patt 22, Stellungswiederholung 35, Zeit + zu wenig Material 47, zu wenig Material 2.
+- Remis-Aufteilung berechnet statt fest eingetragen: Patt 22, Stellungswiederholung 36, Zeit + zu wenig Material 47, zu wenig Material 2.
 - Dokumentation (README, dieses Protokoll) ergänzt.
 
 ## 2026-11-04

@@ -1,54 +1,54 @@
 # Gewinnzüge und Comebacks
 
-Grundlage: **3055 ausgewertete Partien**, davon **1512 Siege**. Gesucht sind deine starken Züge in gewonnenen Partien und die Wendepunkte, wenn du aus einer schlechten Stellung zurückkommst (Bewertung mindestens 3 Bauern schlechter). Alles stammt aus der Stockfish-Auswertung (Tiefe 11 bis 14), die Zuordnung zu Motiven ist eine eigene Näherung.
+Grundlage: **3090 ausgewertete Partien**, davon **1530 Siege**. Gesucht sind deine starken Züge in gewonnenen Partien und die Wendepunkte, wenn du aus einer schlechten Stellung zurückkommst (Bewertung mindestens 3 Bauern schlechter). Alles stammt aus der Stockfish-Auswertung (Tiefe 11 bis 14), die Zuordnung zu Motiven ist eine eigene Näherung.
 
 ## Gewinnzüge
 
-Ein Gewinnzug ist ein Zug in einer gewonnenen Partie, der (fast) der Bestzug war und eines von diesen Dingen bewirkt: ein Matt vorbereitet, ein Figurenopfer, ein Doppelangriff, Materialgewinn durch eine Taktik oder die konsequente Antwort auf einen Fehler des Gegners. Es sind **3114 solche Züge** in 1512 Siegen, im Schnitt 2,1 pro Sieg. Zusätzlich gab es in **654 Siegen (43,3 %)** eine Mattfolge, die die Engine schon vor dem Matt sah (zusammen 1356 Züge, die du dabei gespielt hast; sie sind unten getrennt aufgeführt).
+Ein Gewinnzug ist ein Zug in einer gewonnenen Partie, der (fast) der Bestzug war und eines von diesen Dingen bewirkt: ein Matt vorbereitet, ein Figurenopfer, ein Doppelangriff, Materialgewinn durch eine Taktik oder die konsequente Antwort auf einen Fehler des Gegners. Es sind **3150 solche Züge** in 1530 Siegen, im Schnitt 2,1 pro Sieg. Zusätzlich gab es in **660 Siegen (43,1 %)** eine Mattfolge, die die Engine schon vor dem Matt sah (zusammen 1370 Züge, die du dabei gespielt hast; sie sind unten getrennt aufgeführt).
 
 | Art des Gewinnzugs | Anzahl | Anteil |
 |---|---|---|
-| Materialgewinn durch Schlagzug | 1375 | 44,2 % |
-| Gegnerfehler konsequent bestraft | 670 | 21,5 % |
-| Figurenopfer | 421 | 13,5 % |
-| Gabel / Doppelangriff | 327 | 10,5 % |
-| Materialgewinn durch ruhigen Zug / Drohung | 321 | 10,3 % |
+| Materialgewinn durch Schlagzug | 1392 | 44,2 % |
+| Gegnerfehler konsequent bestraft | 678 | 21,5 % |
+| Figurenopfer | 423 | 13,4 % |
+| Gabel / Doppelangriff | 333 | 10,6 % |
+| Materialgewinn durch ruhigen Zug / Drohung | 324 | 10,3 % |
 
 ### Mit welcher Figur
 | Figur | Anzahl | Anteil |
 |---|---|---|
-| Dame | 764 | 24,5 % |
-| Turm | 613 | 19,7 % |
-| Springer | 584 | 18,8 % |
-| Bauer | 528 | 17,0 % |
-| Läufer | 469 | 15,1 % |
-| König | 156 | 5,0 % |
+| Dame | 775 | 24,6 % |
+| Turm | 617 | 19,6 % |
+| Springer | 592 | 18,8 % |
+| Bauer | 533 | 16,9 % |
+| Läufer | 475 | 15,1 % |
+| König | 158 | 5,0 % |
 
 An den Mattfolgen sind beteiligt:
 
 | Figur in der Mattfolge | Anzahl | Anteil |
 |---|---|---|
-| Dame | 751 | 55,4 % |
-| Turm | 351 | 25,9 % |
-| Bauer | 113 | 8,3 % |
-| Springer | 66 | 4,9 % |
-| Läufer | 51 | 3,8 % |
+| Dame | 757 | 55,3 % |
+| Turm | 356 | 26,0 % |
+| Bauer | 114 | 8,3 % |
+| Springer | 67 | 4,9 % |
+| Läufer | 52 | 3,8 % |
 | König | 24 | 1,8 % |
 
 ### In welcher Phase
 | Phase | Anzahl | Anteil |
 |---|---|---|
-| Mittelspiel | 2560 | 82,2 % |
-| Eröffnung | 291 | 9,3 % |
-| Endspiel | 263 | 8,4 % |
+| Mittelspiel | 2590 | 82,2 % |
+| Eröffnung | 297 | 9,4 % |
+| Endspiel | 263 | 8,3 % |
 
 ### In welchem Zugbereich
 | Zugnummer | Anzahl | Anteil |
 |---|---|---|
-| 11–20 | 1069 | 34,3 % |
-| 21–30 | 1065 | 34,2 % |
-| 31–40 | 451 | 14,5 % |
-| 1–10 | 291 | 9,3 % |
+| 11–20 | 1091 | 34,6 % |
+| 21–30 | 1071 | 34,0 % |
+| 31–40 | 453 | 14,4 % |
+| 1–10 | 297 | 9,4 % |
 | 41+ | 238 | 7,6 % |
 
 ### Beispiele (nur Stellung und Zug, keine Namen)
@@ -66,39 +66,39 @@ An den Mattfolgen sind beteiligt:
 
 ## Comebacks
 
-Von 2204 Partien, in denen du mindestens 3 Bauern schlechter standest, hast du **818 gewonnen und 83 remis gehalten** (40,9 %) und 1303 verloren.
+Von 2232 Partien, in denen du mindestens 3 Bauern schlechter standest, hast du **829 gewonnen und 84 remis gehalten** (40,9 %) und 1319 verloren.
 
 ### Was den Umschwung auslöst
 | Wendepunkt | Anzahl | Anteil |
 |---|---|---|
-| Gegnerfehler | 548 | 83,4 % |
-| Gegner lässt nach | 92 | 14,0 % |
-| eigener starker Zug | 17 | 2,6 % |
+| Gegnerfehler | 549 | 83,1 % |
+| Gegner lässt nach | 94 | 14,2 % |
+| eigener starker Zug | 18 | 2,7 % |
 
 Wendepunkt = der erste Halbzug nach dem Tiefpunkt, nach dem du nicht mehr schlechter stehst (Bewertung mindestens −1).
 
 ### Wo im Spiel kommt der Wendepunkt
 | Phase | Anzahl | Anteil |
 |---|---|---|
-| Mittelspiel | 545 | 83,0 % |
-| Eröffnung | 65 | 9,9 % |
-| Endspiel | 47 | 7,2 % |
+| Mittelspiel | 549 | 83,1 % |
+| Eröffnung | 65 | 9,8 % |
+| Endspiel | 47 | 7,1 % |
 
 | Zugnummer | Anzahl | Anteil |
 |---|---|---|
-| 11–20 | 253 | 38,5 % |
-| 21–30 | 204 | 31,1 % |
+| 11–20 | 254 | 38,4 % |
+| 21–30 | 206 | 31,2 % |
 | 31–40 | 85 | 12,9 % |
-| 1–10 | 65 | 9,9 % |
-| 41+ | 50 | 7,6 % |
+| 1–10 | 65 | 9,8 % |
+| 41+ | 51 | 7,7 % |
 
 ### Deine Antwort auf den Fehler des Gegners
-In 535 Comebacks hat der Gegner mit einem Fehler (mindestens 2,5 Bauern) den Umschwung ausgelöst. Deine direkte Antwort war ein Schachgebot in 19,4 %, ein Schlagzug in 55,5 %. Gespielt hast du dabei:
+In 536 Comebacks hat der Gegner mit einem Fehler (mindestens 2,5 Bauern) den Umschwung ausgelöst. Deine direkte Antwort war ein Schachgebot in 19,4 %, ein Schlagzug in 55,6 %. Gespielt hast du dabei:
 
 | Figur deiner Antwort | Anzahl | Anteil |
 |---|---|---|
 | Dame | 137 | 25,6 % |
-| Turm | 108 | 20,2 % |
+| Turm | 109 | 20,3 % |
 | Springer | 97 | 18,1 % |
 | Läufer | 90 | 16,8 % |
 | Bauer | 63 | 11,8 % |
@@ -110,9 +110,9 @@ Die Figur, die der Gegner mit seinem Fehlerzug bewegt hat:
 |---|---|---|
 | Dame | 107 | 20,0 % |
 | Bauer | 107 | 20,0 % |
-| Läufer | 88 | 16,4 % |
+| Läufer | 89 | 16,6 % |
 | Turm | 88 | 16,4 % |
-| Springer | 87 | 16,3 % |
+| Springer | 87 | 16,2 % |
 | König | 58 | 10,8 % |
 
 ### Was du in schlechter Stellung anders machst
@@ -120,14 +120,14 @@ Deine Züge, solange du mindestens 1,5 Bauern schlechter stehst, im Vergleich zw
 
 | | gerettet (S/R) | verloren |
 |---|---|---|
-| Züge | 9590 | 22533 |
-| Schachgebote | 7,5 % | 7,8 % |
-| Schlagzüge | 23,9 % | 21,9 % |
-| Damenzüge | 14,3 % | 12,0 % |
-| Turmzüge | 20,0 % | 20,7 % |
-| Königszüge | 18,1 % | 23,6 % |
-| Springerzüge | 15,0 % | 12,7 % |
-| Läuferzüge | 12,6 % | 9,5 % |
+| Züge | 9762 | 22761 |
+| Schachgebote | 7,6 % | 7,8 % |
+| Schlagzüge | 23,8 % | 22,0 % |
+| Damenzüge | 14,2 % | 12,1 % |
+| Turmzüge | 20,2 % | 20,7 % |
+| Königszüge | 18,1 % | 23,5 % |
+| Springerzüge | 14,9 % | 12,7 % |
+| Läuferzüge | 12,5 % | 9,6 % |
 | Bauernzüge | 20,0 % | 21,4 % |
 
 In den drei Zügen unmittelbar vor einem gegnerischen Fehler (Comeback-Wendepunkt) waren bei dir 8,9 % Schachgebote und 24,6 % Schlagzüge.
