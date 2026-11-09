@@ -12,11 +12,11 @@ Stockfish-Analyse eigener Chess.com-Partien mit Bericht, Lernviewer und Training
 
 | | |
 |---|---|
-| Partien | **3055** (Chess.com-PGN-Exporte, 23.09.–05.11.2026) |
-| Bilanz | 1511 Siege – 117 Remis – 1427 Niederlagen (49.5 % Siege) |
-| Zeitkontrollen | Bullet 60 s: 1009 Partien (51.6 % Siege) · Blitz 5+0: 2046 Partien (48.4 % Siege) |
-| Rating (Tageswerte) | Blitz 1148 → 1414 · Bullet 565 → 1060 |
-| Analysierte eigene Züge | 107270 |
+| Partien | **3056** (Chess.com-PGN-Exporte, 23.09.–05.11.2026) |
+| Bilanz | 1512 Siege – 117 Remis – 1427 Niederlagen (49.5 % Siege) |
+| Zeitkontrollen | Bullet 60 s: 1009 Partien (51.6 % Siege) · Blitz 5+0: 2047 Partien (48.4 % Siege) |
+| Rating (Tageswerte) | Blitz 1148 → 1422 · Bullet 565 → 1060 |
+| Analysierte eigene Züge | 107306 |
 
 Gegnernamen und Chess.com-Links werden nicht veröffentlicht.
 
@@ -44,7 +44,7 @@ Die Werte sind deshalb **nicht exakt vergleichbar**: Bei geringerer Tiefe schwan
 ## Wichtige Definitionen (Bericht und Viewer)
 
 - **Verlorene Stellung:** Die Engine bewertet die Partie irgendwann mit ≤ −300 cp aus deiner Sicht. Aktuell 2256 Partien, davon 827 gewonnen (37 %), 83 remis, 1346 verloren. Mit Remis 40 % gerettet.
-- **Gegnerfehler bestraft:** Der Gegner verschlechtert seine Stellung um ≥ 200 cp, du stehst danach ≥ +300 und spielst einen Zug mit höchstens 50 cp Verlust. Quote: 2252 von 4988.
+- **Gegnerfehler bestraft:** Der Gegner verschlechtert seine Stellung um ≥ 200 cp, du stehst danach ≥ +300 und spielst einen Zug mit höchstens 50 cp Verlust. Quote: 2257 von 4996.
 - **Vorteil verspielt:** Eigener Vorteil ≥ +300 sinkt durch einen eigenen Zug auf unter +100 (1639-mal).
 - **Verpasstes Matt / zugelassenes Matt:** Die Engine sieht Matt in n Zügen für dich bzw. gegen dich und der gespielte Zug lässt es zu bzw. nicht aus (523 bzw. 1466).
 - **Brillanz-Kandidat (eigene Heuristik, kein offizielles Chess.com-Urteil):** Engine-Bestzug (≤ 15 cp Verlust), mindestens 2 Punkte Material geopfert, danach nicht schlechter als −50 cp, vorher nicht klar gewonnen. Viele Königsopfer sind Fehlalarme.

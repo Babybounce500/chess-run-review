@@ -1,15 +1,15 @@
 # Chess.com gesamt: alle öffentlichen Partien
 
-Quelle: öffentliche Chess.com-Schnittstelle, abgerufen am 2026-11-09. Enthalten sind **3863 Live-Partien** vom 2023-08-19 bis 2026-11-09. Gegnernamen und Partielinks stehen in dieser Datei nicht.
+Quelle: öffentliche Chess.com-Schnittstelle, abgerufen am 2026-11-09. Enthalten sind **3864 Live-Partien** vom 2023-08-19 bis 2026-11-09. Gegnernamen und Partielinks stehen in dieser Datei nicht.
 
 ## Gesamtbild
 
 | | |
 |---|---|
-| Partien | 3863 |
-| Bilanz | **1888 Siege, 151 Remis, 1824 Niederlagen** (50,8 %) |
-| Zeitklassen | blitz 2708 (1302–125–1281), bullet 1062 (544–21–497), daily 1 (1–0–0), rapid 92 (41–5–46) |
-| Weiß / Schwarz | Weiß 1930 (51,9 %), Schwarz 1933 (49,7 %) |
+| Partien | 3864 |
+| Bilanz | **1889 Siege, 151 Remis, 1824 Niederlagen** (50,8 %) |
+| Zeitklassen | blitz 2709 (1303–125–1281), bullet 1062 (544–21–497), daily 1 (1–0–0), rapid 92 (41–5–46) |
+| Weiß / Schwarz | Weiß 1931 (52,0 %), Schwarz 1933 (49,7 %) |
 | Mit Genauigkeitswert (Game Review) | 254, Ø du 70,4, Ø Gegner 73,4 |
 
 ## Rating je Zeitklasse (nur bewertete Partien)
@@ -17,7 +17,7 @@ Quelle: öffentliche Chess.com-Schnittstelle, abgerufen am 2026-11-09. Enthalten
 | Klasse | Partien | erste | höchste | niedrigste | letzte |
 |---|---|---|---|---|---|
 | bullet | 1062 | 1055 | 1318 (2026-11-05) | 446 | 1052 |
-| blitz | 2708 | 1296 | 1452 (2026-11-07) | 1034 | 1414 |
+| blitz | 2709 | 1296 | 1452 (2026-11-07) | 1034 | 1422 |
 | rapid | 92 | 1422 | 1750 (2026-07-25) | 1422 | 1544 |
 
 ## Pro Monat
@@ -43,7 +43,7 @@ Die letzte Spalte zeigt, wie viele dieser Partien in der lokalen Auswertung (PGN
 | 2026-08 | 878 | 439–39–400 | 52,2 % | 500 |
 | 2026-09 | 753 | 346–39–368 | 48,5 % | 188 |
 | 2026-10 | 640 | 336–20–284 | 54,1 % | 615 |
-| 2026-11 | 832 | 413–24–395 | 51,1 % | 339 |
+| 2026-11 | 833 | 414–24–395 | 51,1 % | 339 |
 
 ## Wie die Partien enden
 
@@ -55,7 +55,7 @@ Die letzte Spalte zeigt, wie viele dieser Partien in der lokalen Auswertung (PGN
 | Sieg | Aufgabe | 613 |
 | Sieg | Zeit | 481 |
 | Niederlage | Aufgabe | 128 |
-| Sieg | Verlassen | 107 |
+| Sieg | Verlassen | 108 |
 | Remis | Wiederholung | 53 |
 | Remis | Zeit gegen zu wenig Material | 51 |
 | Remis | Patt | 31 |

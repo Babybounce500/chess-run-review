@@ -1,27 +1,27 @@
 # Gewinnzüge und Comebacks
 
-Grundlage: **3054 ausgewertete Partien**, davon **1511 Siege**. Gesucht sind deine starken Züge in gewonnenen Partien und die Wendepunkte, wenn du aus einer schlechten Stellung zurückkommst (Bewertung mindestens 3 Bauern schlechter). Alles stammt aus der Stockfish-Auswertung (Tiefe 11 bis 14), die Zuordnung zu Motiven ist eine eigene Näherung.
+Grundlage: **3055 ausgewertete Partien**, davon **1512 Siege**. Gesucht sind deine starken Züge in gewonnenen Partien und die Wendepunkte, wenn du aus einer schlechten Stellung zurückkommst (Bewertung mindestens 3 Bauern schlechter). Alles stammt aus der Stockfish-Auswertung (Tiefe 11 bis 14), die Zuordnung zu Motiven ist eine eigene Näherung.
 
 ## Gewinnzüge
 
-Ein Gewinnzug ist ein Zug in einer gewonnenen Partie, der (fast) der Bestzug war und eines von diesen Dingen bewirkt: ein Matt vorbereitet, ein Figurenopfer, ein Doppelangriff, Materialgewinn durch eine Taktik oder die konsequente Antwort auf einen Fehler des Gegners. Es sind **3109 solche Züge** in 1511 Siegen, im Schnitt 2,1 pro Sieg. Zusätzlich gab es in **653 Siegen (43,2 %)** eine Mattfolge, die die Engine schon vor dem Matt sah (zusammen 1355 Züge, die du dabei gespielt hast; sie sind unten getrennt aufgeführt).
+Ein Gewinnzug ist ein Zug in einer gewonnenen Partie, der (fast) der Bestzug war und eines von diesen Dingen bewirkt: ein Matt vorbereitet, ein Figurenopfer, ein Doppelangriff, Materialgewinn durch eine Taktik oder die konsequente Antwort auf einen Fehler des Gegners. Es sind **3114 solche Züge** in 1512 Siegen, im Schnitt 2,1 pro Sieg. Zusätzlich gab es in **654 Siegen (43,3 %)** eine Mattfolge, die die Engine schon vor dem Matt sah (zusammen 1356 Züge, die du dabei gespielt hast; sie sind unten getrennt aufgeführt).
 
 | Art des Gewinnzugs | Anzahl | Anteil |
 |---|---|---|
-| Materialgewinn durch Schlagzug | 1372 | 44,1 % |
-| Gegnerfehler konsequent bestraft | 669 | 21,5 % |
+| Materialgewinn durch Schlagzug | 1375 | 44,2 % |
+| Gegnerfehler konsequent bestraft | 670 | 21,5 % |
 | Figurenopfer | 421 | 13,5 % |
-| Gabel / Doppelangriff | 326 | 10,5 % |
+| Gabel / Doppelangriff | 327 | 10,5 % |
 | Materialgewinn durch ruhigen Zug / Drohung | 321 | 10,3 % |
 
 ### Mit welcher Figur
 | Figur | Anzahl | Anteil |
 |---|---|---|
-| Dame | 762 | 24,5 % |
-| Turm | 612 | 19,7 % |
+| Dame | 764 | 24,5 % |
+| Turm | 613 | 19,7 % |
 | Springer | 584 | 18,8 % |
-| Bauer | 527 | 17,0 % |
-| Läufer | 468 | 15,1 % |
+| Bauer | 528 | 17,0 % |
+| Läufer | 469 | 15,1 % |
 | König | 156 | 5,0 % |
 
 An den Mattfolgen sind beteiligt:
@@ -29,7 +29,7 @@ An den Mattfolgen sind beteiligt:
 | Figur in der Mattfolge | Anzahl | Anteil |
 |---|---|---|
 | Dame | 751 | 55,4 % |
-| Turm | 350 | 25,8 % |
+| Turm | 351 | 25,9 % |
 | Bauer | 113 | 8,3 % |
 | Springer | 66 | 4,9 % |
 | Läufer | 51 | 3,8 % |
@@ -38,18 +38,18 @@ An den Mattfolgen sind beteiligt:
 ### In welcher Phase
 | Phase | Anzahl | Anteil |
 |---|---|---|
-| Mittelspiel | 2555 | 82,2 % |
-| Eröffnung | 291 | 9,4 % |
-| Endspiel | 263 | 8,5 % |
+| Mittelspiel | 2560 | 82,2 % |
+| Eröffnung | 291 | 9,3 % |
+| Endspiel | 263 | 8,4 % |
 
 ### In welchem Zugbereich
 | Zugnummer | Anzahl | Anteil |
 |---|---|---|
-| 11–20 | 1067 | 34,3 % |
-| 21–30 | 1063 | 34,2 % |
-| 31–40 | 450 | 14,5 % |
-| 1–10 | 291 | 9,4 % |
-| 41+ | 238 | 7,7 % |
+| 11–20 | 1069 | 34,3 % |
+| 21–30 | 1065 | 34,2 % |
+| 31–40 | 451 | 14,5 % |
+| 1–10 | 291 | 9,3 % |
+| 41+ | 238 | 7,6 % |
 
 ### Beispiele (nur Stellung und Zug, keine Namen)
 | Art | Zug Nr. | Zug | Stellung (FEN) |
