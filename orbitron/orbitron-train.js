@@ -26,13 +26,15 @@
         <button class="og-btn primary" data-t="blunder"><i class="bi bi-lightning-charge"></i> Fehler-Trainer: finde den besseren Zug</button>
         <button class="og-btn" data-t="open"><i class="bi bi-book"></i> Eröffnungs-Trainer: deine Fehler in den ersten Zügen</button>
         <button class="og-btn" data-t="end"><i class="bi bi-flag"></i> Endspiel-Trainer: Gewinn halten, Remis retten</button>
+        <button class="og-btn" data-t="bullet"><i class="bi bi-stopwatch"></i> Bullet-Aufgaben: Fehler und verpasste Matts aus deiner Session</button>
         <button class="og-btn" data-t="mate"><i class="bi bi-crosshair"></i> Mattjäger: Matt in 1 bis 3</button>
         <button class="og-btn" data-t="check"><i class="bi bi-shield-check"></i> Patzer-Check: hängende Figuren und Mattdrohungen</button>
       </div>`;
     card.querySelector('[data-t="blunder"]').onclick = () => openBlunderTrainer();
     card.querySelector('[data-t="open"]').onclick = () => openBlunderTrainer({ phase: 'o' });
     card.querySelector('[data-t="end"]').onclick = () => openBlunderTrainer({ phase: 'e' });
-    card.querySelector('[data-t="mate"]').onclick = () => window.OrbitronGame.openMateTrainer();
+    card.querySelector('[data-t="bullet"]').onclick = () => openBlunderTrainer({ set: 'bullet' });
+    card.querySelector('[data-t="mate"]').onclick =() => window.OrbitronGame.openMateTrainer();
     card.querySelector('[data-t="check"]').onclick = () => window.OrbitronGame.openPatzerCheck();
     kit.addCard(card);
   }
@@ -40,13 +42,13 @@
   // ---------------- Fehler-Trainer ----------------
   function openBlunderTrainer(opts) {
     opts = opts || {};
-    const raw = window.ORBITRON_BLUNDERS || [];
+    const raw = (opts.set === 'bullet' ? window.ORBITRON_BULLET : window.ORBITRON_BLUNDERS) || [];
     const all = raw.map(a => ({ f: a[0], b: a[1], p: a[2], ps: a[3], ph: a[4], l: a[5], e: a[6], n: a[7], tag: a[8] || '' }));
     const card = kit.newCard();
     const stats = kit.lsGet(STATS_KEY, {});
-    const F = { piece: opts.phase ? 'all' : 'weak', phase: opts.phase || 'all', tag: 'all' };
+    const F = { piece: (opts.phase || opts.set) ? 'all' : 'weak', phase: opts.phase || 'all', tag: 'all' };
     let cur = null, chess = null, fails = 0, done = false, busy = false, order = [];
-    card.innerHTML = `<div class="og-title"><i class="bi bi-lightning-charge"></i> Fehler-Trainer <span class="og-badge">${all.length} Aufgaben aus deinen Partien</span></div>
+    card.innerHTML = `<div class="og-title"><i class="bi bi-lightning-charge"></i> ${opts.set === 'bullet' ? 'Bullet-Aufgaben' : 'Fehler-Trainer'} <span class="og-badge">${all.length} Aufgaben aus deinen ${opts.set === 'bullet' ? 'Bullet-Partien' : 'Partien'}</span></div>
       <div class="og-note og-desc">Du siehst eine Stellung aus einer deiner Partien, in der du einen großen Fehler gemacht hast. Finde den besseren Zug.</div>
       <div class="og-play"><div class="og-left" data-boardwrap></div><div class="og-right"><div class="og-row" data-fp></div><div class="og-status" data-status></div>
       <div class="og-say" data-say><b>Los geht's</b><span class="og-sub">Wähle einen Schwerpunkt.</span></div>
@@ -196,6 +198,7 @@
 
   function match(t) {
     if (!t) return null; const s = t.toLowerCase();
+    if (/^\/bullet\b|^bullet-?aufgaben\b/.test(s)) return { run: () => openBlunderTrainer({ set: 'bullet' }) };
     if (/^\/fehler\b|^fehler-?trainer\b/.test(s)) return { run: openBlunderTrainer };
     if (/^\/partien\b|^meine partien\b|^\/chesscom\b/.test(s)) return { run: () => openChessCom() };
     if (/^\/er[oö]+ffnung\b|^\/eroeffnung\b|^er[oö]ffnungs-?trainer\b/.test(s)) return { run: () => openBlunderTrainer({ phase: 'o' }) };

@@ -1,5 +1,5 @@
-const CACHE_NAME='orbitron-chess-live-v2';
-const SHELL=['./gemini-chat.html','./gemini-player.html','./chess-player-core.js','./orbitron-game-core.js','./orbitron-game.js','./orbitron-train.js','./orbitron-blunders.js','./orbitron-mate-puzzles.js','./orbitron-light.css','./orbitron-manifest.webmanifest','./orbitron-icon.svg'];
+const CACHE_NAME='orbitron-chess-live-v3';
+const SHELL=['./gemini-chat.html','./gemini-player.html','./chess-player-core.js','./orbitron-game-core.js','./orbitron-game.js','./orbitron-train.js','./orbitron-blunders.js','./orbitron-bullet.js','./orbitron-mate-puzzles.js','./orbitron-light.css','./orbitron-manifest.webmanifest','./orbitron-icon.svg'];
 
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(SHELL)).then(()=>self.skipWaiting()));
