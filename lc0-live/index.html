@@ -2,97 +2,232 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0e14">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <title>Lc0 Live</title>
 <style>
-:root{--bg:#14161a;--panel:#1d2026;--line:#2d323b;--text:#e6e8ec;--muted:#9aa3b2;--accent:#4aa3ff;--good:#3fb97a;--warn:#e0a030;--bad:#e5534b;--light:#e9d9b9;--dark:#a77b52;--hl:rgba(255,214,0,.38);--tg:rgba(40,160,90,.55)}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 system-ui,Segoe UI,Roboto,sans-serif}
-header{padding:10px 16px;border-bottom:1px solid var(--line);display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
-header h1{font-size:18px;margin:0}header span{color:var(--muted);font-size:13px}
-main{display:flex;gap:16px;padding:16px;flex-wrap:wrap;max-width:1100px;margin:0 auto}
-.left{flex:0 0 auto;width:min(92vw,520px)}
-.right{flex:1 1 340px;min-width:min(92vw,320px)}
-.boardwrap{position:relative;width:100%;aspect-ratio:1}
-.board{display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);width:100%;height:100%;border:2px solid var(--line);border-radius:4px;overflow:hidden;user-select:none;touch-action:manipulation}
+:root{
+  --bg:#0b0e14;--bg2:#10151f;--panel:#151b26;--panel2:#1b2331;--line:#263043;--text:#e8ecf3;--muted:#8d99ae;
+  --a1:#3ec8ff;--a2:#7a6bff;--accent:linear-gradient(135deg,var(--a1),var(--a2));
+  --good:#2fd28a;--warn:#f0b43c;--bad:#ff6b6b;
+  --light:#f0d9b5;--dark:#b58863;--hl:rgba(255,220,60,.42);--sel:rgba(62,200,255,.5);
+  --r:14px;--shadow:0 10px 30px rgba(0,0,0,.45);--tab-h:64px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{color-scheme:dark}
+body{margin:0;min-height:100vh;color:var(--text);font:15px/1.45 system-ui,"Segoe UI",Roboto,sans-serif;
+  background:radial-gradient(1200px 600px at 15% -10%,rgba(62,200,255,.12),transparent 60%),radial-gradient(900px 500px at 100% 0,rgba(122,107,255,.14),transparent 55%),var(--bg);background-attachment:fixed}
+button,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--a1);outline-offset:2px}
+
+/* Kopf */
+header{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:12px;padding:10px 16px;padding-top:max(10px,env(safe-area-inset-top));backdrop-filter:blur(14px);background:rgba(11,14,20,.72);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;letter-spacing:.2px}
+.logo{width:30px;height:30px;border-radius:9px;background:var(--accent);display:grid;place-items:center;box-shadow:0 0 18px rgba(62,200,255,.45)}
+.logo svg{width:18px;height:18px;fill:#06121c}
+.hdr-right{margin-left:auto;display:flex;align-items:center;gap:10px;min-width:0}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--muted);flex:0 0 auto;box-shadow:0 0 0 3px rgba(255,255,255,.05)}
+.dot.ok{background:var(--good);box-shadow:0 0 10px var(--good)}.dot.err{background:var(--bad);box-shadow:0 0 10px var(--bad)}
+#net{max-width:min(62vw,330px);padding:9px 34px 9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%238d99ae' stroke-width='2'%3E%3Cpath d='M1 1l5 5 5-5'/%3E%3C/svg%3E") no-repeat right 12px center;appearance:none;-webkit-appearance:none;text-overflow:ellipsis}
+.netinfo{font-size:12px;color:var(--muted);display:none}
+
+/* Layout */
+main{display:grid;grid-template-columns:minmax(0,640px) minmax(320px,1fr);gap:22px;max-width:1120px;margin:0 auto;padding:18px 16px 28px}
+.stage{min-width:0}
+.right{min-width:0}
+
+/* Spielerleisten */
+.strip{display:flex;align-items:center;gap:10px;min-height:38px;padding:4px 2px}
+.avatar{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-weight:700;font-size:13px;background:var(--panel2);border:1px solid var(--line)}
+.avatar.me{background:var(--accent);color:#06121c;border:0}
+.pname{font-weight:600}.psub{color:var(--muted);font-size:12px}
+.caps{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:18px;letter-spacing:-2px;min-height:22px}
+.caps .w{color:#eef2f8}.caps .b{color:#7c879b}.caps small{font-size:12px;color:var(--muted);letter-spacing:0;margin-left:6px}
+
+/* Brett */
+.boardrow{display:flex;gap:10px;align-items:stretch}
+.evalbar{width:14px;border-radius:8px;overflow:hidden;background:#05070b;border:1px solid var(--line);position:relative;flex:0 0 auto;box-shadow:inset 0 0 8px rgba(0,0,0,.6)}
+.evalbar b{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(#ffffff,#d9dee8);height:50%;transition:height .35s cubic-bezier(.2,.8,.2,1)}
+.evalbar.flip b{bottom:auto;top:0}
+.evalbar i{position:absolute;left:50%;top:50%;width:140%;height:1px;background:rgba(120,130,150,.5);transform:translate(-50%,-50%)}
+.boardwrap{position:relative;flex:1;aspect-ratio:1;min-width:0}
+.board{display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);width:100%;height:100%;border-radius:10px;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:none;box-shadow:var(--shadow),0 0 0 1px rgba(255,255,255,.06),0 0 40px rgba(62,200,255,.08)}
+.boardwrap.thinking .board{box-shadow:var(--shadow),0 0 0 1px rgba(62,200,255,.5),0 0 44px rgba(62,200,255,.28)}
 .sq{position:relative;display:flex;align-items:center;justify-content:center;cursor:pointer}
 .sq.l{background:var(--light)}.sq.d{background:var(--dark)}
 .sq.last::after{content:"";position:absolute;inset:0;background:var(--hl)}
-.sq.sel::after{content:"";position:absolute;inset:0;background:rgba(74,163,255,.45)}
-.sq.tg::before{content:"";position:absolute;width:30%;height:30%;border-radius:50%;background:var(--tg);z-index:2}
-.sq.chk{box-shadow:inset 0 0 0 3px var(--bad)}
-.sq img,.sq .gl{width:92%;height:92%;object-fit:contain;position:relative;z-index:1;pointer-events:none}
-.sq .gl{display:flex;align-items:center;justify-content:center;font-size:min(8vw,44px);color:#000}
-.sq i{position:absolute;font-style:normal;font-size:10px;opacity:.7;z-index:3;pointer-events:none;color:#222}
-.sq i.f{right:2px;bottom:1px}.sq i.r{left:2px;top:1px}
-svg.arrows{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:5}
-.bar{display:flex;height:14px;border-radius:7px;overflow:hidden;margin:8px 0;background:#000;border:1px solid var(--line)}
-.bar b{display:block;background:#f2f2f2;transition:width .25s}
-.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
-button,select,textarea,input{font:inherit;color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px 10px}
-button{cursor:pointer}button:hover{border-color:var(--accent)}button.on,button.primary{background:var(--accent);color:#04121f;border-color:var(--accent)}
-button:disabled{opacity:.5;cursor:default}
-textarea{width:100%;min-height:90px;font:13px/1.4 ui-monospace,Consolas,monospace}
-.tabs{display:flex;gap:6px;margin-bottom:8px}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px;margin-bottom:12px}
-.card h3{margin:0 0 6px;font-size:14px;color:var(--muted);font-weight:600;text-transform:none}
+.sq.sel::after{content:"";position:absolute;inset:0;background:var(--sel)}
+.sq.chk::after{content:"";position:absolute;inset:0;background:radial-gradient(circle,rgba(255,40,40,.95) 0,rgba(255,60,60,.6) 40%,transparent 75%)}
+.sq.tg::before{content:"";position:absolute;width:28%;height:28%;border-radius:50%;background:rgba(20,30,40,.35);z-index:3;pointer-events:none}
+.sq.tg.cap::before{width:92%;height:92%;background:transparent;border:5px solid rgba(20,30,40,.35)}
+.pc{width:100%;height:100%;object-fit:contain;position:relative;z-index:2;pointer-events:none;filter:drop-shadow(0 2px 2px rgba(0,0,0,.35));will-change:transform}
+.pc.gl{display:flex;align-items:center;justify-content:center;font-size:min(8.5vw,48px);color:#111}
+.drag-src .pc{opacity:.22}
+.ghost{position:absolute;z-index:30;pointer-events:none;filter:drop-shadow(0 8px 10px rgba(0,0,0,.5));transform:translate(-50%,-50%) scale(1.12)}
+.sq i{position:absolute;font-style:normal;font-size:10px;font-weight:700;opacity:.75;z-index:3;pointer-events:none}
+.sq.l i{color:#8a6a47}.sq.d i{color:#f6e8d0}
+.sq i.f{right:3px;bottom:1px}.sq i.r{left:3px;top:1px}
+svg.arrows{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:6}
+
+/* Overlays */
+.overlay{position:absolute;inset:0;z-index:20;display:none;align-items:center;justify-content:center;background:rgba(6,9,14,.62);backdrop-filter:blur(3px);border-radius:10px;padding:12px}
+.overlay.show{display:flex}
+.dlg{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--shadow);text-align:center;max-width:92%;animation:pop .22s ease-out}
+.dlg h2{margin:0 0 4px;font-size:20px}.dlg p{margin:0 0 14px;color:var(--muted)}
+.promo{display:flex;gap:8px}.promo button{width:min(18vw,76px);aspect-ratio:1;border-radius:12px;border:1px solid var(--line);background:var(--panel2);padding:4px}
+.promo button:hover{border-color:var(--a1)}.promo img{width:100%;height:100%}
+@keyframes pop{from{transform:scale(.92);opacity:0}to{transform:none;opacity:1}}
+
+/* Status & Steuerung */
+.status{display:flex;align-items:center;gap:8px;min-height:34px;margin:10px 0 6px;color:var(--text)}
+.status .pulse{width:9px;height:9px;border-radius:50%;background:var(--a1);display:none;animation:pulse 1s infinite}
+.status.busy .pulse{display:inline-block}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(62,200,255,.7)}100%{box-shadow:0 0 0 10px rgba(62,200,255,0)}}
+.chip{padding:2px 9px;border-radius:999px;font-size:12px;background:var(--panel2);border:1px solid var(--line);color:var(--muted)}
+.chip:empty{display:none}
+.ctrl{display:flex;gap:8px;align-items:center}
+.ibtn{flex:1;height:46px;border-radius:12px;border:1px solid var(--line);background:var(--panel);display:grid;place-items:center;transition:transform .08s,border-color .15s,background .15s}
+.ibtn:hover{border-color:var(--a1)}.ibtn:active{transform:scale(.96);background:var(--panel2)}
+.ibtn svg{width:20px;height:20px;stroke:var(--text);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ibtn.sm{flex:0 0 46px}
+.movestrip{margin-top:10px;padding:8px 10px;background:var(--panel);border:1px solid var(--line);border-radius:12px;font-size:14px;max-height:120px;overflow:auto}
+.movestrip span[data-i]{display:inline-block;padding:2px 6px;border-radius:6px;cursor:pointer}
+.movestrip span[data-i]:hover{background:var(--panel2)}
+.movestrip span.cur{background:var(--accent);color:#06121c;font-weight:600}
+.movestrip .no{color:var(--muted);margin-left:4px}
+
+/* Rechte Seite */
+.tabs{display:flex;gap:6px;padding:5px;border-radius:14px;background:var(--panel);border:1px solid var(--line);margin-bottom:12px}
+.tabs button{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:10px 8px;border:0;border-radius:10px;background:transparent;color:var(--muted);font-weight:600}
+.tabs button svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tabs button.on{background:var(--accent);color:#06121c;box-shadow:0 4px 16px rgba(62,200,255,.28)}
+.card{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:var(--r);padding:14px;margin-bottom:12px}
+.card h3{margin:0 0 8px;font-size:13px;letter-spacing:.4px;text-transform:uppercase;color:var(--muted)}
 .muted{color:var(--muted);font-size:13px}
-table{border-collapse:collapse;width:100%;font-size:14px}
-td,th{padding:3px 6px;text-align:left;border-bottom:1px solid var(--line)}
-th{color:var(--muted);font-weight:600;font-size:12px}
-tr.click{cursor:pointer}tr.click:hover{background:rgba(74,163,255,.12)}
-.tag{padding:1px 7px;border-radius:10px;font-size:12px}
-.t-typ{background:rgba(63,185,122,.2);color:var(--good)}.t-sel{background:rgba(224,160,48,.2);color:var(--warn)}.t-aus{background:rgba(229,83,75,.2);color:var(--bad)}
-.status{min-height:22px}
-.moves{max-height:160px;overflow:auto;font-size:14px}
-.moves span{display:inline-block;padding:1px 4px;border-radius:4px;cursor:pointer}.moves span.cur{background:var(--accent);color:#04121f}
-.hide{display:none}
-@media(max-width:560px){main{padding:10px}}
+.hide{display:none!important}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.field{display:flex;flex-direction:column;gap:4px;flex:1 1 140px;font-size:12px;color:var(--muted)}
+.field select{padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font-size:15px}
+.btn{padding:11px 16px;border-radius:11px;border:1px solid var(--line);background:var(--panel2);font-weight:600;min-height:44px;transition:transform .08s,border-color .15s}
+.btn:hover{border-color:var(--a1)}.btn:active{transform:scale(.97)}
+.btn.primary{background:var(--accent);color:#06121c;border:0;box-shadow:0 6px 18px rgba(62,200,255,.25)}
+.btn:disabled{opacity:.5}
+textarea{width:100%;min-height:96px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:#0e131c;color:var(--text);font:13px/1.4 ui-monospace,Consolas,monospace;resize:vertical}
+label.chk{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px}
+label.chk input{width:18px;height:18px;accent-color:#3ec8ff}
+
+/* Analyse-Zeilen */
+.evline{display:flex;align-items:baseline;gap:10px;margin-bottom:8px}
+.evline b{font-size:22px}.evline span{color:var(--muted);font-size:13px}
+.ln{display:grid;grid-template-columns:62px 1fr auto;gap:10px;align-items:center;padding:7px 0;border-top:1px solid var(--line)}
+.ln .mv{font-weight:700}.ln.best .mv{color:var(--good)}
+.bar{height:8px;border-radius:6px;background:#0c1118;overflow:hidden}.bar u{display:block;height:100%;background:var(--accent);border-radius:6px;text-decoration:none}
+.ln.best .bar u{background:linear-gradient(90deg,#2fd28a,#6fe3b0)}
+.ln .pv{font-size:13px;color:var(--muted);min-width:54px;text-align:right}
+
+/* Partie prüfen */
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+.tile{border-radius:12px;padding:10px;text-align:center;border:1px solid var(--line);background:var(--panel2)}
+.tile b{display:block;font-size:24px}.tile span{font-size:12px;color:var(--muted)}
+.tile.typ b{color:var(--good)}.tile.sel b{color:var(--warn)}.tile.aus b{color:var(--bad)}
+.rv{display:grid;grid-template-columns:46px 1fr auto;gap:10px;align-items:center;padding:9px 6px;border-top:1px solid var(--line);border-radius:8px}
+.rv.click{cursor:pointer}.rv.click:hover{background:rgba(62,200,255,.08)}
+.rv .no{color:var(--muted);font-size:13px}.rv .san{font-weight:700}
+.rv .sub{font-size:12px;color:var(--muted)}
+.tag{padding:2px 9px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap}
+.t-typ{background:rgba(47,210,138,.15);color:var(--good)}.t-sel{background:rgba(240,180,60,.15);color:var(--warn)}.t-aus{background:rgba(255,107,107,.16);color:var(--bad)}
+.t-top{background:rgba(141,153,174,.15);color:var(--muted)}
+.revlist{max-height:380px;overflow:auto;margin-top:6px}
+.worst{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0}
+.worst button{padding:6px 11px;border-radius:999px;border:1px solid rgba(255,107,107,.4);background:rgba(255,107,107,.1);color:#ffb3b3;font-size:13px}
+
+/* Handy */
+@media (max-width:860px){
+  main{grid-template-columns:1fr;gap:10px;padding:8px 10px calc(var(--tab-h) + 24px + env(safe-area-inset-bottom))}
+  header{padding:8px 12px}
+  .brand span{display:none}
+  .boardrow{gap:6px}.evalbar{width:10px}
+  .tabs{position:fixed;left:0;right:0;bottom:0;z-index:40;margin:0;border-radius:18px 18px 0 0;border-width:1px 0 0;padding:8px 10px calc(8px + env(safe-area-inset-bottom));background:rgba(21,27,38,.94);backdrop-filter:blur(14px);box-shadow:0 -10px 30px rgba(0,0,0,.4)}
+  .tabs button{flex-direction:column;gap:2px;font-size:12px;padding:7px 4px;min-height:48px}
+  .tabs button svg{width:22px;height:22px}
+  .movestrip{white-space:nowrap;overflow-x:auto;overflow-y:hidden;max-height:none}
+  .caps{font-size:16px}
+  .sq i{font-size:9px}
+  .card{padding:12px}
+  .ln{grid-template-columns:56px 1fr auto}
+}
+@media (max-width:420px){
+  .boardrow .evalbar{display:none}
+  .ctrl .ibtn{height:44px}
+  .tiles b{font-size:20px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
-<header><h1>Lc0 Live</h1><span>Lc0 statt Stockfish: spielen, Stellungen nachstellen, Partien nachspielen und prüfen. Läuft nur auf diesem Rechner.</span></header>
+<header>
+  <div class="brand"><div class="logo"><svg viewBox="0 0 24 24"><path d="M12 2l2.2 5.2L20 8l-4.2 3.8L17 18H7l1.2-6.2L4 8l5.8-.8z"/></svg></div><span>Lc0 Live</span></div>
+  <div class="hdr-right"><span class="netinfo" id="netinfo"></span><span class="dot" id="conn" title="Verbindung zur lokalen Engine"></span><select id="net" aria-label="Engine / Netz"></select></div>
+</header>
 <main>
-  <div class="left">
-    <div class="boardwrap"><div class="board" id="board" aria-label="Schachbrett"></div><svg class="arrows" id="arrows" viewBox="0 0 8 8"></svg></div>
-    <div class="bar" title="Bewertung aus Sicht von Weiß"><b id="bar" style="width:50%"></b></div>
-    <div class="status" id="status"></div>
-    <div class="row">
-      <button id="bFirst" title="Zum Anfang">⏮</button><button id="bPrev" title="Zug zurück">◀</button><button id="bNext" title="Zug vor">▶</button><button id="bLast" title="Zum Ende">⏭</button>
-      <button id="bFlip">Brett drehen</button>
+  <section class="stage">
+    <div class="strip" id="stripTop"><div class="avatar" id="avTop">G</div><div><div class="pname" id="nameTop">Gegner</div><div class="psub" id="subTop"></div></div><div class="caps" id="capsTop"></div></div>
+    <div class="boardrow">
+      <div class="evalbar" id="evalbar" title="Bewertung (Weiß unten)"><b id="bar" style="height:50%"></b><i></i></div>
+      <div class="boardwrap" id="bw">
+        <div class="board" id="board" aria-label="Schachbrett"></div>
+        <svg class="arrows" id="arrows" viewBox="0 0 8 8"></svg>
+        <div class="overlay" id="promoOv"><div class="dlg"><h2>Umwandlung</h2><p>Wähle die neue Figur</p><div class="promo" id="promo"></div></div></div>
+        <div class="overlay" id="overOv"><div class="dlg"><h2 id="overT">Partie beendet</h2><p id="overS"></p><div class="row" style="justify-content:center"><button class="btn primary" id="ovNew">Neue Partie</button><button class="btn" id="ovRev">Partie prüfen</button></div></div></div>
+      </div>
     </div>
-    <div class="moves" id="moves"></div>
-  </div>
-  <div class="right">
-    <div class="card">
-      <h3>Engine</h3>
-      <div class="row"><select id="net" aria-label="Netz"></select><span class="muted" id="netinfo"></span></div>
+    <div class="strip" id="stripBot"><div class="avatar me" id="avBot">D</div><div><div class="pname" id="nameBot">Du</div><div class="psub" id="subBot"></div></div><div class="caps" id="capsBot"></div></div>
+    <div class="status" id="statusRow"><span class="pulse"></span><span id="status"></span><span class="chip" id="evchip" style="margin-left:auto"></span></div>
+    <div class="ctrl">
+      <button class="ibtn" id="bFirst" title="Zum Anfang" aria-label="Zum Anfang"><svg viewBox="0 0 24 24"><path d="M6 5v14M19 6l-8 6 8 6z"/></svg></button>
+      <button class="ibtn" id="bPrev" title="Zug zurück" aria-label="Zug zurück"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <button class="ibtn" id="bNext" title="Zug vor" aria-label="Zug vor"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
+      <button class="ibtn" id="bLast" title="Zum Ende" aria-label="Zum Ende"><svg viewBox="0 0 24 24"><path d="M18 5v14M5 6l8 6-8 6z"/></svg></button>
+      <button class="ibtn sm" id="bFlip" title="Brett drehen" aria-label="Brett drehen"><svg viewBox="0 0 24 24"><path d="M7 4v14M3 14l4 4 4-4M17 20V6M13 10l4-4 4 4"/></svg></button>
+      <button class="ibtn sm" id="bSound" title="Ton" aria-label="Ton an oder aus"><svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9zM17 9a4 4 0 010 6"/></svg></button>
     </div>
-    <div class="tabs"><button data-tab="play" class="on">Spielen</button><button data-tab="ana">Analyse</button><button data-tab="rev">Partie prüfen</button></div>
+    <div class="movestrip" id="moves"></div>
+  </section>
+
+  <section class="right">
+    <nav class="tabs" id="tabs">
+      <button data-tab="play" class="on"><svg viewBox="0 0 24 24"><path d="M6 4l14 8-14 8z"/></svg>Spielen</button>
+      <button data-tab="ana"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg>Analyse</button>
+      <button data-tab="rev"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>Prüfen</button>
+    </nav>
 
     <div id="tab-play" class="card">
       <h3>Gegen Lc0 spielen</h3>
-      <div class="row"><label>Du spielst <select id="pcol"><option value="w">Weiß</option><option value="b">Schwarz</option><option value="r">Zufall</option></select></label>
-        <label>Spielweise <select id="pstyle"><option value="human">wie ein Mensch (nach Wahrscheinlichkeit)</option><option value="best">immer der beste Zug</option></select></label></div>
-      <div class="row"><button class="primary" id="bNew">Neue Partie</button><button id="bUndo">Zug zurücknehmen</button><button id="bHint">Hinweis</button></div>
-      <div class="muted">Mit „Stellung laden“ (Analyse-Reiter) kannst du auch ab einer eigenen Stellung weiterspielen.</div>
+      <div class="row"><label class="field">Du spielst<select id="pcol"><option value="w">Weiß</option><option value="b">Schwarz</option><option value="r">Zufall</option></select></label>
+        <label class="field">Spielweise<select id="pstyle"><option value="human">wie ein Mensch</option><option value="best">immer der beste Zug</option></select></label></div>
+      <div class="row"><button class="btn primary" id="bNew">Neue Partie</button><button class="btn" id="bUndo">Zug zurück</button><button class="btn" id="bHint">Hinweis</button></div>
+      <div class="muted">„Wie ein Mensch“ wählt Züge nach der Wahrscheinlichkeit des Maia-Netzes. Eigene Stellung weiterspielen: im Reiter Analyse laden.</div>
     </div>
 
     <div id="tab-ana" class="card hide">
       <h3>Stellung oder Partie laden</h3>
-      <textarea id="load" placeholder="FEN oder PGN hier einfügen"></textarea>
-      <div class="row"><button id="bLoad" class="primary">Laden</button><button id="bStart">Grundstellung</button><button id="bCopy">PGN kopieren</button><label class="muted"><input type="checkbox" id="auto" checked> automatisch analysieren</label><button id="bAna">Analysieren</button></div>
+      <textarea id="load" placeholder="FEN oder PGN hier einfügen" aria-label="FEN oder PGN"></textarea>
+      <div class="row"><button id="bLoad" class="btn primary">Laden</button><button id="bStart" class="btn">Grundstellung</button><button id="bCopy" class="btn">PGN kopieren</button></div>
+      <div class="row"><label class="chk"><input type="checkbox" id="auto" checked> automatisch analysieren</label><button id="bAna" class="btn" style="margin-left:auto">Analysieren</button></div>
+      <h3 style="margin-top:14px">Lc0 sagt</h3>
       <div id="lines" class="muted">Noch keine Analyse.</div>
     </div>
 
     <div id="tab-rev" class="card hide">
-      <h3>Partie prüfen: wie wahrscheinlich war jeder deiner Züge?</h3>
-      <div class="muted">Lade zuerst die Partie im Reiter „Analyse“ (PGN). Maia zeigt, wie oft ein Spieler dieser Stärke den Zug spielt. Unter 3 % ist ein Ausrutscher.</div>
-      <div class="row"><label>Ich war <select id="rside"><option value="w">Weiß</option><option value="b">Schwarz</option><option value="x">beide</option></select></label><button id="bRev" class="primary">Prüfen</button></div>
+      <h3>Partie prüfen</h3>
+      <div class="muted">Wie wahrscheinlich war jeder deiner Züge für einen Spieler dieser Stärke? Unter 3 % ist ein Ausrutscher. Die Partie lädst du im Reiter „Analyse“, oder du spielst sie hier.</div>
+      <div class="row"><label class="field">Ich war<select id="rside"><option value="w">Weiß</option><option value="b">Schwarz</option><option value="x">beide</option></select></label><button id="bRev" class="btn primary">Prüfen</button></div>
       <div id="revsum" class="muted"></div>
-      <div id="revtab" style="max-height:340px;overflow:auto"></div>
+      <div id="revtab"></div>
     </div>
-  </div>
+  </section>
 </main>
 <script src="vendor/chess.js"></script>
 <script>
@@ -101,81 +236,180 @@ tr.click{cursor:pointer}tr.click:hover{background:rgba(74,163,255,.12)}
   const $ = (s) => document.querySelector(s);
   // Auf dem eigenen Server (Port 8791) relativ; sonst (z.B. GitHub Pages) die Engine auf diesem Rechner ansprechen
   const API = new URLSearchParams(location.search).get('api') || (location.port === '8791' ? '' : 'http://127.0.0.1:8791');
-  const PIECE_URL = 'https://chessboardjs.com/img/chesspieces/wikipedia/{p}.png';
+  const PIECE_SVG = 'https://cdn.jsdelivr.net/gh/lichess-org/lila@master/public/piece/cburnett/{p}.svg';
+  const PIECE_PNG = 'https://chessboardjs.com/img/chesspieces/wikipedia/{p}.png';
   const GLYPH = { wK: '♔', wQ: '♕', wR: '♖', wB: '♗', wN: '♘', wP: '♙', bK: '♚', bQ: '♛', bR: '♜', bB: '♝', bN: '♞', bP: '♟' };
+  const GLYPH_FILLED = { q: '♛', r: '♜', b: '♝', n: '♞', p: '♟' };
   const START = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+  const VAL = { p: 1, n: 3, b: 3, r: 5, q: 9 }, FULL = { p: 8, n: 2, b: 2, r: 2, q: 1 };
   let nets = [], startFen = START, mv = [], idx = 0, flip = false, sel = null, mode = 'play', pcol = 'w', busy = false, req = 0, hintArrows = [], lastAna = null;
+  let soundOn = true; try { soundOn = localStorage.getItem('lc0sound') !== '0'; } catch (e) { /* ignorieren */ }
+  let drag = null, suppress = false, overShown = false;
 
   const build = (i) => { const c = new Chess(startFen); for (let k = 0; k < i; k++) c.move(mv[k]); return c; };
   const sqName = (f, r) => 'abcdefgh'[f] + (r + 1);
   const netKey = () => $('#net').value;
-  const isHuman = () => (nets.find((n) => n.id === netKey()) || {}).human;
+  const netObj = () => nets.find((n) => n.id === netKey()) || {};
+  const isHuman = () => !!netObj().human;
+  const shortName = () => (netObj().name || 'Lc0').replace(/\s*\(.*$/, '');
+  const pieceSrc = (code) => PIECE_SVG.replace('{p}', code);
+
+  // ---------------- Ton ----------------
+  let actx = null;
+  function beep(kind) {
+    if (!soundOn) return;
+    try {
+      actx = actx || new (window.AudioContext || window.webkitAudioContext)(); const o = actx.createOscillator(), g = actx.createGain(), t = actx.currentTime;
+      const f = { move: 520, cap: 330, chk: 760, end: 220 }[kind] || 440, d = kind === 'end' ? .35 : kind === 'cap' ? .09 : .06;
+      o.type = kind === 'cap' ? 'triangle' : 'sine'; o.frequency.value = f; g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.12, t + .01); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+      o.connect(g).connect(actx.destination); o.start(t); o.stop(t + d + .02);
+    } catch (e) { /* kein Ton */ }
+  }
+  function updSound() { $('#bSound').style.opacity = soundOn ? 1 : .45; }
+  $('#bSound').onclick = () => { soundOn = !soundOn; try { localStorage.setItem('lc0sound', soundOn ? '1' : '0'); } catch (e) { /* ignorieren */ } updSound(); beep('move'); };
 
   async function lc0(fen, nodes, movetime, net) {
     const r = await fetch(API + '/api/go', { targetAddressSpace: 'loopback', method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ net: net || netKey(), fen, nodes, movetime }) });
-    if (!r.ok) throw new Error('Engine-Fehler');
+    if (!r.ok) throw new Error('Engine-Fehler (HTTP ' + r.status + ')');
     return r.json();
   }
   const searchParams = () => isHuman() ? { nodes: 1, movetime: 0 } : { nodes: 0, movetime: 2000 };
 
   // ---------------- Brett ----------------
-  function render() {
+  function imgFor(code) {
+    const im = document.createElement('img'); im.className = 'pc'; im.alt = code; im.draggable = false; im.dataset.code = code; im.src = pieceSrc(code); im.dataset.try = '0';
+    im.onerror = () => {
+      if (im.dataset.try === '0') { im.dataset.try = '1'; im.src = PIECE_PNG.replace('{p}', code); return; }
+      const g = document.createElement('div'); g.className = 'pc gl'; g.textContent = GLYPH[code]; im.replaceWith(g);
+    };
+    return im;
+  }
+  function render(anim) {
     const c = build(idx), board = $('#board'), last = idx ? mv[idx - 1] : null;
-    const targets = sel ? c.moves({ square: sel, verbose: true }).map((m) => m.to) : [];
+    const moves = sel ? c.moves({ square: sel, verbose: true }) : [];
+    const targets = new Map(moves.map((m) => [m.to, !!m.captured]));
     let kingSq = null; if (c.in_check()) { const t = c.turn(); for (let r = 0; r < 8 && !kingSq; r++) for (let f = 0; f < 8; f++) { const p = c.get(sqName(f, r)); if (p && p.type === 'k' && p.color === t) { kingSq = sqName(f, r); break; } } }
-    let h = '';
+    board.textContent = '';
     for (let rr = 0; rr < 8; rr++) for (let cc = 0; cc < 8; cc++) {
       const f = flip ? 7 - cc : cc, r = flip ? rr : 7 - rr, n = sqName(f, r), p = c.get(n);
-      const cls = ['sq', (f + r) % 2 === 1 ? 'l' : 'd'];
-      if (last && (last.from === n || last.to === n)) cls.push('last'); if (sel === n) cls.push('sel'); if (targets.includes(n)) cls.push('tg'); if (kingSq === n) cls.push('chk');
-      const code = p ? p.color + p.type.toUpperCase() : '';
-      h += `<div class="${cls.join(' ')}" data-sq="${n}">${code ? `<img alt="${code}" data-code="${code}" src="${PIECE_URL.replace('{p}', code)}">` : ''}${cc === 0 ? `<i class="r">${r + 1}</i>` : ''}${rr === 7 ? `<i class="f">${'abcdefgh'[f]}</i>` : ''}</div>`;
+      const d = document.createElement('div'); d.className = 'sq ' + ((f + r) % 2 === 1 ? 'l' : 'd'); d.dataset.sq = n;
+      if (last && (last.from === n || last.to === n)) d.classList.add('last'); if (sel === n) d.classList.add('sel');
+      if (targets.has(n)) { d.classList.add('tg'); if (targets.get(n)) d.classList.add('cap'); } if (kingSq === n) d.classList.add('chk');
+      if (p) d.appendChild(imgFor(p.color + p.type.toUpperCase()));
+      if (cc === 0) { const i = document.createElement('i'); i.className = 'r'; i.textContent = r + 1; d.appendChild(i); }
+      if (rr === 7) { const i = document.createElement('i'); i.className = 'f'; i.textContent = 'abcdefgh'[f]; d.appendChild(i); }
+      board.appendChild(d);
     }
-    board.innerHTML = h;
-    board.querySelectorAll('img').forEach((im) => { im.onerror = () => { const g = document.createElement('div'); g.className = 'gl'; g.textContent = GLYPH[im.dataset.code]; im.replaceWith(g); }; });
-    drawArrows();
-    drawMoves(); status(c);
+    if (anim && !matchMedia('(prefers-reduced-motion: reduce)').matches) animate(anim);
+    drawArrows(); drawMoves(); drawStrips(c); status(c);
+    $('#bw').classList.toggle('thinking', busy);
+    $('#evalbar').classList.toggle('flip', flip);
+  }
+  function animate(a) {
+    const board = $('#board'), im = board.querySelector(`[data-sq="${a.to}"] .pc`); if (!im) return;
+    const S = board.clientWidth / 8, col = (s) => flip ? 7 - (s.charCodeAt(0) - 97) : s.charCodeAt(0) - 97, row = (s) => flip ? +s[1] - 1 : 8 - +s[1];
+    const dx = (col(a.from) - col(a.to)) * S, dy = (row(a.from) - row(a.to)) * S;
+    im.style.transition = 'none'; im.style.transform = `translate(${dx}px,${dy}px)`; im.style.zIndex = 8; void im.offsetWidth;
+    im.style.transition = 'transform .2s cubic-bezier(.2,.8,.2,1)'; im.style.transform = '';
   }
   function arrow(u, color, w, op) {
     const x = (s) => { const f = s.charCodeAt(0) - 97, r = +s[1] - 1; return [(flip ? 7 - f : f) + .5, (flip ? r : 7 - r) + .5]; };
-    const [x1, y1] = x(u.slice(0, 2)), [x2, y2] = x(u.slice(2, 4)); const dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy) || 1, ux = dx / L, uy = dy / L, hl = .32;
+    const [x1, y1] = x(u.slice(0, 2)), [x2, y2] = x(u.slice(2, 4)); const dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy) || 1, ux = dx / L, uy = dy / L, hl = .34;
     const ex = x2 - ux * hl, ey = y2 - uy * hl;
     return `<g opacity="${op}"><line x1="${x1}" y1="${y1}" x2="${ex}" y2="${ey}" stroke="${color}" stroke-width="${w}" stroke-linecap="round"/><polygon points="${x2},${y2} ${ex - uy * hl * .8},${ey + ux * hl * .8} ${ex + uy * hl * .8},${ey - ux * hl * .8}" fill="${color}"/></g>`;
   }
-  function drawArrows() {
-    $('#arrows').innerHTML = hintArrows.map((a) => arrow(a.u, a.c, a.w, a.o)).join('');
+  function drawArrows() { $('#arrows').innerHTML = hintArrows.map((a) => arrow(a.u, a.c, a.w, a.o)).join(''); }
+  function result(c) {
+    if (c.in_checkmate()) return { t: 'Schachmatt', win: c.turn() === 'w' ? 'b' : 'w' };
+    if (c.in_stalemate()) return { t: 'Patt', win: null }; if (c.insufficient_material()) return { t: 'Remis (zu wenig Material)', win: null };
+    if (c.in_threefold_repetition()) return { t: 'Remis (Wiederholung)', win: null }; if (c.in_draw()) return { t: 'Remis', win: null };
+    return null;
   }
   function status(c) {
-    let t = '';
-    if (c.in_checkmate()) t = 'Schachmatt. ' + (c.turn() === 'w' ? 'Schwarz' : 'Weiß') + ' gewinnt.';
-    else if (c.in_stalemate()) t = 'Patt. Remis.'; else if (c.insufficient_material()) t = 'Remis (zu wenig Material).'; else if (c.in_threefold_repetition()) t = 'Remis (dreifache Wiederholung).';
+    const r = result(c); let t;
+    if (r) t = r.win ? `${r.t}: ${r.win === 'w' ? 'Weiß' : 'Schwarz'} gewinnt.` : r.t + '.';
     else t = (c.turn() === 'w' ? 'Weiß' : 'Schwarz') + ' ist am Zug' + (c.in_check() ? ' (Schach)' : '') + '.';
-    if (busy) t += ' Lc0 denkt …';
-    $('#status').textContent = t;
+    if (busy) t = 'Lc0 denkt …';
+    $('#status').textContent = t; $('#statusRow').classList.toggle('busy', busy);
+    const ov = $('#overOv'); const show = !!r && mode === 'play' && idx === mv.length && mv.length > 0;
+    if (show && !overShown) {
+      overShown = true; const me = r.win === pcol; $('#overT').textContent = r.win ? (me ? 'Du hast gewonnen!' : 'Lc0 gewinnt') : 'Remis'; $('#overS').textContent = r.win ? r.t + ' nach ' + Math.ceil(mv.length / 2) + ' Zügen.' : r.t + '.'; ov.classList.add('show'); beep('end');
+    } else if (!show) { overShown = false; ov.classList.remove('show'); }
   }
-  function moveNo(i) { const fm = parseInt(startFen.split(' ')[5], 10) || 1, bs = startFen.split(' ')[1] === 'b'; return bs ? { n: fm + Math.floor((i + 1) / 2), white: i % 2 === 1 } : { n: fm + Math.floor(i / 2), white: i % 2 === 0 }; }
+  function drawStrips(c) {
+    const topC = flip ? 'w' : 'b', botC = flip ? 'b' : 'w';
+    const name = (col) => mode === 'play' ? (col === pcol ? 'Du' : shortName()) : (col === 'w' ? 'Weiß' : 'Schwarz');
+    const sub = (col) => mode === 'play' && col !== pcol ? (isHuman() && $('#pstyle').value === 'human' ? 'spielt wie ein Mensch' : 'Lc0') : (col === 'w' ? 'Weiß' : 'Schwarz');
+    $('#nameTop').textContent = name(topC); $('#subTop').textContent = sub(topC); $('#nameBot').textContent = name(botC); $('#subBot').textContent = sub(botC);
+    $('#avTop').textContent = name(topC)[0]; $('#avBot').textContent = name(botC)[0]; $('#avBot').classList.toggle('me', mode !== 'play' || botC === pcol); $('#avTop').classList.toggle('me', mode === 'play' && topC === pcol);
+    const have = { w: { p: 0, n: 0, b: 0, r: 0, q: 0 }, b: { p: 0, n: 0, b: 0, r: 0, q: 0 } };
+    for (const row of c.board()) for (const p of row) if (p && p.type !== 'k') have[p.color][p.type]++;
+    const cap = (by) => { const other = by === 'w' ? 'b' : 'w'; let s = '', val = 0; for (const t of ['q', 'r', 'b', 'n', 'p']) { const miss = Math.max(0, FULL[t] - have[other][t]); val += miss * VAL[t]; s += GLYPH_FILLED[t].repeat(miss); } return { s, val }; };
+    const cw = cap('w'), cb = cap('b'), diff = cw.val - cb.val;
+    const fill = (el, s, col, d) => { el.innerHTML = `<span class="${col}">${s}</span>` + (d > 0 ? `<small>+${d}</small>` : ''); };
+    fill($('#capsBot'), botC === 'w' ? cw.s : cb.s, botC === 'w' ? 'b' : 'w', botC === 'w' ? diff : -diff);
+    fill($('#capsTop'), topC === 'w' ? cw.s : cb.s, topC === 'w' ? 'b' : 'w', topC === 'w' ? diff : -diff);
+  }
+  const moveNo = (i) => { const fm = parseInt(startFen.split(' ')[5], 10) || 1, bs = startFen.split(' ')[1] === 'b'; return bs ? { n: fm + Math.floor((i + 1) / 2), white: i % 2 === 1 } : { n: fm + Math.floor(i / 2), white: i % 2 === 0 }; };
   function drawMoves() {
-    let h = '';
-    mv.forEach((m, i) => { const q = moveNo(i); if (q.white) h += ' ' + q.n + '.'; else if (i === 0) h += ' ' + q.n + '…'; h += '<span data-i="' + (i + 1) + '" class="' + (idx === i + 1 ? 'cur' : '') + '">' + m.san + '</span> '; });
-    $('#moves').innerHTML = h || '<span class="muted">Noch keine Züge.</span>';
-    $('#moves').querySelectorAll('span[data-i]').forEach((s) => { s.onclick = () => go(+s.dataset.i); });
+    const box = $('#moves'); box.textContent = '';
+    if (!mv.length) { box.innerHTML = '<span class="muted">Noch keine Züge.</span>'; return; }
+    mv.forEach((m, i) => {
+      const q = moveNo(i); if (q.white || i === 0) { const s = document.createElement('span'); s.className = 'no'; s.textContent = q.n + (q.white ? '.' : '…'); box.appendChild(s); }
+      const s = document.createElement('span'); s.dataset.i = i + 1; s.textContent = m.san; if (idx === i + 1) s.className = 'cur'; s.onclick = () => go(i + 1); box.appendChild(s); box.appendChild(document.createTextNode(' '));
+    });
+    const cur = box.querySelector('.cur'); if (cur) cur.scrollIntoView({ block: 'nearest', inline: 'center' });
   }
-  function go(i) { idx = Math.max(0, Math.min(mv.length, i)); sel = null; hintArrows = []; lastAna = null; render(); afterMove(); }
+  function go(i) { const from = idx; idx = Math.max(0, Math.min(mv.length, i)); sel = null; hintArrows = []; lastAna = null; render(idx === from + 1 ? mv[from] : null); afterMove(); }
 
   // ---------------- Züge ----------------
-  function playerTurn() { const t = build(idx).turn(); return mode !== 'play' || t === pcol; }
-  function tryMove(from, to) {
-    const c = build(idx); const cand = c.moves({ verbose: true }).filter((m) => m.from === from && m.to === to); if (!cand.length) return false;
-    const m = { from, to, promotion: cand[0].promotion ? 'q' : undefined }; const done = c.move(m); if (!done) return false;
-    // gleicher Zug wie in der Linie: nur vorwärts gehen
+  const playerTurn = () => mode !== 'play' || build(idx).turn() === pcol;
+  const legalTarget = (from, to) => build(idx).moves({ verbose: true }).filter((m) => m.from === from && m.to === to);
+  function askPromo(color) {
+    return new Promise((res) => {
+      const box = $('#promo'); box.textContent = ''; const ov = $('#promoOv');
+      for (const t of ['q', 'r', 'b', 'n']) { const b = document.createElement('button'); b.dataset.p = t; b.setAttribute('aria-label', t); const im = document.createElement('img'); im.src = pieceSrc(color + t.toUpperCase()); im.alt = t; im.onerror = () => { im.src = PIECE_PNG.replace('{p}', color + t.toUpperCase()); }; b.appendChild(im); b.onclick = () => { ov.classList.remove('show'); res(t); }; box.appendChild(b); }
+      ov.classList.add('show');
+    });
+  }
+  async function tryMove(from, to) {
+    const cand = legalTarget(from, to); if (!cand.length) return false; const c = build(idx);
+    let promo; if (cand[0].promotion) { promo = await askPromo(c.turn()); }
+    const done = c.move({ from, to, promotion: promo }); if (!done) return false;
     if (mv[idx] && mv[idx].from === done.from && mv[idx].to === done.to && (mv[idx].promotion || '') === (done.promotion || '')) { idx++; } else { mv = mv.slice(0, idx); mv.push({ from: done.from, to: done.to, promotion: done.promotion, san: done.san }); idx = mv.length; }
-    sel = null; hintArrows = []; lastAna = null; render(); afterMove(); return true;
+    sel = null; hintArrows = []; lastAna = null; beep(c.in_check() ? 'chk' : done.captured ? 'cap' : 'move'); render({ from: done.from, to: done.to }); afterMove(); return true;
   }
   $('#board').addEventListener('click', (e) => {
+    if (suppress) { suppress = false; return; }
     const s = e.target.closest('.sq'); if (!s || busy) return; const n = s.dataset.sq, c = build(idx);
-    if (!playerTurn() || c.game_over()) return;
-    if (sel && sel !== n && tryMove(sel, n)) return;
+    if (!playerTurn() || c.game_over() || $('#promoOv').classList.contains('show')) return;
+    if (sel && sel !== n && legalTarget(sel, n).length) { tryMove(sel, n); return; }
     const p = c.get(n); sel = (p && p.color === c.turn() && sel !== n) ? n : null; render();
+  });
+  // Ziehen mit Maus oder Finger
+  $('#board').addEventListener('pointerdown', (e) => {
+    if (busy || (e.pointerType === 'mouse' && e.button !== 0) || $('#promoOv').classList.contains('show')) return;
+    const s = e.target.closest('.sq'); if (!s) return; const c = build(idx); if (!playerTurn() || c.game_over()) return;
+    const p = c.get(s.dataset.sq); if (!p || p.color !== c.turn()) return;
+    drag = { n: s.dataset.sq, x: e.clientX, y: e.clientY, moved: false, ghost: null, code: p.color + p.type.toUpperCase() };
+    const mvf = (ev) => {
+      if (!drag) return; const bw = $('#bw').getBoundingClientRect();
+      if (!drag.moved && Math.hypot(ev.clientX - drag.x, ev.clientY - drag.y) > 6) {
+        drag.moved = true; sel = drag.n; render(); const sq = $('#board').querySelector(`[data-sq="${drag.n}"]`); sq.classList.add('drag-src');
+        const g = imgFor(drag.code); g.className = 'pc ghost'; g.style.width = g.style.height = (bw.width / 8) + 'px'; $('#bw').appendChild(g); drag.ghost = g;
+      }
+      if (drag.ghost) { drag.ghost.style.left = (ev.clientX - bw.left) + 'px'; drag.ghost.style.top = (ev.clientY - bw.top) + 'px'; }
+    };
+    const up = (ev) => {
+      window.removeEventListener('pointermove', mvf); window.removeEventListener('pointerup', up); window.removeEventListener('pointercancel', up);
+      const d = drag; drag = null; if (!d || !d.moved) return;
+      if (d.ghost) d.ghost.remove(); suppress = true; setTimeout(() => { suppress = false; }, 60);
+      const r = $('#board').getBoundingClientRect(), S = r.width / 8, cc = Math.floor((ev.clientX - r.left) / S), rr = Math.floor((ev.clientY - r.top) / S);
+      if (cc < 0 || cc > 7 || rr < 0 || rr > 7) { sel = null; render(); return; }
+      const f = flip ? 7 - cc : cc, rk = flip ? rr : 7 - rr, to = sqName(f, rk);
+      if (to !== d.n && legalTarget(d.n, to).length) tryMove(d.n, to); else render();
+    };
+    window.addEventListener('pointermove', mvf); window.addEventListener('pointerup', up); window.addEventListener('pointercancel', up);
   });
 
   async function afterMove() {
@@ -193,30 +427,31 @@ tr.click{cursor:pointer}tr.click:hover{background:rgba(74,163,255,.12)}
         const pool = r.moves.filter((m) => m.p >= 1); const tot = pool.reduce((s, m) => s + m.p, 0); let x = Math.random() * tot; for (const m of pool) { x -= m.p; if (x <= 0) { u = m.uci; break; } }
       }
       busy = false;
-      const done = c.move({ from: u.slice(0, 2), to: u.slice(2, 4), promotion: u[4] }); if (!done) throw new Error('Unerlaubter Zug von der Engine: ' + u);
-      mv = mv.slice(0, idx); mv.push({ from: done.from, to: done.to, promotion: done.promotion, san: done.san }); idx = mv.length; sel = null; hintArrows = []; render();
-    } catch (e) { busy = false; $('#status').textContent = 'Fehler: ' + e.message; }
+      const before = build(idx); const done = c.move({ from: u.slice(0, 2), to: u.slice(2, 4), promotion: u[4] }); if (!done) throw new Error('Unerlaubter Zug von der Engine: ' + u);
+      mv = mv.slice(0, idx); mv.push({ from: done.from, to: done.to, promotion: done.promotion, san: done.san }); idx = mv.length; sel = null; hintArrows = [];
+      beep(c.in_check() ? 'chk' : done.captured ? 'cap' : 'move'); render({ from: done.from, to: done.to }); setEval(r, before);
+    } catch (e) { busy = false; render(); $('#status').textContent = 'Fehler: ' + e.message; }
   }
 
   // ---------------- Analyse ----------------
   function sanOf(c, u) { const t = new Chess(c.fen()); const m = t.move({ from: u.slice(0, 2), to: u.slice(2, 4), promotion: u[4] }); return m ? m.san : u; }
+  function setEval(r, c) {
+    const white = c.turn() === 'w'; const w = white ? r.win : 100 - r.win; $('#bar').style.height = w + '%'; $('#evchip').textContent = 'Weiß ' + w + ' %'; $('#evalbar').title = 'Weiß ' + w + ' %';
+  }
   async function analyse() {
     const my = ++req; const c = build(idx); busy = true; render(); $('#lines').textContent = 'Lc0 denkt …';
     try {
-      const sp = searchParams(); const r = await lc0(c.fen(), sp.nodes, sp.movetime); if (my !== req) return; busy = false; lastAna = r; showLines(c, r); render(); showArrows(r);
+      const sp = searchParams(); const r = await lc0(c.fen(), sp.nodes, sp.movetime); if (my !== req) return; busy = false; lastAna = r; setEval(r, c); showLines(c, r); render(); showArrows(r);
     } catch (e) { busy = false; $('#lines').textContent = 'Fehler: ' + e.message; render(); }
   }
   function showLines(c, r) {
-    const white = c.turn() === 'w'; const wWin = white ? r.win : 100 - r.win; $('#bar').style.width = wWin + '%';
-    const human = isHuman(); const top = r.moves.slice(0, 6);
-    let h = `<div>Bewertung: <b>${wWin} % für Weiß</b>${r.nodes ? ` · ${r.nodes} Knoten${r.nps ? ', ' + r.nps + ' pro Sekunde' : ''}` : ''}</div><table><tr><th>Zug</th><th>Wahrscheinlichkeit</th>${human ? '' : '<th>Gewinnchance</th><th>Knoten</th>'}</tr>`;
-    for (const m of top) h += `<tr><td>${sanOf(c, m.uci)}</td><td>${m.p.toFixed(1)} %</td>${human ? '' : `<td>${m.n ? Math.round((1 + m.q) * 50) + ' %' : '–'}</td><td>${m.n}</td>`}</tr>`;
-    h += '</table><div class="muted">Wahrscheinlichkeit = wie oft das Netz diesen Zug wählt' + (human ? ' (Spieler dieser Stärke).' : ' (Policy).') + '</div>';
+    const white = c.turn() === 'w'; const wWin = white ? r.win : 100 - r.win; const human = isHuman(); const top = r.moves.slice(0, 6), mx = Math.max(...top.map((m) => m.p), 1);
+    let h = `<div class="evline"><b>${wWin} %</b><span>Gewinnchance Weiß${r.nodes ? ` · ${r.nodes} Knoten` : ''}${r.nps ? `, ${r.nps}/s` : ''}</span></div>`;
+    top.forEach((m, i) => { h += `<div class="ln ${i === 0 ? 'best' : ''}"><span class="mv">${sanOf(c, m.uci)}</span><span class="bar"><u style="width:${Math.max(3, m.p / mx * 100)}%"></u></span><span class="pv">${m.p.toFixed(1)} %${human || !m.n ? '' : ' · ' + Math.round((1 + m.q) * 50) + ' %'}</span></div>`; });
+    h += '<div class="muted" style="margin-top:8px">Wahrscheinlichkeit = wie oft das Netz diesen Zug wählt' + (human ? ' (Spieler dieser Stärke).' : '; dahinter die Gewinnchance des Zugs.') + '</div>';
     $('#lines').innerHTML = h;
   }
-  function showArrows(r) {
-    hintArrows = r.moves.slice(0, 3).map((m, i) => ({ u: m.uci, c: i === 0 ? '#2fbf71' : '#4aa3ff', w: i === 0 ? .16 : .1, o: i === 0 ? .85 : Math.max(.25, Math.min(.6, m.p / 60)) })); drawArrows();
-  }
+  function showArrows(r) { hintArrows = r.moves.slice(0, 3).map((m, i) => ({ u: m.uci, c: i === 0 ? '#2fd28a' : '#3ec8ff', w: i === 0 ? .16 : .1, o: i === 0 ? .88 : Math.max(.25, Math.min(.6, m.p / 60)) })); drawArrows(); }
   $('#bHint').onclick = async () => { if (busy) return; const c = build(idx); busy = true; render(); try { const sp = searchParams(); const r = await lc0(c.fen(), sp.nodes, sp.movetime); busy = false; render(); showArrows(r); $('#status').textContent = 'Hinweis: ' + r.moves.slice(0, 3).map((m) => sanOf(c, m.uci) + ' ' + m.p.toFixed(0) + ' %').join(' · '); } catch (e) { busy = false; render(); } };
 
   // ---------------- Laden / Navigation ----------------
@@ -233,45 +468,55 @@ tr.click{cursor:pointer}tr.click:hover{background:rgba(74,163,255,.12)}
   $('#bFirst').onclick = () => go(0); $('#bPrev').onclick = () => go(idx - 1); $('#bNext').onclick = () => go(idx + 1); $('#bLast').onclick = () => go(mv.length);
   $('#bFlip').onclick = () => { flip = !flip; render(); };
   $('#bCopy').onclick = async () => { const c = new Chess(startFen); for (let i = 0; i < idx; i++) c.move(mv[i]); const t = c.pgn(); try { await navigator.clipboard.writeText(t); $('#lines').textContent = 'PGN kopiert.'; } catch (e) { $('#load').value = t; $('#lines').textContent = 'PGN steht im Textfeld.'; } };
-  document.addEventListener('keydown', (e) => { if (/TEXTAREA|INPUT|SELECT/.test(e.target.tagName)) return; if (e.key === 'ArrowLeft') go(idx - 1); else if (e.key === 'ArrowRight') go(idx + 1); });
+  document.addEventListener('keydown', (e) => { if (/TEXTAREA|INPUT|SELECT/.test(e.target.tagName)) return; if (e.key === 'ArrowLeft') go(idx - 1); else if (e.key === 'ArrowRight') go(idx + 1); else if (e.key === 'ArrowUp') go(0); else if (e.key === 'ArrowDown') go(mv.length); else if (e.key === 'f') { flip = !flip; render(); } });
 
   // ---------------- Spielen ----------------
   function newGame() {
-    const v = $('#pcol').value; pcol = v === 'r' ? (Math.random() < .5 ? 'w' : 'b') : v; startFen = START; mv = []; idx = 0; sel = null; hintArrows = []; flip = pcol === 'b'; req++; busy = false; render(); afterMove();
+    const v = $('#pcol').value; pcol = v === 'r' ? (Math.random() < .5 ? 'w' : 'b') : v; startFen = START; mv = []; idx = 0; sel = null; hintArrows = []; flip = pcol === 'b'; req++; busy = false; overShown = false; $('#bar').style.height = '50%'; $('#evchip').textContent = ''; render(); afterMove();
   }
-  $('#bNew').onclick = newGame;
-  $('#bUndo').onclick = () => { if (busy) { req++; busy = false; } const c = build(idx); let n = 1; if (mode === 'play' && c.turn() === pcol) n = 2; mv = mv.slice(0, Math.max(0, idx - n)); idx = mv.length; sel = null; hintArrows = []; render(); };
+  $('#bNew').onclick = () => { setTab('play'); newGame(); }; $('#ovNew').onclick = newGame;
+  $('#ovRev').onclick = () => { $('#overOv').classList.remove('show'); setTab('rev'); $('#rside').value = pcol; $('#bRev').click(); };
+  $('#bUndo').onclick = () => { if (busy) { req++; busy = false; } const c = build(idx); let n = 1; if (mode === 'play' && c.turn() === pcol) n = 2; mv = mv.slice(0, Math.max(0, idx - n)); idx = mv.length; sel = null; hintArrows = []; overShown = false; render(); };
+  $('#pstyle').onchange = () => render();
 
   // ---------------- Partie prüfen ----------------
   $('#bRev').onclick = async () => {
-    if (!mv.length) { $('#revsum').textContent = 'Keine Partie geladen. Im Reiter „Analyse“ ein PGN laden.'; return; }
-    const side = $('#rside').value, net = netKey(); if (!isHuman()) { $('#revsum').textContent = 'Zum Prüfen bitte ein Maia-Netz wählen (das starke Netz ist dafür zu langsam).'; return; }
+    if (!mv.length) { $('#revsum').textContent = 'Keine Partie vorhanden. Spiele eine oder lade ein PGN im Reiter „Analyse“.'; return; }
+    const side = $('#rside').value, net = isHuman() ? netKey() : 'maia-1500';
     $('#revsum').textContent = 'Prüfe …'; $('#revtab').innerHTML = ''; const rows = []; const c = new Chess(startFen); const cnt = { typ: 0, sel: 0, aus: 0 };
     for (let i = 0; i < mv.length; i++) {
       const col = c.turn(); const fen = c.fen(); const played = mv[i]; c.move(played);
       if (side !== 'x' && col !== side) continue;
       let r; try { r = await lc0(fen, 1, 0, net); } catch (e) { $('#revsum').textContent = 'Fehler: ' + e.message; return; }
+      if (!r.moves || !r.moves.length) { window.__bad = fen; continue; }
       const u = played.from + played.to + (played.promotion || ''); const e = r.moves.find((m) => m.uci === u); const p = e ? e.p : 0; const top = r.moves[0];
       const kind = p >= 10 ? 'typ' : p >= 3 ? 'sel' : 'aus'; if (u !== top.uci) cnt[kind]++;
       rows.push({ i, san: played.san, p, top: top.uci === u ? null : sanOf(new Chess(fen), top.uci), tp: top.p, kind, white: col === 'w' });
       if (rows.length % 5 === 0) $('#revsum').textContent = `Prüfe … ${i + 1} von ${mv.length}`;
     }
-    const worst = rows.filter((r) => r.top).sort((a, b) => a.p - b.p);
-    $('#revsum').innerHTML = `${rows.length} Züge geprüft. Nicht der Top-Zug des Netzes: <b>${cnt.typ}</b> häufige, <b>${cnt.sel}</b> seltene, <b>${cnt.aus}</b> Ausrutscher (unter 3 %).`;
+    const worst = rows.filter((r) => r.top && r.kind === 'aus').sort((a, b) => a.p - b.p).slice(0, 4);
+    $('#revsum').textContent = `${rows.length} Züge geprüft (${net.replace('maia-', 'Maia ')}${isHuman() ? '' : ', das starke Netz ist dafür zu langsam'}). Gezählt werden Züge, die nicht der Top-Zug des Netzes waren.`;
     const label = { typ: 'häufig', sel: 'selten', aus: 'Ausrutscher' };
-    $('#revtab').innerHTML = '<table><tr><th>Zug</th><th>Dein Zug</th><th>Wahrsch.</th><th>Netz würde ziehen</th><th></th></tr>' + rows.map((r) => `<tr class="click" data-i="${r.i}"><td>${moveNo(r.i).n}${r.white ? '.' : '…'}</td><td>${r.san}</td><td>${r.p.toFixed(1)} %</td><td>${r.top ? r.top + ' (' + r.tp.toFixed(0) + ' %)' : 'gleicher Zug'}</td><td>${r.top ? `<span class="tag t-${r.kind}">${label[r.kind]}</span>` : ''}</td></tr>`).join('') + '</table>';
-    $('#revtab').querySelectorAll('tr.click').forEach((tr) => { tr.onclick = () => { setTab('ana'); go(+tr.dataset.i); }; });
-    window.__review = { rows, cnt, worst: worst.slice(0, 3) };
+    let h = `<div class="tiles"><div class="tile typ"><b>${cnt.typ}</b><span>häufige Abweichung</span></div><div class="tile sel"><b>${cnt.sel}</b><span>seltene</span></div><div class="tile aus"><b>${cnt.aus}</b><span>Ausrutscher</span></div></div>`;
+    if (worst.length) h += '<div class="muted">Größte Überraschungen:</div><div class="worst">' + worst.map((r) => `<button data-i="${r.i}">${moveNo(r.i).n}${r.white ? '.' : '…'} ${r.san} · ${r.p.toFixed(1)} %</button>`).join('') + '</div>';
+    h += '<div class="revlist">' + rows.map((r) => `<div class="rv click" data-i="${r.i}"><span class="no">${moveNo(r.i).n}${r.white ? '.' : '…'}</span><span><span class="san">${r.san}</span> <span class="sub">${r.p.toFixed(1)} % · ${r.top ? 'Netz: ' + r.top + ' (' + r.tp.toFixed(0) + ' %)' : 'Top-Zug des Netzes'}</span><span class="bar" style="display:block;margin-top:5px"><u style="width:${Math.max(2, Math.min(100, r.p))}%"></u></span></span>${r.top ? `<span class="tag t-${r.kind}">${label[r.kind]}</span>` : '<span class="tag t-top">Top</span>'}</div>`).join('') + '</div>';
+    $('#revtab').innerHTML = h;
+    $('#revtab').querySelectorAll('[data-i]').forEach((el) => { el.onclick = () => { setTab('ana'); go(+el.dataset.i); }; });
+    window.__review = { rows, cnt, worst };
   };
 
   // ---------------- Reiter, Netze ----------------
-  function setTab(t) { mode = t; document.querySelectorAll('.tabs button').forEach((b) => b.classList.toggle('on', b.dataset.tab === t)); for (const k of ['play', 'ana', 'rev']) $('#tab-' + k).classList.toggle('hide', k !== t); hintArrows = []; render(); if (t === 'ana' && $('#auto').checked) analyse(); }
-  document.querySelectorAll('.tabs button').forEach((b) => { b.onclick = () => setTab(b.dataset.tab); });
-  $('#net').onchange = () => { $('#netinfo').textContent = isHuman() ? 'schnell, spielt wie ein Mensch dieser Stärke' : 'stark, aber ca. 2 Sekunden pro Zug'; if (mode === 'ana' && $('#auto').checked) analyse(); };
-  window.__lc0 = { get state() { return { startFen, mv, idx, mode, busy, flip, pcol, hint: hintArrows.length, fen: build(idx).fen() }; }, setTab, go, newGame };
+  function setTab(t) { mode = t; document.querySelectorAll('#tabs button').forEach((b) => b.classList.toggle('on', b.dataset.tab === t)); for (const k of ['play', 'ana', 'rev']) $('#tab-' + k).classList.toggle('hide', k !== t); hintArrows = []; render(); if (t === 'ana' && $('#auto').checked) analyse(); }
+  document.querySelectorAll('#tabs button').forEach((b) => { b.onclick = () => setTab(b.dataset.tab); });
+  $('#net').onchange = () => { $('#netinfo').textContent = isHuman() ? 'schnell, spielt wie ein Mensch dieser Stärke' : 'stark, ca. 2 s pro Zug'; try { localStorage.setItem('lc0net', netKey()); } catch (e) { /* ignorieren */ } render(); if (mode === 'ana' && $('#auto').checked) analyse(); };
+  window.__lc0 = { get state() { return { startFen, mv, idx, mode, busy, flip, pcol, hint: hintArrows.length, fen: build(idx).fen(), over: overShown, sound: soundOn }; }, setTab, go, newGame };
   (async () => {
-    try { nets = await (await fetch(API + '/api/nets', { targetAddressSpace: 'loopback' })).json(); } catch (e) { $('#status').innerHTML = 'Keine Verbindung zur lokalen Engine. Bitte <b>start-lc0.bat</b> (oder <b>node lc0-server.js</b>) im Ordner lc0-live starten und die Seite neu laden. Fragt der Browser nach Zugriff auf lokale Geräte oder das lokale Netzwerk, bitte zulassen.'; return; }
-    $('#net').innerHTML = nets.filter((n) => n.ok).map((n) => `<option value="${n.id}" ${n.id === 'maia-1500' ? 'selected' : ''}>${n.name}</option>`).join(''); $('#net').onchange();
+    updSound();
+    try { nets = await (await fetch(API + '/api/nets', { targetAddressSpace: 'loopback' })).json(); $('#conn').classList.add('ok'); }
+    catch (e) { $('#conn').classList.add('err'); render(); $('#status').innerHTML = 'Keine Verbindung zur lokalen Engine. Bitte <b>start-lc0.bat</b> (oder <b>node lc0-server.js</b>) im Ordner lc0-live starten und die Seite neu laden. Fragt der Browser nach Zugriff auf lokale Geräte oder das lokale Netzwerk, bitte zulassen.'; return; }
+    let saved = null; try { saved = localStorage.getItem('lc0net'); } catch (e) { /* ignorieren */ }
+    const okNets = nets.filter((n) => n.ok); const pick = okNets.find((n) => n.id === saved) ? saved : 'maia-1500';
+    $('#net').innerHTML = okNets.map((n) => `<option value="${n.id}" ${n.id === pick ? 'selected' : ''}>${n.name}</option>`).join(''); $('#net').onchange();
     render(); afterMove();
   })();
 })();
