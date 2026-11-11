@@ -28,6 +28,9 @@ const PGN = '1. d4 d6 2. Nf3 f5 3. e3 g6 4. Bd3 Bg7 5. c4 Nf6 6. Bd2 O-O 7. Bc3 
   await page.evaluate(() => { document.querySelector('#pcol').value = 'b'; document.querySelector('#bNew').click(); });
   ok(await waitFor(() => window.__lc0.state.mv.length === 1 && !window.__lc0.state.busy), 'Als Schwarz zieht Lc0 zuerst');
   ok((await S()).flip === true, 'Brett ist für Schwarz gedreht');
+  ok(await page.evaluate(() => { const e = document.querySelector('#evalbar').getBoundingClientRect(), b = document.querySelector('#board').getBoundingClientRect(); return e.height > e.width * 10 && Math.abs(e.height - b.height) < 4 && e.right <= b.left; }), 'Bewertungsleiste steht senkrecht links neben dem Brett');
+  ok(await page.evaluate(() => document.querySelector('#evalbar').classList.contains('flip')), 'Leiste dreht mit dem Brett (Schwarz unten)');
+  ok(await page.evaluate(() => /Weiß [0-9]+ %/.test(document.querySelector('#evtxt').innerText) && document.querySelector('#bar').style.height !== '50%'), 'Leiste und Text zeigen nach dem Lc0-Zug eine Bewertung: ' + (await page.evaluate(() => document.querySelector('#evtxt').innerText)));
 
   // Analyse + PGN laden
   await page.evaluate(() => window.__lc0.setTab('ana'));
