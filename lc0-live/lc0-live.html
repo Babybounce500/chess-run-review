@@ -112,7 +112,7 @@ tr.click{cursor:pointer}tr.click:hover{background:rgba(74,163,255,.12)}
   const isHuman = () => (nets.find((n) => n.id === netKey()) || {}).human;
 
   async function lc0(fen, nodes, movetime, net) {
-    const r = await fetch(API + '/api/go', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ net: net || netKey(), fen, nodes, movetime }) });
+    const r = await fetch(API + '/api/go', { targetAddressSpace: 'loopback', method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ net: net || netKey(), fen, nodes, movetime }) });
     if (!r.ok) throw new Error('Engine-Fehler');
     return r.json();
   }
@@ -270,7 +270,7 @@ tr.click{cursor:pointer}tr.click:hover{background:rgba(74,163,255,.12)}
   $('#net').onchange = () => { $('#netinfo').textContent = isHuman() ? 'schnell, spielt wie ein Mensch dieser Stärke' : 'stark, aber ca. 2 Sekunden pro Zug'; if (mode === 'ana' && $('#auto').checked) analyse(); };
   window.__lc0 = { get state() { return { startFen, mv, idx, mode, busy, flip, pcol, hint: hintArrows.length, fen: build(idx).fen() }; }, setTab, go, newGame };
   (async () => {
-    try { nets = await (await fetch(API + '/api/nets')).json(); } catch (e) { $('#status').innerHTML = 'Keine Verbindung zur lokalen Engine. Bitte <b>start-lc0.bat</b> (oder <b>node lc0-server.js</b>) im Ordner lc0-live starten und die Seite neu laden.'; return; }
+    try { nets = await (await fetch(API + '/api/nets', { targetAddressSpace: 'loopback' })).json(); } catch (e) { $('#status').innerHTML = 'Keine Verbindung zur lokalen Engine. Bitte <b>start-lc0.bat</b> (oder <b>node lc0-server.js</b>) im Ordner lc0-live starten und die Seite neu laden. Fragt der Browser nach Zugriff auf lokale Geräte oder das lokale Netzwerk, bitte zulassen.'; return; }
     $('#net').innerHTML = nets.filter((n) => n.ok).map((n) => `<option value="${n.id}" ${n.id === 'maia-1500' ? 'selected' : ''}>${n.name}</option>`).join(''); $('#net').onchange();
     render(); afterMove();
   })();

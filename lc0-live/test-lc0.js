@@ -5,7 +5,7 @@ let fails = 0, passes = 0; const ok = (c, m) => { if (c) { passes++; console.log
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const PGN = '1. d4 d6 2. Nf3 f5 3. e3 g6 4. Bd3 Bg7 5. c4 Nf6 6. Bd2 O-O 7. Bc3 Nc6 8. O-O e5 9. d5 Ne7 10. Bc2 e4 11. Nfd2 Ng4 12. h3 Bxc3 13. Nxc3 Ne5 *';
 (async () => {
-  const browser = await puppeteer.launch({ executablePath: process.env.CHROME || 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: 'new', args: ['--no-sandbox'] });
+  const browser = await puppeteer.launch({ executablePath: process.env.CHROME || 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: 'new', args: ['--no-sandbox'].concat(process.env.LNA_OFF ? ['--disable-features=LocalNetworkAccessChecks,BlockInsecurePrivateNetworkRequests,PrivateNetworkAccessSendPreflights'] : []) });
   const page = await browser.newPage(); await page.setViewport({ width: 1100, height: 900 });
   const errors = []; page.on('pageerror', (e) => errors.push(e.message));
   await page.goto(BASE, { waitUntil: 'networkidle2', timeout: 60000 });
