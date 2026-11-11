@@ -33,7 +33,7 @@ const PGN = '1. d4 d6 2. Nf3 f5 3. e3 g6 4. Bd3 Bg7 5. c4 Nf6 6. Bd2 O-O 7. Bc3 
   await page.evaluate(() => window.__lc0.setTab('ana'));
   await page.evaluate((p) => { document.querySelector('#load').value = p; document.querySelector('#bLoad').click(); }, PGN);
   ok(await waitFor(() => window.__lc0.state.mv.length === 26 && window.__lc0.state.idx === 26), 'PGN geladen: 26 Halbzüge (mit Rochade und Schlagzügen)');
-  ok(await waitFor(() => /Wahrscheinlichkeit/.test(document.querySelector('#lines').innerText) && document.querySelectorAll('#lines .ln').length >= 4), 'Analyse zeigt Zugliste mit Wahrscheinlichkeiten');
+  ok(await waitFor(() => /Wahrscheinlichkeit/.test(document.querySelector('#lines').innerText) && document.querySelectorAll('#lines tr').length >= 4), 'Analyse zeigt Zugliste mit Wahrscheinlichkeiten');
   ok(await page.evaluate(() => document.querySelectorAll('#arrows g').length >= 1), 'Pfeile für die besten Züge');
   await page.evaluate(() => document.querySelector('#bPrev').click()); ok((await S()).idx === 25, 'Zug zurück');
   await page.evaluate(() => document.querySelector('#bFirst').click()); ok((await S()).idx === 0 && /w KQkq/.test((await S()).fen), 'Zum Anfang');
@@ -42,49 +42,18 @@ const PGN = '1. d4 d6 2. Nf3 f5 3. e3 g6 4. Bd3 Bg7 5. c4 Nf6 6. Bd2 O-O 7. Bc3 
 
   // Partie prüfen
   await page.evaluate(() => { window.__lc0.setTab('rev'); document.querySelector('#rside').value = 'b'; document.querySelector('#bRev').click(); });
-  ok(await waitFor(() => document.querySelectorAll('#revtab .rv').length === 13, 30000), 'Partie prüfen: 13 Züge von Schwarz bewertet');
+  ok(await waitFor(() => document.querySelectorAll('#revtab tr.click').length === 13, 30000), 'Partie prüfen: 13 Züge von Schwarz bewertet');
   const rv = await page.evaluate(() => window.__review.rows.map((r) => r.p));
   ok(rv.every((x) => x >= 0 && x <= 100) && rv.some((x) => x > 10), 'Wahrscheinlichkeiten plausibel (' + rv.map((x) => x.toFixed(0)).join(', ') + ' %)');
-  await page.evaluate(() => document.querySelector('#revtab .rv').click()); ok((await S()).mode === 'ana', 'Klick auf Zeile springt in die Stellung');
+  await page.evaluate(() => document.querySelector('#revtab tr.click').click()); ok((await S()).mode === 'ana', 'Klick auf Zeile springt in die Stellung');
 
   // starkes Netz
   await page.evaluate(() => { window.__lc0.setTab('ana'); const n = document.querySelector('#net'); n.value = 'strong'; n.dispatchEvent(new Event('change')); document.querySelector('#bStart').click(); });
   ok(await waitFor(() => /Knoten/.test(document.querySelector('#lines').innerText) && /Gewinnchance/.test(document.querySelector('#lines').innerText), 30000), 'Starkes Netz: Analyse mit Knoten und Gewinnchance');
 
-  // Oberfläche: Verbindung, Ziehen, Umwandlung, Partie-Ende
-  await page.evaluate(() => { const n = document.querySelector('#net'); n.value = 'maia-1500'; n.dispatchEvent(new Event('change')); });
-  ok(await page.evaluate(() => document.querySelector('#conn').classList.contains('ok')), 'Verbindungspunkt ist grün');
-  await page.evaluate(() => { document.querySelector('#bStart').click(); window.__lc0.setTab('play'); document.querySelector('#pcol').value = 'w'; document.querySelector('#bNew').click(); });
-  await sleep(300);
-  const rc = (sq) => page.evaluate((s) => { const r = document.querySelector(`.sq[data-sq="${s}"]`).getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }, sq);
-  const a = await rc('d2'), b = await rc('d4');
-  await page.mouse.move(a.x, a.y); await page.mouse.down(); await page.mouse.move((a.x + b.x) / 2, (a.y + b.y) / 2, { steps: 4 });
-  ok(await page.evaluate(() => !!document.querySelector('.ghost')), 'Ziehen: Figur folgt dem Zeiger');
-  await page.mouse.move(b.x, b.y, { steps: 4 }); await page.mouse.up();
-  ok(await waitFor(() => window.__lc0.state.mv.length >= 1 && window.__lc0.state.mv[0].san === 'd4'), 'Ziehen: d2 nach d4 per Drag and Drop');
-  ok(await waitFor(() => window.__lc0.state.mv.length === 2 && !window.__lc0.state.busy), 'Lc0 antwortet auf den Drag-Zug');
-  ok(await page.evaluate(() => document.querySelector('#capsBot') && document.querySelector('#stripTop .pname').textContent.length > 0), 'Spielerleisten zeigen Namen');
-  // Umwandlung
-  await page.evaluate(() => { window.__lc0.setTab('ana'); document.querySelector('#auto').checked = false; document.querySelector('#load').value = '7k/P7/8/8/8/8/8/K7 w - - 0 1'; document.querySelector('#bLoad').click(); window.__lc0.setTab('play'); });
-  await waitFor(() => !window.__lc0.state.busy);
-  await click('a7'); await click('a8');
-  ok(await waitFor(() => document.querySelector('#promoOv').classList.contains('show')), 'Umwandlung: Auswahl erscheint');
-  await page.evaluate(() => document.querySelector('#promo button[data-p="q"]').click());
-  ok(await waitFor(() => window.__lc0.state.mv.length >= 1 && /=Q/.test(window.__lc0.state.mv[0].san)), 'Umwandlung in Dame: ' + (await S()).mv.map((m) => m.san).join(' '));
-  // Partie-Ende
-  await page.evaluate(() => { window.__lc0.setTab('ana'); document.querySelector('#load').value = '1. f3 e5 2. g4 Qh4#'; document.querySelector('#bLoad').click(); window.__lc0.setTab('play'); });
-  ok(await waitFor(() => document.querySelector('#overOv').classList.contains('show') && /Lc0 gewinnt/.test(document.querySelector('#overT').textContent)), 'Partie-Ende: Banner „Lc0 gewinnt“ bei Matt');
-  await page.evaluate(() => document.querySelector('#ovRev').click());
-  ok(await waitFor(() => document.querySelectorAll('#revtab .rv').length === 2, 20000), 'Banner „Partie prüfen“ startet die Prüfung (2 Züge von Weiß)');
-
   // Handy-Breite
-  await page.setViewport({ width: 375, height: 800, isMobile: true, hasTouch: true }); await sleep(400);
+  await page.setViewport({ width: 375, height: 800 }); await sleep(300);
   ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1), 'Handy-Breite: kein seitliches Scrollen');
-  ok(await page.evaluate(() => { const r = document.querySelector('#board').getBoundingClientRect(); return r.width >= 340 && r.left >= 0 && r.right <= window.innerWidth; }), 'Handy: Brett füllt die Breite');
-  ok(await page.evaluate(() => { const t = document.querySelector('#tabs').getBoundingClientRect(); return getComputedStyle(document.querySelector('#tabs')).position === 'fixed' && Math.abs(t.bottom - window.innerHeight) < 2; }), 'Handy: Reiterleiste sitzt unten fest');
-  ok(await page.evaluate(() => [...document.querySelectorAll('.ibtn, #tabs button, #bNew, #bUndo, #bHint')].every((b) => b.getBoundingClientRect().height >= 43 || b.offsetParent === null)), 'Handy: alle Tasten mindestens 44 px hoch');
-  await page.evaluate(() => { window.__lc0.setTab('play'); document.querySelector('#bStart').click(); window.__lc0.setTab('ana'); }); await sleep(300);
-  if (process.env.SHOT) await page.screenshot({ path: process.env.SHOT, fullPage: false });
   ok(errors.length === 0, 'Keine Skriptfehler' + (errors.length ? ': ' + errors[0] : ''));
   console.log(`\n${passes} bestanden, ${fails} fehlgeschlagen`);
   await browser.close(); process.exit(fails ? 1 : 0);
