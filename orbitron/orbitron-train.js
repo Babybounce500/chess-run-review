@@ -43,10 +43,14 @@
   function openBlunderTrainer(opts) {
     opts = opts || {};
     const raw = (opts.set === 'bullet' ? window.ORBITRON_BULLET : window.ORBITRON_BLUNDERS) || [];
-    const all = raw.map(a => ({ f: a[0], b: a[1], p: a[2], ps: a[3], ph: a[4], l: a[5], e: a[6], n: a[7], tag: a[8] || '' }));
+    const all = raw.map(a => ({ f: a[0], b: a[1], p: a[2], ps: a[3], ph: a[4], l: a[5], e: a[6], n: a[7], tag: a[8] || '', pr: typeof a[9] === 'number' ? a[9] : null }));
+    // Maia-Einordnung: wie wahrscheinlich ist der Fehlzug auf deinem Niveau?
+    const kindOf = (pr) => pr == null ? '' : pr >= 10 ? 'typ' : pr >= 3 ? 'sel' : 'aus';
+    const KIND_NAME = { typ: 'Typischer Fehler', sel: 'Seltener Fehler', aus: 'Ausrutscher' };
+    const prTxt = (pr) => pr < 1 ? 'unter 1' : String(Math.round(pr));
     const card = kit.newCard();
     const stats = kit.lsGet(STATS_KEY, {});
-    const F = { piece: (opts.phase || opts.set) ? 'all' : 'weak', phase: opts.phase || 'all', tag: 'all' };
+    const F = { piece: (opts.phase || opts.set) ? 'all' : 'weak', phase: opts.phase || 'all', tag: 'all', kind: 'all' };
     let cur = null, chess = null, fails = 0, done = false, busy = false, order = [];
     card.innerHTML = `<div class="og-title"><i class="bi bi-lightning-charge"></i> ${opts.set === 'bullet' ? 'Bullet-Aufgaben' : 'Fehler-Trainer'} <span class="og-badge">${all.length} Aufgaben aus deinen ${opts.set === 'bullet' ? 'Bullet-Partien' : 'Partien'}</span></div>
       <div class="og-note og-desc">Du siehst eine Stellung aus einer deiner Partien, in der du einen großen Fehler gemacht hast. Finde den besseren Zug.</div>
@@ -66,12 +70,13 @@
       const pOpts = [['weak', 'Schwerpunkt: Dame, König, Turm'], ['all', 'Alle Figuren'], ['Q', 'Dame'], ['K', 'König'], ['R', 'Turm'], ['N', 'Springer'], ['B', 'Läufer'], ['P', 'Bauer']];
       const hOpts = [['all', 'Alle Phasen'], ['o', 'Eröffnung'], ['m', 'Mittelspiel'], ['e', 'Endspiel']];
       const tg = (F.phase === 'o' || F.phase === 'e') ? tagsFor(F.phase) : [];
-      q('[data-fp]').innerHTML = '<select class="og-select" data-sp aria-label="Figur">' + pOpts.map(([v, t]) => `<option value="${v}" ${F.piece === v ? 'selected' : ''}>${t}</option>`).join('') + '</select><select class="og-select" data-sh aria-label="Phase">' + hOpts.map(([v, t]) => `<option value="${v}" ${F.phase === v ? 'selected' : ''}>${t}</option>`).join('') + '</select>' + (tg.length ? '<select class="og-select" data-st aria-label="Thema"><option value="all">' + (F.phase === 'o' ? 'Alle Eröffnungen' : 'Alle Endspielarten') + '</option>' + tg.map(([v, c]) => `<option value="${kit.esc(v)}" ${F.tag === v ? 'selected' : ''}>${kit.esc(v)} (${c})</option>`).join('') + '</select>' : '');
+      q('[data-fp]').innerHTML = '<select class="og-select" data-sp aria-label="Figur">' + pOpts.map(([v, t]) => `<option value="${v}" ${F.piece === v ? 'selected' : ''}>${t}</option>`).join('') + '</select><select class="og-select" data-sh aria-label="Phase">' + hOpts.map(([v, t]) => `<option value="${v}" ${F.phase === v ? 'selected' : ''}>${t}</option>`).join('') + '</select><select class="og-select" data-sk aria-label="Fehlerart">' + [['all', 'Alle Fehlerarten'], ['typ', 'Typische Fehler'], ['sel', 'Seltene Fehler'], ['aus', 'Ausrutscher']].map(([v, t]) => `<option value="${v}" ${F.kind === v ? 'selected' : ''}>${t}</option>`).join('') + '</select>' + (tg.length ? '<select class="og-select" data-st aria-label="Thema"><option value="all">' + (F.phase === 'o' ? 'Alle Eröffnungen' : 'Alle Endspielarten') + '</option>' + tg.map(([v, c]) => `<option value="${kit.esc(v)}" ${F.tag === v ? 'selected' : ''}>${kit.esc(v)} (${c})</option>`).join('') + '</select>' : '');
       q('[data-sp]').onchange = (e) => { F.piece = e.target.value; next(); };
       q('[data-sh]').onchange = (e) => { F.phase = e.target.value; F.tag = 'all'; drawFilters(); next(); };
+      q('[data-sk]').onchange = (e) => { F.kind = e.target.value; next(); };
       const st = q('[data-st]'); if (st) st.onchange = (e) => { F.tag = e.target.value; next(); };
     }
-    function pool() { return all.filter(c => (F.piece === 'all' || (F.piece === 'weak' ? 'QKR'.includes(c.ps) : c.ps === F.piece)) && (F.phase === 'all' || c.ph === F.phase) && (F.tag === 'all' || c.tag === F.tag)); }
+    function pool() { return all.filter(c => (F.piece === 'all' || (F.piece === 'weak' ? 'QKR'.includes(c.ps) : c.ps === F.piece)) && (F.phase === 'all' || c.ph === F.phase) && (F.tag === 'all' || c.tag === F.tag) && (F.kind === 'all' || kindOf(c.pr) === F.kind)); }
     function showStats() {
       const rows = ['Q', 'K', 'R', 'N', 'B', 'P'].map(k => { const s = stats[k] || { s: 0, t: 0 }; return s.t ? `${PIECE_NAME[k]} ${s.s}/${s.t}` : null; }).filter(Boolean);
       q('[data-stats]').textContent = rows.length ? 'Beim ersten Versuch gelöst: ' + rows.join(' · ') : 'Noch keine Aufgabe gelöst.';
@@ -80,7 +85,7 @@
     function next() {
       const p = pool();
       if (!p.length) { sayT('Keine Aufgaben', 'Für diese Auswahl gibt es keine Aufgaben.'); return; }
-      if (!order.length || order.pool !== p.length + F.piece + F.phase + F.tag) { order = p.map((_, i) => i).sort(() => Math.random() - .5); order.pool = p.length + F.piece + F.phase + F.tag; }
+      if (!order.length || order.pool !== p.length + F.piece + F.phase + F.tag + F.kind) { order = p.map((_, i) => i).sort(() => Math.random() - .5); order.pool = p.length + F.piece + F.phase + F.tag + F.kind; }
       const i = order.pop(); cur = p[i]; chess = new C(cur.f); fails = 0; done = false; busy = false;
       const side = chess.turn();
       board.set({ fen: chess.fen(), flip: side === 'b', last: null, check: null, marks: {} });
@@ -107,7 +112,7 @@
         done = true; busy = false;
         if (fails === 0) bump(cur.ps, true);
         const gm = new C(cur.f); const pm = gm.move({ from: cur.p.slice(0, 2), to: cur.p.slice(2, 4), promotion: cur.p[4] });
-        sayT('Richtig!', `${fails === 0 ? 'Beim ersten Versuch. ' : ''}In deiner Partie hast du ${pm ? K.describeMove(pm) : 'einen anderen Zug'} gespielt. Das hat etwa ${bp(cur.l)} Bauern gekostet.`);
+        sayT('Richtig!', `${fails === 0 ? 'Beim ersten Versuch. ' : ''}In deiner Partie hast du ${pm ? K.describeMove(pm) : 'einen anderen Zug'} gespielt. Das hat etwa ${bp(cur.l)} Bauern gekostet.${cur.pr != null ? ` ${KIND_NAME[kindOf(cur.pr)]}: Diesen Zug spielen auf deinem Niveau etwa ${prTxt(cur.pr)} % der Spieler.` : ''}`);
         return;
       }
       await kit.sleep(500); chess.undo(); board.set({ fen: chess.fen(), last: null });
