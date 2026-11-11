@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lc0 Live</title>
+<style>
+:root{--bg:#14161a;--panel:#1d2026;--line:#2d323b;--text:#e6e8ec;--muted:#9aa3b2;--accent:#4aa3ff;--good:#3fb97a;--warn:#e0a030;--bad:#e5534b;--light:#e9d9b9;--dark:#a77b52;--hl:rgba(255,214,0,.38);--tg:rgba(40,160,90,.55)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 system-ui,Segoe UI,Roboto,sans-serif}
+header{padding:10px 16px;border-bottom:1px solid var(--line);display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
+header h1{font-size:18px;margin:0}header span{color:var(--muted);font-size:13px}
+main{display:flex;gap:16px;padding:16px;flex-wrap:wrap;max-width:1100px;margin:0 auto}
+.left{flex:0 0 auto;width:min(92vw,520px)}
+.right{flex:1 1 340px;min-width:min(92vw,320px)}
+.boardwrap{position:relative;width:100%;aspect-ratio:1}
+.board{display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);width:100%;height:100%;border:2px solid var(--line);border-radius:4px;overflow:hidden;user-select:none;touch-action:manipulation}
+.sq{position:relative;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.sq.l{background:var(--light)}.sq.d{background:var(--dark)}
+.sq.last::after{content:"";position:absolute;inset:0;background:var(--hl)}
+.sq.sel::after{content:"";position:absolute;inset:0;background:rgba(74,163,255,.45)}
+.sq.tg::before{content:"";position:absolute;width:30%;height:30%;border-radius:50%;background:var(--tg);z-index:2}
+.sq.chk{box-shadow:inset 0 0 0 3px var(--bad)}
+.sq img,.sq .gl{width:92%;height:92%;object-fit:contain;position:relative;z-index:1;pointer-events:none}
+.sq .gl{display:flex;align-items:center;justify-content:center;font-size:min(8vw,44px);color:#000}
+.sq i{position:absolute;font-style:normal;font-size:10px;opacity:.7;z-index:3;pointer-events:none;color:#222}
+.sq i.f{right:2px;bottom:1px}.sq i.r{left:2px;top:1px}
+svg.arrows{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:5}
+.bar{display:flex;height:14px;border-radius:7px;overflow:hidden;margin:8px 0;background:#000;border:1px solid var(--line)}
+.bar b{display:block;background:#f2f2f2;transition:width .25s}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
+button,select,textarea,input{font:inherit;color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px 10px}
+button{cursor:pointer}button:hover{border-color:var(--accent)}button.on,button.primary{background:var(--accent);color:#04121f;border-color:var(--accent)}
+button:disabled{opacity:.5;cursor:default}
+textarea{width:100%;min-height:90px;font:13px/1.4 ui-monospace,Consolas,monospace}
+.tabs{display:flex;gap:6px;margin-bottom:8px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px;margin-bottom:12px}
+.card h3{margin:0 0 6px;font-size:14px;color:var(--muted);font-weight:600;text-transform:none}
+.muted{color:var(--muted);font-size:13px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+td,th{padding:3px 6px;text-align:left;border-bottom:1px solid var(--line)}
+th{color:var(--muted);font-weight:600;font-size:12px}
+tr.click{cursor:pointer}tr.click:hover{background:rgba(74,163,255,.12)}
+.tag{padding:1px 7px;border-radius:10px;font-size:12px}
+.t-typ{background:rgba(63,185,122,.2);color:var(--good)}.t-sel{background:rgba(224,160,48,.2);color:var(--warn)}.t-aus{background:rgba(229,83,75,.2);color:var(--bad)}
+.status{min-height:22px}
+.moves{max-height:160px;overflow:auto;font-size:14px}
+.moves span{display:inline-block;padding:1px 4px;border-radius:4px;cursor:pointer}.moves span.cur{background:var(--accent);color:#04121f}
+.hide{display:none}
+@media(max-width:560px){main{padding:10px}}
+</style>
+</head>
+<body>
+<header><h1>Lc0 Live</h1><span>Lc0 statt Stockfish: spielen, Stellungen nachstellen, Partien nachspielen und prüfen. Läuft nur auf diesem Rechner.</span></header>
+<main>
+  <div class="left">
+    <div class="boardwrap"><div class="board" id="board" aria-label="Schachbrett"></div><svg class="arrows" id="arrows" viewBox="0 0 8 8"></svg></div>
+    <div class="bar" title="Bewertung aus Sicht von Weiß"><b id="bar" style="width:50%"></b></div>
+    <div class="status" id="status"></div>
+    <div class="row">
+      <button id="bFirst" title="Zum Anfang">⏮</button><button id="bPrev" title="Zug zurück">◀</button><button id="bNext" title="Zug vor">▶</button><button id="bLast" title="Zum Ende">⏭</button>
+      <button id="bFlip">Brett drehen</button>
+    </div>
+    <div class="moves" id="moves"></div>
+  </div>
+  <div class="right">
+    <div class="card">
+      <h3>Engine</h3>
+      <div class="row"><select id="net" aria-label="Netz"></select><span class="muted" id="netinfo"></span></div>
+    </div>
+    <div class="tabs"><button data-tab="play" class="on">Spielen</button><button data-tab="ana">Analyse</button><button data-tab="rev">Partie prüfen</button></div>
+
+    <div id="tab-play" class="card">
+      <h3>Gegen Lc0 spielen</h3>
+      <div class="row"><label>Du spielst <select id="pcol"><option value="w">Weiß</option><option value="b">Schwarz</option><option value="r">Zufall</option></select></label>
+        <label>Spielweise <select id="pstyle"><option value="human">wie ein Mensch (nach Wahrscheinlichkeit)</option><option value="best">immer der beste Zug</option></select></label></div>
+      <div class="row"><button class="primary" id="bNew">Neue Partie</button><button id="bUndo">Zug zurücknehmen</button><button id="bHint">Hinweis</button></div>
+      <div class="muted">Mit „Stellung laden“ (Analyse-Reiter) kannst du auch ab einer eigenen Stellung weiterspielen.</div>
+    </div>
+
+    <div id="tab-ana" class="card hide">
+      <h3>Stellung oder Partie laden</h3>
+      <textarea id="load" placeholder="FEN oder PGN hier einfügen"></textarea>
+      <div class="row"><button id="bLoad" class="primary">Laden</button><button id="bStart">Grundstellung</button><button id="bCopy">PGN kopieren</button><label class="muted"><input type="checkbox" id="auto" checked> automatisch analysieren</label><button id="bAna">Analysieren</button></div>
+      <div id="lines" class="muted">Noch keine Analyse.</div>
+    </div>
+
+    <div id="tab-rev" class="card hide">
+      <h3>Partie prüfen: wie wahrscheinlich war jeder deiner Züge?</h3>
+      <div class="muted">Lade zuerst die Partie im Reiter „Analyse“ (PGN). Maia zeigt, wie oft ein Spieler dieser Stärke den Zug spielt. Unter 3 % ist ein Ausrutscher.</div>
+      <div class="row"><label>Ich war <select id="rside"><option value="w">Weiß</option><option value="b">Schwarz</option><option value="x">beide</option></select></label><button id="bRev" class="primary">Prüfen</button></div>
+      <div id="revsum" class="muted"></div>
+      <div id="revtab" style="max-height:340px;overflow:auto"></div>
+    </div>
+  </div>
+</main>
+<script src="vendor/chess.js"></script>
+<script>
+(function () {
+  'use strict';
+  const $ = (s) => document.querySelector(s);
+  // Auf dem eigenen Server (Port 8791) relativ; sonst (z.B. GitHub Pages) die Engine auf diesem Rechner ansprechen
+  const API = new URLSearchParams(location.search).get('api') || (location.port === '8791' ? '' : 'http://127.0.0.1:8791');
+  const PIECE_URL = 'https://chessboardjs.com/img/chesspieces/wikipedia/{p}.png';
+  const GLYPH = { wK: '♔', wQ: '♕', wR: '♖', wB: '♗', wN: '♘', wP: '♙', bK: '♚', bQ: '♛', bR: '♜', bB: '♝', bN: '♞', bP: '♟' };
+  const START = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+  let nets = [], startFen = START, mv = [], idx = 0, flip = false, sel = null, mode = 'play', pcol = 'w', busy = false, req = 0, hintArrows = [], lastAna = null;
+
+  const build = (i) => { const c = new Chess(startFen); for (let k = 0; k < i; k++) c.move(mv[k]); return c; };
+  const sqName = (f, r) => 'abcdefgh'[f] + (r + 1);
+  const netKey = () => $('#net').value;
+  const isHuman = () => (nets.find((n) => n.id === netKey()) || {}).human;
+
+  async function lc0(fen, nodes, movetime, net) {
+    const r = await fetch(API + '/api/go', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ net: net || netKey(), fen, nodes, movetime }) });
+    if (!r.ok) throw new Error('Engine-Fehler');
+    return r.json();
+  }
+  const searchParams = () => isHuman() ? { nodes: 1, movetime: 0 } : { nodes: 0, movetime: 2000 };
+
+  // ---------------- Brett ----------------
+  function render() {
+    const c = build(idx), board = $('#board'), last = idx ? mv[idx - 1] : null;
+    const targets = sel ? c.moves({ square: sel, verbose: true }).map((m) => m.to) : [];
+    let kingSq = null; if (c.in_check()) { const t = c.turn(); for (let r = 0; r < 8 && !kingSq; r++) for (let f = 0; f < 8; f++) { const p = c.get(sqName(f, r)); if (p && p.type === 'k' && p.color === t) { kingSq = sqName(f, r); break; } } }
+    let h = '';
+    for (let rr = 0; rr < 8; rr++) for (let cc = 0; cc < 8; cc++) {
+      const f = flip ? 7 - cc : cc, r = flip ? rr : 7 - rr, n = sqName(f, r), p = c.get(n);
+      const cls = ['sq', (f + r) % 2 === 1 ? 'l' : 'd'];
+      if (last && (last.from === n || last.to === n)) cls.push('last'); if (sel === n) cls.push('sel'); if (targets.includes(n)) cls.push('tg'); if (kingSq === n) cls.push('chk');
+      const code = p ? p.color + p.type.toUpperCase() : '';
+      h += `<div class="${cls.join(' ')}" data-sq="${n}">${code ? `<img alt="${code}" data-code="${code}" src="${PIECE_URL.replace('{p}', code)}">` : ''}${cc === 0 ? `<i class="r">${r + 1}</i>` : ''}${rr === 7 ? `<i class="f">${'abcdefgh'[f]}</i>` : ''}</div>`;
+    }
+    board.innerHTML = h;
+    board.querySelectorAll('img').forEach((im) => { im.onerror = () => { const g = document.createElement('div'); g.className = 'gl'; g.textContent = GLYPH[im.dataset.code]; im.replaceWith(g); }; });
+    drawArrows();
+    drawMoves(); status(c);
+  }
+  function arrow(u, color, w, op) {
+    const x = (s) => { const f = s.charCodeAt(0) - 97, r = +s[1] - 1; return [(flip ? 7 - f : f) + .5, (flip ? r : 7 - r) + .5]; };
+    const [x1, y1] = x(u.slice(0, 2)), [x2, y2] = x(u.slice(2, 4)); const dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy) || 1, ux = dx / L, uy = dy / L, hl = .32;
+    const ex = x2 - ux * hl, ey = y2 - uy * hl;
+    return `<g opacity="${op}"><line x1="${x1}" y1="${y1}" x2="${ex}" y2="${ey}" stroke="${color}" stroke-width="${w}" stroke-linecap="round"/><polygon points="${x2},${y2} ${ex - uy * hl * .8},${ey + ux * hl * .8} ${ex + uy * hl * .8},${ey - ux * hl * .8}" fill="${color}"/></g>`;
+  }
+  function drawArrows() {
+    $('#arrows').innerHTML = hintArrows.map((a) => arrow(a.u, a.c, a.w, a.o)).join('');
+  }
+  function status(c) {
+    let t = '';
+    if (c.in_checkmate()) t = 'Schachmatt. ' + (c.turn() === 'w' ? 'Schwarz' : 'Weiß') + ' gewinnt.';
+    else if (c.in_stalemate()) t = 'Patt. Remis.'; else if (c.insufficient_material()) t = 'Remis (zu wenig Material).'; else if (c.in_threefold_repetition()) t = 'Remis (dreifache Wiederholung).';
+    else t = (c.turn() === 'w' ? 'Weiß' : 'Schwarz') + ' ist am Zug' + (c.in_check() ? ' (Schach)' : '') + '.';
+    if (busy) t += ' Lc0 denkt …';
+    $('#status').textContent = t;
+  }
+  function moveNo(i) { const fm = parseInt(startFen.split(' ')[5], 10) || 1, bs = startFen.split(' ')[1] === 'b'; return bs ? { n: fm + Math.floor((i + 1) / 2), white: i % 2 === 1 } : { n: fm + Math.floor(i / 2), white: i % 2 === 0 }; }
+  function drawMoves() {
+    let h = '';
+    mv.forEach((m, i) => { const q = moveNo(i); if (q.white) h += ' ' + q.n + '.'; else if (i === 0) h += ' ' + q.n + '…'; h += '<span data-i="' + (i + 1) + '" class="' + (idx === i + 1 ? 'cur' : '') + '">' + m.san + '</span> '; });
+    $('#moves').innerHTML = h || '<span class="muted">Noch keine Züge.</span>';
+    $('#moves').querySelectorAll('span[data-i]').forEach((s) => { s.onclick = () => go(+s.dataset.i); });
+  }
+  function go(i) { idx = Math.max(0, Math.min(mv.length, i)); sel = null; hintArrows = []; lastAna = null; render(); afterMove(); }
+
+  // ---------------- Züge ----------------
+  function playerTurn() { const t = build(idx).turn(); return mode !== 'play' || t === pcol; }
+  function tryMove(from, to) {
+    const c = build(idx); const cand = c.moves({ verbose: true }).filter((m) => m.from === from && m.to === to); if (!cand.length) return false;
+    const m = { from, to, promotion: cand[0].promotion ? 'q' : undefined }; const done = c.move(m); if (!done) return false;
+    // gleicher Zug wie in der Linie: nur vorwärts gehen
+    if (mv[idx] && mv[idx].from === done.from && mv[idx].to === done.to && (mv[idx].promotion || '') === (done.promotion || '')) { idx++; } else { mv = mv.slice(0, idx); mv.push({ from: done.from, to: done.to, promotion: done.promotion, san: done.san }); idx = mv.length; }
+    sel = null; hintArrows = []; lastAna = null; render(); afterMove(); return true;
+  }
+  $('#board').addEventListener('click', (e) => {
+    const s = e.target.closest('.sq'); if (!s || busy) return; const n = s.dataset.sq, c = build(idx);
+    if (!playerTurn() || c.game_over()) return;
+    if (sel && sel !== n && tryMove(sel, n)) return;
+    const p = c.get(n); sel = (p && p.color === c.turn() && sel !== n) ? n : null; render();
+  });
+
+  async function afterMove() {
+    const c = build(idx);
+    if (mode === 'play' && !c.game_over() && c.turn() !== pcol && idx === mv.length) return engineMove();
+    if (mode === 'ana' && $('#auto').checked) return analyse();
+  }
+  async function engineMove() {
+    const my = ++req; busy = true; render();
+    try {
+      const c = build(idx); const sp = searchParams(); const r = await lc0(c.fen(), sp.nodes, sp.movetime);
+      if (my !== req) return;
+      let u = r.bestmove;
+      if (isHuman() && $('#pstyle').value === 'human') {
+        const pool = r.moves.filter((m) => m.p >= 1); const tot = pool.reduce((s, m) => s + m.p, 0); let x = Math.random() * tot; for (const m of pool) { x -= m.p; if (x <= 0) { u = m.uci; break; } }
+      }
+      busy = false;
+      const done = c.move({ from: u.slice(0, 2), to: u.slice(2, 4), promotion: u[4] }); if (!done) throw new Error('Unerlaubter Zug von der Engine: ' + u);
+      mv = mv.slice(0, idx); mv.push({ from: done.from, to: done.to, promotion: done.promotion, san: done.san }); idx = mv.length; sel = null; hintArrows = []; render();
+    } catch (e) { busy = false; $('#status').textContent = 'Fehler: ' + e.message; }
+  }
+
+  // ---------------- Analyse ----------------
+  function sanOf(c, u) { const t = new Chess(c.fen()); const m = t.move({ from: u.slice(0, 2), to: u.slice(2, 4), promotion: u[4] }); return m ? m.san : u; }
+  async function analyse() {
+    const my = ++req; const c = build(idx); busy = true; render(); $('#lines').textContent = 'Lc0 denkt …';
+    try {
+      const sp = searchParams(); const r = await lc0(c.fen(), sp.nodes, sp.movetime); if (my !== req) return; busy = false; lastAna = r; showLines(c, r); render(); showArrows(r);
+    } catch (e) { busy = false; $('#lines').textContent = 'Fehler: ' + e.message; render(); }
+  }
+  function showLines(c, r) {
+    const white = c.turn() === 'w'; const wWin = white ? r.win : 100 - r.win; $('#bar').style.width = wWin + '%';
+    const human = isHuman(); const top = r.moves.slice(0, 6);
+    let h = `<div>Bewertung: <b>${wWin} % für Weiß</b>${r.nodes ? ` · ${r.nodes} Knoten${r.nps ? ', ' + r.nps + ' pro Sekunde' : ''}` : ''}</div><table><tr><th>Zug</th><th>Wahrscheinlichkeit</th>${human ? '' : '<th>Gewinnchance</th><th>Knoten</th>'}</tr>`;
+    for (const m of top) h += `<tr><td>${sanOf(c, m.uci)}</td><td>${m.p.toFixed(1)} %</td>${human ? '' : `<td>${m.n ? Math.round((1 + m.q) * 50) + ' %' : '–'}</td><td>${m.n}</td>`}</tr>`;
+    h += '</table><div class="muted">Wahrscheinlichkeit = wie oft das Netz diesen Zug wählt' + (human ? ' (Spieler dieser Stärke).' : ' (Policy).') + '</div>';
+    $('#lines').innerHTML = h;
+  }
+  function showArrows(r) {
+    hintArrows = r.moves.slice(0, 3).map((m, i) => ({ u: m.uci, c: i === 0 ? '#2fbf71' : '#4aa3ff', w: i === 0 ? .16 : .1, o: i === 0 ? .85 : Math.max(.25, Math.min(.6, m.p / 60)) })); drawArrows();
+  }
+  $('#bHint').onclick = async () => { if (busy) return; const c = build(idx); busy = true; render(); try { const sp = searchParams(); const r = await lc0(c.fen(), sp.nodes, sp.movetime); busy = false; render(); showArrows(r); $('#status').textContent = 'Hinweis: ' + r.moves.slice(0, 3).map((m) => sanOf(c, m.uci) + ' ' + m.p.toFixed(0) + ' %').join(' · '); } catch (e) { busy = false; render(); } };
+
+  // ---------------- Laden / Navigation ----------------
+  function loadText(t) {
+    t = t.trim(); if (!t) return 'Bitte FEN oder PGN einfügen.';
+    if (/^[rnbqkpRNBQKP1-8/]+ [wb] /.test(t) && !/\n/.test(t)) { const v = new Chess(); if (!v.validate_fen(t).valid) return 'Die FEN ist ungültig.'; startFen = new Chess(t).fen(); mv = []; idx = 0; return null; }
+    const c = new Chess(); if (!c.load_pgn(t, { sloppy: true })) return 'Das PGN konnte nicht gelesen werden.';
+    const hd = c.header(); const hist = c.history({ verbose: true });
+    startFen = hd.FEN && hd.SetUp === '1' ? hd.FEN : START; mv = hist.map((m) => ({ from: m.from, to: m.to, promotion: m.promotion, san: m.san })); idx = mv.length; return null;
+  }
+  $('#bLoad').onclick = () => { const e = loadText($('#load').value); if (e) { $('#lines').textContent = e; return; } sel = null; hintArrows = []; render(); afterMove(); };
+  $('#bStart').onclick = () => { startFen = START; mv = []; idx = 0; sel = null; hintArrows = []; render(); afterMove(); };
+  $('#bAna').onclick = analyse;
+  $('#bFirst').onclick = () => go(0); $('#bPrev').onclick = () => go(idx - 1); $('#bNext').onclick = () => go(idx + 1); $('#bLast').onclick = () => go(mv.length);
+  $('#bFlip').onclick = () => { flip = !flip; render(); };
+  $('#bCopy').onclick = async () => { const c = new Chess(startFen); for (let i = 0; i < idx; i++) c.move(mv[i]); const t = c.pgn(); try { await navigator.clipboard.writeText(t); $('#lines').textContent = 'PGN kopiert.'; } catch (e) { $('#load').value = t; $('#lines').textContent = 'PGN steht im Textfeld.'; } };
+  document.addEventListener('keydown', (e) => { if (/TEXTAREA|INPUT|SELECT/.test(e.target.tagName)) return; if (e.key === 'ArrowLeft') go(idx - 1); else if (e.key === 'ArrowRight') go(idx + 1); });
+
+  // ---------------- Spielen ----------------
+  function newGame() {
+    const v = $('#pcol').value; pcol = v === 'r' ? (Math.random() < .5 ? 'w' : 'b') : v; startFen = START; mv = []; idx = 0; sel = null; hintArrows = []; flip = pcol === 'b'; req++; busy = false; render(); afterMove();
+  }
+  $('#bNew').onclick = newGame;
+  $('#bUndo').onclick = () => { if (busy) { req++; busy = false; } const c = build(idx); let n = 1; if (mode === 'play' && c.turn() === pcol) n = 2; mv = mv.slice(0, Math.max(0, idx - n)); idx = mv.length; sel = null; hintArrows = []; render(); };
+
+  // ---------------- Partie prüfen ----------------
+  $('#bRev').onclick = async () => {
+    if (!mv.length) { $('#revsum').textContent = 'Keine Partie geladen. Im Reiter „Analyse“ ein PGN laden.'; return; }
+    const side = $('#rside').value, net = netKey(); if (!isHuman()) { $('#revsum').textContent = 'Zum Prüfen bitte ein Maia-Netz wählen (das starke Netz ist dafür zu langsam).'; return; }
+    $('#revsum').textContent = 'Prüfe …'; $('#revtab').innerHTML = ''; const rows = []; const c = new Chess(startFen); const cnt = { typ: 0, sel: 0, aus: 0 };
+    for (let i = 0; i < mv.length; i++) {
+      const col = c.turn(); const fen = c.fen(); const played = mv[i]; c.move(played);
+      if (side !== 'x' && col !== side) continue;
+      let r; try { r = await lc0(fen, 1, 0, net); } catch (e) { $('#revsum').textContent = 'Fehler: ' + e.message; return; }
+      const u = played.from + played.to + (played.promotion || ''); const e = r.moves.find((m) => m.uci === u); const p = e ? e.p : 0; const top = r.moves[0];
+      const kind = p >= 10 ? 'typ' : p >= 3 ? 'sel' : 'aus'; if (u !== top.uci) cnt[kind]++;
+      rows.push({ i, san: played.san, p, top: top.uci === u ? null : sanOf(new Chess(fen), top.uci), tp: top.p, kind, white: col === 'w' });
+      if (rows.length % 5 === 0) $('#revsum').textContent = `Prüfe … ${i + 1} von ${mv.length}`;
+    }
+    const worst = rows.filter((r) => r.top).sort((a, b) => a.p - b.p);
+    $('#revsum').innerHTML = `${rows.length} Züge geprüft. Nicht der Top-Zug des Netzes: <b>${cnt.typ}</b> häufige, <b>${cnt.sel}</b> seltene, <b>${cnt.aus}</b> Ausrutscher (unter 3 %).`;
+    const label = { typ: 'häufig', sel: 'selten', aus: 'Ausrutscher' };
+    $('#revtab').innerHTML = '<table><tr><th>Zug</th><th>Dein Zug</th><th>Wahrsch.</th><th>Netz würde ziehen</th><th></th></tr>' + rows.map((r) => `<tr class="click" data-i="${r.i}"><td>${moveNo(r.i).n}${r.white ? '.' : '…'}</td><td>${r.san}</td><td>${r.p.toFixed(1)} %</td><td>${r.top ? r.top + ' (' + r.tp.toFixed(0) + ' %)' : 'gleicher Zug'}</td><td>${r.top ? `<span class="tag t-${r.kind}">${label[r.kind]}</span>` : ''}</td></tr>`).join('') + '</table>';
+    $('#revtab').querySelectorAll('tr.click').forEach((tr) => { tr.onclick = () => { setTab('ana'); go(+tr.dataset.i); }; });
+    window.__review = { rows, cnt, worst: worst.slice(0, 3) };
+  };
+
+  // ---------------- Reiter, Netze ----------------
+  function setTab(t) { mode = t; document.querySelectorAll('.tabs button').forEach((b) => b.classList.toggle('on', b.dataset.tab === t)); for (const k of ['play', 'ana', 'rev']) $('#tab-' + k).classList.toggle('hide', k !== t); hintArrows = []; render(); if (t === 'ana' && $('#auto').checked) analyse(); }
+  document.querySelectorAll('.tabs button').forEach((b) => { b.onclick = () => setTab(b.dataset.tab); });
+  $('#net').onchange = () => { $('#netinfo').textContent = isHuman() ? 'schnell, spielt wie ein Mensch dieser Stärke' : 'stark, aber ca. 2 Sekunden pro Zug'; if (mode === 'ana' && $('#auto').checked) analyse(); };
+  window.__lc0 = { get state() { return { startFen, mv, idx, mode, busy, flip, pcol, hint: hintArrows.length, fen: build(idx).fen() }; }, setTab, go, newGame };
+  (async () => {
+    try { nets = await (await fetch(API + '/api/nets')).json(); } catch (e) { $('#status').innerHTML = 'Keine Verbindung zur lokalen Engine. Bitte <b>start-lc0.bat</b> (oder <b>node lc0-server.js</b>) im Ordner lc0-live starten und die Seite neu laden.'; return; }
+    $('#net').innerHTML = nets.filter((n) => n.ok).map((n) => `<option value="${n.id}" ${n.id === 'maia-1500' ? 'selected' : ''}>${n.name}</option>`).join(''); $('#net').onchange();
+    render(); afterMove();
+  })();
+})();
+</script>
+</body>
+</html>
