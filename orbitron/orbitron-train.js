@@ -252,5 +252,14 @@
     return null;
   }
 
-  ready(() => { window.OrbitronTrain = { openBlunderTrainer, openChessCom, openMenu, match, version: '1.0' }; });
+  // Direktlinks: gemini-chat.html#/zeitnot, #/matt, #/opfer, #/bullet, #/fehler, #/repertoire, #/fallen, #/training, #/partien
+  function openFromHash() {
+    let h = ''; try { h = decodeURIComponent((location.hash || '').replace(/^#/, '')); } catch (e) { return; }
+    if (!/^[/]/.test(h)) return; const m = match(h); if (m && m.run) m.run();
+  }
+  ready(() => {
+    window.OrbitronTrain = { openBlunderTrainer, openChessCom, openMenu, match, openFromHash, version: '1.1' };
+    setTimeout(openFromHash, 900);
+    window.addEventListener('hashchange', openFromHash);
+  });
 })();

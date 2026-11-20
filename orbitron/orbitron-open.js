@@ -41,6 +41,15 @@
   }
   function classify(moves) { for (const e of BYLEN) { if (e.m.length > moves.length) continue; let ok = true; for (let i = 0; i < e.m.length; i++) if (e.m[i] !== moves[i]) { ok = false; break; } if (ok) return e; } return null; }
   function longestWithPrefix(prefix) { for (const e of BYLEN) { if (e.m.length < prefix.length) continue; let ok = true; for (let i = 0; i < prefix.length; i++) if (e.m[i] !== prefix[i]) { ok = false; break; } if (ok) return e; } return null; }
+  // Kurze Linien (zum Beispiel nur 1.e4 d6) werden auf eine echte Variante der gleichen Familie verlaengert (hoechstens 16 Halbzuege)
+  function extendShort(e, pref) {
+    if (e.m.length >= 8) return e; const fam = e.name.split(':')[0]; let best = null, bs = 1e9;
+    for (const x of ECO) {
+      if (x.m.length <= e.m.length || x.m.length > 16 || !x.name.startsWith(fam)) continue; let ok = true; for (let i = 0; i < e.m.length; i++) if (x.m[i] !== e.m[i]) { ok = false; break; } if (!ok) continue;
+      const sc = Math.abs(x.m.length - 10) - (pref && pref.has(x.name) ? 4 : 0); if (sc < bs) { bs = sc; best = x; }
+    }
+    return best || e;
+  }
   const guessColor = (name) => /Defen[cs]e|Declined|Indian|Benoni|Sicilian|French|Caro|Pirc|Modern|Scandinavian|Alekhine|Dutch|Nimzowitsch|Philidor|Petrov|Petroff|Slav|Gr[uü]nfeld|Budapest|Benko|Englund|Albin|Czech|Owen|St\. George|Latvian/.test(name) ? 'b' : 'w';
 
   // ---------------- gemeinsames Spielbrett ----------------
@@ -59,7 +68,7 @@
     const card = kit.newCard();
     const REP = (window.ORBITRON_REPERTOIRE && window.ORBITRON_REPERTOIRE.rows) || [];
     const repN = (window.ORBITRON_REPERTOIRE && window.ORBITRON_REPERTOIRE.games) || 0;
-    const stats = kit.lsGet(REP_KEY, {});
+    const stats = kit.lsGet(REP_KEY, {}); const REPNAMES = new Set(REP.filter((r) => r[3] >= 5).map((r) => r[0]));
     const F = { tab: REP.length ? 'mine' : 'all', col: 'all', q: '' };
     card.innerHTML = `<div class="og-title"><i class="bi bi-diagram-3"></i> Eröffnungs-Prüfer <span class="og-badge">${REP.length ? 'aus ' + repN + ' deiner Partien' : 'Buchzüge'}</span></div>
       <div class="og-note og-desc">Wähle eine Eröffnung und spiele sie Zug für Zug nach. Du siehst die Buchzüge (Lichess-ECO), und für deine eigenen Eröffnungen deine Bilanz und die Stelle, an der du das Buch verlässt.</div>
@@ -117,7 +126,7 @@
     }
     function kingSq(c) { const b = c.board(); for (let r = 0; r < 8; r++) for (let f = 0; f < 8; f++) { const p = b[r][f]; if (p && p.type === 'k' && p.color === c.turn()) return 'abcdefgh'[f] + (8 - r); } return null; }
     function startPlay(entry, col, row) {
-      S.gen++; S.entry = entry; S.line = entry.m.slice(); S.ply = 0; S.fails = 0; S.mistakes = 0; S.row = row; st.user = col; st.done = false; st.busy = false;
+      entry = extendShort(entry, REPNAMES); S.gen++; S.entry = entry; S.line = entry.m.slice(); S.ply = 0; S.fails = 0; S.mistakes = 0; S.row = row; st.user = col; st.done = false; st.busy = false;
       st.chess = new C(); showPlay(true); q('[data-mode]').textContent = 'Modus: ' + (S.mode === 'lernen' ? 'Lernen (Buchzug wird gezeigt)' : 'Prüfen (ohne Hilfe)'); q('[data-side]').textContent = 'Ich spiele: ' + COLOR_DE[st.user];
       q('[data-status]').textContent = entry.name + ' · ' + COLOR_DE[st.user] + ' spielen';
       sayT('Los geht\'s', S.mode === 'lernen' ? 'Der Buchzug ist markiert. Spiele ihn.' : 'Spiele die Eröffnung aus dem Gedächtnis. Nach zwei Fehlern zeige ich den Buchzug.');
