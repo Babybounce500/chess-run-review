@@ -28,6 +28,10 @@
         <button class="og-btn" data-t="end"><i class="bi bi-flag"></i> Endspiel-Trainer: Gewinn halten, Remis retten</button>
         <button class="og-btn" data-t="bullet"><i class="bi bi-stopwatch"></i> Bullet-Aufgaben: Fehler und verpasste Matts aus deiner Session</button>
         <button class="og-btn" data-t="sac"><i class="bi bi-gem"></i> Opfer-Trainer: finde das Opfer, das die Stellung verbessert</button>
+        <button class="og-btn" data-t="zeit"><i class="bi bi-hourglass-split"></i> Zeitnot-Trainer: Gewinn nach Hause bringen (mit Uhr)</button>
+        <button class="og-btn" data-t="ownmate"><i class="bi bi-stopwatch"></i> Mattjäger: deine verpassten Matts (mit Uhr)</button>
+        <button class="og-btn" data-t="rep"><i class="bi bi-diagram-3"></i> Eröffnungs-Prüfer: Varianten nachspielen, Buchzüge sehen</button>
+        <button class="og-btn" data-t="traps"><i class="bi bi-bug"></i> Eröffnungs-Fallen: stellen und erkennen</button>
         <button class="og-btn" data-t="mate"><i class="bi bi-crosshair"></i> Mattjäger: Matt in 1 bis 3</button>
         <button class="og-btn" data-t="check"><i class="bi bi-shield-check"></i> Patzer-Check: hängende Figuren und Mattdrohungen</button>
       </div>`;
@@ -36,6 +40,10 @@
     card.querySelector('[data-t="end"]').onclick = () => openBlunderTrainer({ phase: 'e' });
     card.querySelector('[data-t="bullet"]').onclick = () => openBlunderTrainer({ set: 'bullet' });
     card.querySelector('[data-t="sac"]').onclick = () => openBlunderTrainer({ set: 'sac' });
+    card.querySelector('[data-t="zeit"]').onclick = () => openBlunderTrainer({ set: 'zeit' });
+    card.querySelector('[data-t="ownmate"]').onclick = () => openBlunderTrainer({ set: 'ownmate' });
+    card.querySelector('[data-t="rep"]').onclick = () => window.OrbitronOpen && window.OrbitronOpen.openRepertoire();
+    card.querySelector('[data-t="traps"]').onclick = () => window.OrbitronOpen && window.OrbitronOpen.openTraps();
     card.querySelector('[data-t="mate"]').onclick =() => window.OrbitronGame.openMateTrainer();
     card.querySelector('[data-t="check"]').onclick = () => window.OrbitronGame.openPatzerCheck();
     kit.addCard(card);
@@ -44,9 +52,22 @@
   // ---------------- Fehler-Trainer ----------------
   function openBlunderTrainer(opts) {
     opts = opts || {};
-    const SAC = opts.set === 'sac';
-    const raw = (SAC ? window.ORBITRON_SACS : opts.set === 'bullet' ? window.ORBITRON_BULLET : window.ORBITRON_BLUNDERS) || [];
-    const all = raw.map(a => ({ f: a[0], b: a[1], p: a[2], ps: a[3], ph: a[4], l: a[5], e: a[6], n: a[7], tag: a[8] || '', pr: typeof a[9] === 'number' ? a[9] : null, mine: a[10] !== 0, line: a[11] || '' }));
+    const SAC = opts.set === 'sac', ZEIT = opts.set === 'zeit', OWNM = opts.set === 'ownmate', TIMED = ZEIT || OWNM;
+    const raw = (SAC ? window.ORBITRON_SACS : ZEIT ? window.ORBITRON_ZEITNOT : OWNM ? window.ORBITRON_OWNMATES : opts.set === 'bullet' ? window.ORBITRON_BULLET : window.ORBITRON_BLUNDERS) || [];
+    const all = raw.map(a => ({ f: a[0], b: a[1], p: a[2], ps: a[3], ph: a[4], l: a[5], e: a[6], n: a[7], tag: a[8] || '', pr: typeof a[9] === 'number' ? a[9] : null, mine: SAC ? a[10] !== 0 : true, secs: ZEIT && typeof a[10] === 'number' ? a[10] : null, line: a[11] || '' }));
+    // Uhr (Zeitnot-Trainer und Mattjaeger): Zeitlimit je Aufgabe, tickt herunter
+    const limitOf = (c) => ZEIT ? Math.min(15, Math.max(8, c.secs == null ? 15 : c.secs)) : (c.l <= 2 ? 10 : c.l <= 4 ? 15 : 20);
+    let clockT = null, clockEnd = 0, clockLim = 0;
+    function stopClock() { if (clockT) { clearInterval(clockT); clockT = null; } }
+    function drawClock(left) { const c = card.querySelector('[data-clock]'); if (!c) return; c.textContent = '⏱ ' + Math.max(0, left).toFixed(1).replace('.', ',') + ' s'; c.classList.toggle('og-clock-low', left < 4); }
+    function startClock() {
+      stopClock(); if (!TIMED || !cur) return; clockLim = limitOf(cur); clockEnd = Date.now() + clockLim * 1000; drawClock(clockLim);
+      clockT = setInterval(() => {
+        if (!card.isConnected) { stopClock(); return; }
+        const left = (clockEnd - Date.now()) / 1000; drawClock(left);
+        if (left <= 0) { stopClock(); timeUp(); }
+      }, 100);
+    }
     // Maia-Einordnung: wie wahrscheinlich ist der Fehlzug auf deinem Niveau?
     const kindOf = (pr) => pr == null ? '' : pr >= 10 ? 'typ' : pr >= 3 ? 'sel' : 'aus'; // bei Opfern: leicht / mittel / schwer (so oft findet Maia den Zug)
     const KIND_NAME = { typ: 'Typischer Fehler', sel: 'Seltener Fehler', aus: 'Ausrutscher' };
@@ -56,9 +77,9 @@
     const stats = kit.lsGet(STATS_KEY, {});
     const F = { piece: (opts.phase || opts.set) ? 'all' : 'weak', phase: opts.phase || 'all', tag: 'all', kind: 'all' };
     let cur = null, chess = null, fails = 0, done = false, busy = false, order = [];
-    card.innerHTML = `<div class="og-title"><i class="bi bi-lightning-charge"></i> ${SAC ? 'Opfer-Trainer' : opts.set === 'bullet' ? 'Bullet-Aufgaben' : 'Fehler-Trainer'} <span class="og-badge">${all.length} Aufgaben aus deinen ${opts.set === 'bullet' ? 'Bullet-Partien' : 'Partien'}</span></div>
-      <div class="og-note og-desc">${SAC ? 'In jeder Stellung ist ein Opfer der beste Zug: Du gibst Material her und bekommst dafür eine bessere Stellung, einen Angriff oder Matt. Alle Stellungen stammen aus deinen Partien.' : 'Du siehst eine Stellung aus einer deiner Partien, in der du einen großen Fehler gemacht hast. Finde den besseren Zug.'}</div>
-      <div class="og-play"><div class="og-left" data-boardwrap></div><div class="og-right"><div class="og-row" data-fp></div><div class="og-status" data-status></div>
+    card.innerHTML = `<div class="og-title"><i class="bi bi-lightning-charge"></i> ${SAC ? 'Opfer-Trainer' : ZEIT ? 'Zeitnot-Trainer' : OWNM ? 'Mattjäger: deine verpassten Matts' : opts.set === 'bullet' ? 'Bullet-Aufgaben' : 'Fehler-Trainer'} <span class="og-badge">${all.length} Aufgaben aus deinen ${opts.set === 'bullet' || TIMED ? 'Bullet- und Blitz-Partien' : 'Partien'}</span></div>
+      <div class="og-note og-desc">${SAC ? 'In jeder Stellung ist ein Opfer der beste Zug: Du gibst Material her und bekommst dafür eine bessere Stellung, einen Angriff oder Matt. Alle Stellungen stammen aus deinen Partien.' : ZEIT ? 'Du stehst klar auf Gewinn, aber deine Uhr läuft. Finde in wenigen Sekunden einen Zug, der den Vorsprung sichert (Tausch, Vereinfachen) oder Matt setzt. Die Uhr tickt ab Aufgabenstart; läuft sie ab, wird die Lösung gezeigt.' : OWNM ? 'Das sind Stellungen, in denen du in deiner Partie ein Matt verpasst hast. Setze es, bevor die Uhr abläuft (Matt in 1 bis 2: 10 Sekunden, in 3 bis 4: 15, länger: 20).' : 'Du siehst eine Stellung aus einer deiner Partien, in der du einen großen Fehler gemacht hast. Finde den besseren Zug.'}</div>
+      <div class="og-play"><div class="og-left" data-boardwrap></div><div class="og-right">${TIMED ? '<div class="og-clock" data-clock style="font-size:26px;font-weight:700;font-variant-numeric:tabular-nums"></div>' : ''}<div class="og-row" data-fp></div><div class="og-status" data-status></div>
       <div class="og-say" data-say><b>Los geht's</b><span class="og-sub">Wähle einen Schwerpunkt.</span></div>
       <div class="og-row"><button class="og-btn" data-hint>Hinweis</button><button class="og-btn" data-sol>Lösung</button><button class="og-btn primary" data-next>Nächste Aufgabe</button></div>
       <div class="og-note" data-stats></div></div></div>`;
@@ -73,8 +94,9 @@
     function drawFilters() {
       const pOpts = [['weak', 'Schwerpunkt: Dame, König, Turm'], ['all', 'Alle Figuren'], ['Q', 'Dame'], ['K', 'König'], ['R', 'Turm'], ['N', 'Springer'], ['B', 'Läufer'], ['P', 'Bauer']];
       const hOpts = [['all', 'Alle Phasen'], ['o', 'Eröffnung'], ['m', 'Mittelspiel'], ['e', 'Endspiel']];
-      const tg = SAC ? tagsFor(null) : (F.phase === 'o' || F.phase === 'e') ? tagsFor(F.phase) : [];
-      q('[data-fp]').innerHTML = '<select class="og-select" data-sp aria-label="Figur">' + pOpts.map(([v, t]) => `<option value="${v}" ${F.piece === v ? 'selected' : ''}>${t}</option>`).join('') + '</select><select class="og-select" data-sh aria-label="Phase">' + hOpts.map(([v, t]) => `<option value="${v}" ${F.phase === v ? 'selected' : ''}>${t}</option>`).join('') + '</select><select class="og-select" data-sk aria-label="' + (SAC ? 'Schwierigkeit' : 'Fehlerart') + '">' + (SAC ? [['all', 'Alle Schwierigkeiten'], ['typ', 'Leicht'], ['sel', 'Mittel'], ['aus', 'Schwer']] : [['all', 'Alle Fehlerarten'], ['typ', 'Typische Fehler'], ['sel', 'Seltene Fehler'], ['aus', 'Ausrutscher']]).map(([v, t]) => `<option value="${v}" ${F.kind === v ? 'selected' : ''}>${t}</option>`).join('') + '</select>' + (tg.length ? '<select class="og-select" data-st aria-label="Thema"><option value="all">' + (SAC ? 'Alle Opferarten' : F.phase === 'o' ? 'Alle Eröffnungen' : 'Alle Endspielarten') + '</option>' + tg.map(([v, c]) => `<option value="${kit.esc(v)}" ${F.tag === v ? 'selected' : ''}>${kit.esc(v)} (${c})</option>`).join('') + '</select>' : '');
+      const tg = (SAC || TIMED) ? tagsFor(null) : (F.phase === 'o' || F.phase === 'e') ? tagsFor(F.phase) : [];
+      q('[data-fp]').innerHTML = '<select class="og-select" data-sp aria-label="Figur">' + pOpts.map(([v, t]) => `<option value="${v}" ${F.piece === v ? 'selected' : ''}>${t}</option>`).join('') + '</select><select class="og-select" data-sh aria-label="Phase">' + hOpts.map(([v, t]) => `<option value="${v}" ${F.phase === v ? 'selected' : ''}>${t}</option>`).join('') + '</select><select class="og-select" data-sk aria-label="' + (SAC ? 'Schwierigkeit' : 'Fehlerart') + '">' + (SAC ? [['all', 'Alle Schwierigkeiten'], ['typ', 'Leicht'], ['sel', 'Mittel'], ['aus', 'Schwer']] : [['all', 'Alle Fehlerarten'], ['typ', 'Typische Fehler'], ['sel', 'Seltene Fehler'], ['aus', 'Ausrutscher']]).map(([v, t]) => `<option value="${v}" ${F.kind === v ? 'selected' : ''}>${t}</option>`).join('') + '</select>' + (tg.length ? '<select class="og-select" data-st aria-label="Thema"><option value="all">' + (SAC ? 'Alle Opferarten' : TIMED ? 'Alle Themen' : F.phase === 'o' ? 'Alle Eröffnungen' : 'Alle Endspielarten') + '</option>' + tg.map(([v, c]) => `<option value="${kit.esc(v)}" ${F.tag === v ? 'selected' : ''}>${kit.esc(v)} (${c})</option>`).join('') + '</select>' : '');
+      if (TIMED) { q('[data-sk]').style.display = 'none'; q('[data-sp]').style.display = 'none'; }
       q('[data-sp]').onchange = (e) => { F.piece = e.target.value; next(); };
       q('[data-sh]').onchange = (e) => { F.phase = e.target.value; F.tag = 'all'; drawFilters(); next(); };
       q('[data-sk]').onchange = (e) => { F.kind = e.target.value; next(); };
@@ -93,8 +115,16 @@
       const i = order.pop(); cur = p[i]; chess = new C(cur.f); fails = 0; done = false; busy = false;
       const side = chess.turn();
       board.set({ fen: chess.fen(), flip: side === 'b', last: null, check: null, marks: {} });
-      q('[data-status]').textContent = `${K.COLOR[side]} ist am Zug · ${PHASE_NAME[cur.ph]}, Zug ${cur.n}${cur.tag && !SAC ? ' · ' + cur.tag : ''}`;
-      if (SAC) sayT('Finde das Opfer', 'Hier ist ein Opfer der beste Zug. Welcher Zug gibt Material her und bringt trotzdem die bessere Stellung?'); else sayT('Finde den besseren Zug', `Hier hast du einen Fehler gemacht, der etwa ${bp(cur.l)} Bauern gekostet hat. Welcher Zug ist besser?`); showStats();
+      q('[data-status]').textContent = ZEIT ? `${K.COLOR[side]} ist am Zug · Zug ${cur.n} · du hast klar Vorteil` : OWNM ? `${K.COLOR[side]} ist am Zug · Zug ${cur.n} · Matt in ${cur.l}` : `${K.COLOR[side]} ist am Zug · ${PHASE_NAME[cur.ph]}, Zug ${cur.n}${cur.tag && !SAC ? ' · ' + cur.tag : ''}`;
+      if (ZEIT) sayT('Sichere den Gewinn', 'Die Uhr läuft. Vereinfache, tausche oder setze Matt, aber gib den Vorteil nicht her.'); else if (OWNM) sayT('Setze Matt', `Es gibt ein Matt in ${cur.l}. Finde den Zug, bevor die Uhr abläuft.`); else if (SAC) sayT('Finde das Opfer', 'Hier ist ein Opfer der beste Zug. Welcher Zug gibt Material her und bringt trotzdem die bessere Stellung?'); else sayT('Finde den besseren Zug', `Hier hast du einen Fehler gemacht, der etwa ${bp(cur.l)} Bauern gekostet hat. Welcher Zug ist besser?`); showStats();
+      startClock();
+    }
+    function timeUp() {
+      if (!cur || done) return; done = true; busy = false;
+      const g2 = new C(cur.f); const m = g2.move({ from: cur.b.slice(0, 2), to: cur.b.slice(2, 4), promotion: cur.b[4] });
+      board.set({ marks: { [cur.b.slice(0, 2)]: 'og-hint', [cur.b.slice(2, 4)]: 'og-hint' } });
+      if (fails === 0) bump(cur.ps, false); fails = Math.max(fails, 1);
+      sayT('Zeit abgelaufen', 'Lösung: ' + (m ? K.describeMove(m) : cur.b) + (cur.line ? ' · Mögliche Folge: ' + cur.line : ''));
     }
     async function evalAfter(fen) {
       const r = await kit.Engine.search(fen, { skill: 20, movetime: 450 });
@@ -111,11 +141,12 @@
       const m = chess.move({ from, to, promotion: promo }); const uci = m.from + m.to + (m.promotion || '');
       board.set({ fen: chess.fen(), last: [m.from, m.to], marks: {}, check: null }, { from: m.from, to: m.to });
       let ok = uci === cur.b;
-      if (!ok && await kit.Engine.available()) { const ev = await evalAfter(chess.fen()); ok = ev != null && ev >= cur.e - (SAC ? 20 : 80); }
+      if (!ok && await kit.Engine.available()) { const ev = await evalAfter(chess.fen()); ok = ev != null && (OWNM || (ZEIT && cur.tag === 'Matt setzen') ? ev >= 9000 : ZEIT ? ev >= Math.max(cur.e - 150, 400) : ev >= cur.e - (SAC ? 20 : 80)); }
       if (ok) {
         done = true; busy = false;
         if (fails === 0) bump(cur.ps, true);
         const gm = new C(cur.f); const pm = gm.move({ from: cur.p.slice(0, 2), to: cur.p.slice(2, 4), promotion: cur.p[4] });
+        if (TIMED) { stopClock(); const used = clockLim - Math.max(0, (clockEnd - Date.now()) / 1000); sayT(OWNM ? 'Matt gefunden!' : 'Vorteil gesichert!', `${fails === 0 ? 'Beim ersten Versuch' : 'Nach ' + fails + ' Fehlversuch(en)'} in ${used.toFixed(1).replace('.', ',')} s. ${cur.line ? 'Mögliche Folge: ' + cur.line + '. ' : ''}${cur.p === cur.b ? 'Das hast du in deiner Partie auch gespielt.' : 'In deiner Partie hast du ' + (pm ? K.describeMove(pm) : 'einen anderen Zug') + ' gespielt' + (ZEIT && cur.l > 50 ? ' und etwa ' + bp(cur.l) + ' Bauern verschenkt' : '') + '.'}`); return; }
         if (SAC) { sayT('Richtig, das Opfer ist der beste Zug!', `${fails === 0 ? 'Beim ersten Versuch. ' : ''}${cur.tag ? cur.tag + '. ' : ''}${cur.line ? 'Mögliche Folge: ' + cur.line + '. ' : ''}${cur.p === cur.b ? (cur.mine ? 'Das hast du in deiner Partie auch gespielt.' : 'Das wurde in der Partie gespielt.') : (cur.mine ? `In deiner Partie hast du ${pm ? K.describeMove(pm) : 'einen anderen Zug'} gespielt.` : 'In der Partie wurde es nicht gespielt.')}${cur.pr != null ? ` ${KIND_NAME2[kindOf(cur.pr)]}: Dieses Opfer finden auf deinem Niveau etwa ${prTxt(cur.pr)} % der Spieler.` : ''}`); return; }
         sayT('Richtig!', `${fails === 0 ? 'Beim ersten Versuch. ' : ''}In deiner Partie hast du ${pm ? K.describeMove(pm) : 'einen anderen Zug'} gespielt. Das hat etwa ${bp(cur.l)} Bauern gekostet.${cur.pr != null ? ` ${KIND_NAME[kindOf(cur.pr)]}: Diesen Zug spielen auf deinem Niveau etwa ${prTxt(cur.pr)} % der Spieler.` : ''}`);
         return;
@@ -127,14 +158,14 @@
     }
     q('[data-hint]').onclick = () => { if (!cur || done || busy) return; board.set({ marks: { [cur.b.slice(0, 2)]: 'og-hint' } }); sayT('Hinweis', `Die markierte Figur macht den besten Zug (${PIECE_NAME[new C(cur.f).get(cur.b.slice(0, 2)).type.toUpperCase()] || 'Figur'}).`); };
     q('[data-sol]').onclick = () => {
-      if (!cur || done || busy) return; const g2 = new C(cur.f); const m = g2.move({ from: cur.b.slice(0, 2), to: cur.b.slice(2, 4), promotion: cur.b[4] });
+      if (!cur || done || busy) return; stopClock(); const g2 = new C(cur.f); const m = g2.move({ from: cur.b.slice(0, 2), to: cur.b.slice(2, 4), promotion: cur.b[4] });
       board.set({ marks: { [cur.b.slice(0, 2)]: 'og-hint', [cur.b.slice(2, 4)]: 'og-hint' } });
       if (fails === 0) bump(cur.ps, false); fails = Math.max(fails, 1);
-      sayT('Lösung', (m ? K.describeMove(m) : cur.b) + (SAC && cur.line ? ' · Mögliche Folge: ' + cur.line : ''));
+      sayT('Lösung', (m ? K.describeMove(m) : cur.b) + ((SAC || TIMED) && cur.line ? ' · Mögliche Folge: ' + cur.line : ''));
     };
     q('[data-next]').onclick = next;
     drawFilters(); showStats(); next();
-    kit.addCard(card); card.__og = { next, tryMove, board, getCur: () => cur }; return card;
+    kit.addCard(card); card.__og = { next, tryMove, board, getCur: () => cur, timeUp, getClock: () => ({ lim: clockLim, running: !!clockT }) }; return card;
   }
 
   // ---------------- Meine Partien (Chess.com) ----------------
@@ -208,6 +239,9 @@
 
   function match(t) {
     if (!t) return null; const s = t.toLowerCase();
+    if (window.OrbitronOpen && window.OrbitronOpen.match) { const r = window.OrbitronOpen.match(t); if (r) return r; }
+    if (/^[/]zeitnot\b|^zeitnot-?trainer\b/.test(s)) return { run: () => openBlunderTrainer({ set: 'zeit' }) };
+    if (/^[/]matt(j[aä]ger|e)?\b|^mattj[aä]ger\b/.test(s)) return { run: () => openBlunderTrainer({ set: 'ownmate' }) };
     if (/^[/]opfer\b|^opfer-?trainer\b/.test(s)) return { run: () => openBlunderTrainer({ set: 'sac' }) };
     if (/^\/bullet\b|^bullet-?aufgaben\b/.test(s)) return { run: () => openBlunderTrainer({ set: 'bullet' }) };
     if (/^\/fehler\b|^fehler-?trainer\b/.test(s)) return { run: openBlunderTrainer };

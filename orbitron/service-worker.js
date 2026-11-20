@@ -1,5 +1,5 @@
-const CACHE_NAME='orbitron-chess-live-v4';
-const SHELL=['./gemini-chat.html','./gemini-player.html','./chess-player-core.js','./orbitron-game-core.js','./orbitron-game.js','./orbitron-train.js','./orbitron-blunders.js','./orbitron-sacs.js','./orbitron-bullet.js','./orbitron-mate-puzzles.js','./orbitron-light.css','./orbitron-manifest.webmanifest','./orbitron-icon.svg'];
+const CACHE_NAME='orbitron-chess-live-v5';
+const SHELL=['./gemini-chat.html','./gemini-player.html','./chess-player-core.js','./orbitron-game-core.js','./orbitron-game.js','./orbitron-train.js','./orbitron-blunders.js','./orbitron-sacs.js','./orbitron-zeitnot.js','./orbitron-ownmates.js','./orbitron-traps.js','./orbitron-repertoire.js','./orbitron-open.js','./CLAUDE-ADDONS/orbitron-eco-data.js','./orbitron-bullet.js','./orbitron-mate-puzzles.js','./orbitron-light.css','./orbitron-manifest.webmanifest','./orbitron-icon.svg'];
 
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(SHELL)).then(()=>self.skipWaiting()));
