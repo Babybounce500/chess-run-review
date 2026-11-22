@@ -23,6 +23,7 @@
     card.innerHTML = `<div class="og-title"><i class="bi bi-crosshair"></i> Training <span class="og-badge">aus deinen Partien</span></div>
       <div class="og-note">Alle Aufgaben stammen aus deinen eigenen Partien. Sie sind mit Stockfish geprüft.</div>
       <div class="og-row" style="flex-direction:column;align-items:stretch">
+        <button class="og-btn" data-t="today"><i class="bi bi-calendar-check"></i> Training heute: Tagesplan, Wiederholung und Serie</button>
         <button class="og-btn primary" data-t="blunder"><i class="bi bi-lightning-charge"></i> Fehler-Trainer: finde den besseren Zug</button>
         <button class="og-btn" data-t="open"><i class="bi bi-book"></i> Eröffnungs-Trainer: deine Fehler in den ersten Zügen</button>
         <button class="og-btn" data-t="end"><i class="bi bi-flag"></i> Endspiel-Fehler: nur deine Fehler aus Endspielen (Turm, Bauern, Dame ...)</button>
@@ -36,6 +37,7 @@
         <button class="og-btn" data-t="mate"><i class="bi bi-crosshair"></i> Mattjäger: Matt in 1 bis 3</button>
         <button class="og-btn" data-t="check"><i class="bi bi-shield-check"></i> Patzer-Check: hängende Figuren und Mattdrohungen</button>
       </div>`;
+    card.querySelector('[data-t="today"]').onclick = () => window.OrbitronDaily && window.OrbitronDaily.openToday();
     card.querySelector('[data-t="blunder"]').onclick = () => openBlunderTrainer();
     card.querySelector('[data-t="open"]').onclick = () => openBlunderTrainer({ phase: 'o' });
     card.querySelector('[data-t="end"]').onclick = () => openBlunderTrainer({ set: 'endgame' });
@@ -51,10 +53,30 @@
     kit.addCard(card);
   }
 
+  // ---------------- PGN-Export (Lichess-Studie, Chessbase, andere Programme) ----------------
+  function toPgn(tasks, title, withLoss) {
+    const d = new Date(); const date = d.getFullYear() + '.' + String(d.getMonth() + 1).padStart(2, '0') + '.' + String(d.getDate()).padStart(2, '0'); const out = [];
+    for (const c of tasks) {
+      try {
+        const g = new C(c.f); const m = g.move({ from: c.b.slice(0, 2), to: c.b.slice(2, 4), promotion: c.b[4] }); if (!m) continue;
+        const pg = new C(c.f); const pm = pg.move({ from: c.p.slice(0, 2), to: c.p.slice(2, 4), promotion: c.p[4] });
+        const num = parseInt(c.f.split(' ')[5], 10) || 1; const clean = (x) => String(x).replace(/[{}\[\]]/g, '');
+        const note = ['Bester Zug.', pm ? (c.p === c.b ? 'Das hast du in deiner Partie gespielt.' : 'In deiner Partie: ' + pm.san + (withLoss && c.l ? ' (Verlust etwa ' + bp(c.l) + ' Bauern)' : '') + '.') : '', c.tag ? 'Thema: ' + c.tag + '.' : '', c.line ? 'Mögliche Folge: ' + c.line + '.' : ''].filter(Boolean).join(' ');
+        out.push('[Event "' + clean('Orbitron: ' + title) + '"]\n[Site "Orbitron Chess"]\n[Date "' + date + '"]\n[Round "-"]\n[White "?"]\n[Black "?"]\n[Result "*"]\n[SetUp "1"]\n[FEN "' + c.f + '"]\n\n' + (g.turn() === 'b' ? num + '... ' : num + '. ') + m.san + ' {' + clean(note) + '} *\n');
+      } catch (e) { /* defekte Aufgabe ueberspringen */ }
+    }
+    return out.join('\n');
+  }
+  function downloadText(name, text) {
+    try { const blob = new Blob([text], { type: 'application/x-chess-pgn' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 3000); return true; } catch (e) { return false; }
+  }
+
   // ---------------- Fehler-Trainer ----------------
   function openBlunderTrainer(opts) {
     opts = opts || {};
     const SAC = opts.set === 'sac', ZEIT = opts.set === 'zeit', OWNM = opts.set === 'ownmate', ENDG = opts.set === 'endgame', TIMED = ZEIT || OWNM;
+    const SETNAME = opts.set || (opts.phase ? 'phase-' + opts.phase : 'blunder');
+    const TITLE = SAC ? 'Opfer-Trainer' : ENDG ? 'Endspiel-Fehler' : ZEIT ? 'Zeitnot-Trainer' : OWNM ? 'Mattjäger' : opts.set === 'bullet' ? 'Bullet-Aufgaben' : 'Fehler-Trainer';
     const raw = (SAC ? window.ORBITRON_SACS : ZEIT ? window.ORBITRON_ZEITNOT : OWNM ? window.ORBITRON_OWNMATES : ENDG ? window.ORBITRON_ENDGAME : opts.set === 'bullet' ? window.ORBITRON_BULLET : window.ORBITRON_BLUNDERS) || [];
     const all = raw.map(a => ({ f: a[0], b: a[1], p: a[2], ps: a[3], ph: a[4], l: a[5], e: a[6], n: a[7], tag: a[8] || '', pr: typeof a[9] === 'number' ? a[9] : null, mine: SAC ? a[10] !== 0 : true, secs: ZEIT && typeof a[10] === 'number' ? a[10] : null, line: a[11] || '' }));
     // Uhr (Zeitnot-Trainer und Mattjaeger): Zeitlimit je Aufgabe, tickt herunter
@@ -83,7 +105,7 @@
       <div class="og-note og-desc">${ENDG ? 'Nur Fehler aus deinen Endspielen (wenig Material: höchstens 12 Figuren inklusive Bauern oder insgesamt höchstens 20 Punkte Figurenwert, also auch lange Turmendspiele mit vielen Bauern): verspielter Gewinn, verpasste Rettung oder verschenktes Remis. Wähle die Endspielart und finde den besseren Zug. Alle Stellungen stammen aus deinen eigenen Partien und sind mit Stockfish geprüft.' : SAC ? 'In jeder Stellung ist ein Opfer der beste Zug: Du gibst Material her und bekommst dafür eine bessere Stellung, einen Angriff oder Matt. Alle Stellungen stammen aus deinen Partien.' : ZEIT ? 'Du stehst klar auf Gewinn, aber deine Uhr läuft. Finde in wenigen Sekunden einen Zug, der den Vorsprung sichert (Tausch, Vereinfachen) oder Matt setzt. Die Uhr tickt ab Aufgabenstart; läuft sie ab, wird die Lösung gezeigt.' : OWNM ? 'Das sind Stellungen, in denen du in deiner Partie ein Matt verpasst hast. Setze es, bevor die Uhr abläuft (Matt in 1 bis 2: 10 Sekunden, in 3 bis 4: 15, länger: 20).' : 'Du siehst eine Stellung aus einer deiner Partien, in der du einen großen Fehler gemacht hast. Finde den besseren Zug.'}</div>
       <div class="og-play"><div class="og-left" data-boardwrap></div><div class="og-right">${TIMED ? '<div class="og-clock" data-clock style="font-size:26px;font-weight:700;font-variant-numeric:tabular-nums"></div>' : ''}<div class="og-row" data-fp></div><div class="og-status" data-status></div>
       <div class="og-say" data-say><b>Los geht's</b><span class="og-sub">Wähle einen Schwerpunkt.</span></div>
-      <div class="og-row"><button class="og-btn" data-hint>Hinweis</button><button class="og-btn" data-sol>Lösung</button><button class="og-btn primary" data-next>Nächste Aufgabe</button></div>
+      <div class="og-row"><button class="og-btn" data-hint>Hinweis</button><button class="og-btn" data-sol>Lösung</button><button class="og-btn primary" data-next>Nächste Aufgabe</button><button class="og-btn" data-pgn title="Alle Aufgaben dieser Auswahl als PGN speichern (zum Beispiel für eine Lichess-Studie)">PGN</button></div>
       <div class="og-note" data-stats></div></div></div>`;
     const q = (s) => card.querySelector(s);
     function sayT(a, b) { q('[data-say]').innerHTML = `<b>${kit.esc(a)}</b>${b ? `<span class="og-sub">${kit.esc(b)}</span>` : ''}`; }
@@ -110,12 +132,12 @@
       const rows = ['Q', 'K', 'R', 'N', 'B', 'P'].map(k => { const s = stats[k] || { s: 0, t: 0 }; return s.t ? `${PIECE_NAME[k]} ${s.s}/${s.t}` : null; }).filter(Boolean);
       q('[data-stats]').textContent = rows.length ? 'Beim ersten Versuch gelöst: ' + rows.join(' · ') : 'Noch keine Aufgabe gelöst.';
     }
-    function bump(k, ok) { stats[k] = stats[k] || { s: 0, t: 0 }; stats[k].t++; if (ok) stats[k].s++; kit.lsSet(STATS_KEY, stats); showStats(); }
+    function bump(k, ok) { stats[k] = stats[k] || { s: 0, t: 0 }; stats[k].t++; if (ok) stats[k].s++; kit.lsSet(STATS_KEY, stats); showStats(); try { if (window.OrbitronDaily && cur) window.OrbitronDaily.record(SETNAME, cur.f, ok); } catch (e) { /* egal */ } }
     function next() {
       const p = pool();
       if (!p.length) { sayT('Keine Aufgaben', 'Für diese Auswahl gibt es keine Aufgaben.'); return; }
       if (!order.length || order.pool !== p.length + F.piece + F.phase + F.tag + F.kind) { order = p.map((_, i) => i).sort(() => Math.random() - .5); order.pool = p.length + F.piece + F.phase + F.tag + F.kind; }
-      const i = order.pop(); cur = p[i]; chess = new C(cur.f); fails = 0; done = false; busy = false;
+      const i = order.pop(); cur = p[i]; { const df = window.OrbitronDaily && window.OrbitronDaily.due ? window.OrbitronDaily.due(SETNAME, p.map((c) => c.f)) : null; if (df) { const j = p.findIndex((c) => c.f === df); if (j >= 0) cur = p[j]; } } chess = new C(cur.f); fails = 0; done = false; busy = false;
       const side = chess.turn();
       board.set({ fen: chess.fen(), flip: side === 'b', last: null, check: null, marks: {} });
       q('[data-status]').textContent = ZEIT ? `${K.COLOR[side]} ist am Zug · Zug ${cur.n} · du hast klar Vorteil` : OWNM ? `${K.COLOR[side]} ist am Zug · Zug ${cur.n} · Matt in ${cur.l}` : `${K.COLOR[side]} ist am Zug · ${PHASE_NAME[cur.ph]}, Zug ${cur.n}${cur.tag && !SAC && !ENDG ? ' · ' + cur.tag : ''}`;
@@ -167,8 +189,10 @@
       sayT('Lösung', (m ? K.describeMove(m) : cur.b) + ((SAC || TIMED || ENDG) && cur.line ? ' · Mögliche Folge: ' + cur.line : ''));
     };
     q('[data-next]').onclick = next;
+    const exportPgn = () => toPgn(pool(), TITLE, !(OWNM || SAC || (ZEIT && false)));
+    q('[data-pgn]').onclick = () => { const p = exportPgn(); if (!p) { sayT('Nichts zu exportieren', 'Für diese Auswahl gibt es keine Aufgaben.'); return; } const ok = downloadText('orbitron-' + SETNAME + '-' + new Date().toISOString().slice(0, 10) + '.pgn', p); sayT(ok ? 'PGN gespeichert' : 'Speichern nicht möglich', ok ? pool().length + ' Aufgaben als PGN in deinem Download-Ordner. In einer Lichess-Studie kannst du die Datei importieren.' : 'Der Browser hat das Speichern blockiert.'); };
     drawFilters(); showStats(); next();
-    kit.addCard(card); card.__og = { next, tryMove, board, getCur: () => cur, timeUp, getClock: () => ({ lim: clockLim, running: !!clockT }) }; return card;
+    kit.addCard(card); card.__og = { exportPgn, next, tryMove, board, getCur: () => cur, timeUp, getClock: () => ({ lim: clockLim, running: !!clockT }) }; return card;
   }
 
   // ---------------- Meine Partien (Chess.com) ----------------
@@ -244,6 +268,7 @@
     if (!t) return null; const s = t.toLowerCase();
     if (window.OrbitronOpen && window.OrbitronOpen.match) { const r = window.OrbitronOpen.match(t); if (r) return r; }
     if (window.OrbitronTime && window.OrbitronTime.match) { const r = window.OrbitronTime.match(t); if (r) return r; }
+    if (window.OrbitronDaily && window.OrbitronDaily.match) { const r = window.OrbitronDaily.match(t); if (r) return r; }
     if (/^[/]zeitnot\b|^zeitnot-?trainer\b/.test(s)) return { run: () => openBlunderTrainer({ set: 'zeit' }) };
     if (/^[/]matt(j[aä]ger|e)?\b|^mattj[aä]ger\b/.test(s)) return { run: () => openBlunderTrainer({ set: 'ownmate' }) };
     if (/^[/]opfer\b|^opfer-?trainer\b/.test(s)) return { run: () => openBlunderTrainer({ set: 'sac' }) };
@@ -262,7 +287,7 @@
     if (!/^[/]/.test(h)) return; const m = match(h); if (m && m.run) m.run();
   }
   ready(() => {
-    window.OrbitronTrain = { openBlunderTrainer, openChessCom, openMenu, match, openFromHash, version: '1.1' };
+    window.OrbitronTrain = { openBlunderTrainer, openChessCom, openMenu, match, openFromHash, toPgn, version: '1.2' };
     setTimeout(openFromHash, 900);
     window.addEventListener('hashchange', openFromHash);
   });

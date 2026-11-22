@@ -1,5 +1,11 @@
 # Änderungsprotokoll
 
+## 2026-11-22 (Orbitron: neue Trainingsbereiche)
+- **Orbitron-Live (Pfad /orbitron/):** Das Training-Menü hat jetzt 13 Bereiche: Tagesplan mit Wiederholungsplan und Serie, Fehler-Trainer, Bullet-Aufgaben, Opfer-Trainer, Zeitnot-Trainer und Mattjäger (jeweils mit Uhr), Endspiel-Fehler (nur Endspiele, auch lange Turmendspiele), Eröffnungs-Prüfer mit Buchzügen (Lichess-ECO), Eröffnungs-Fallen (stellen und erkennen), Zeit-Heatmap (Zeit pro Zug, Bullet und Blitz getrennt) und Session-Wächter.
+- Jeder Bereich hat einen Direktlink (zum Beispiel `gemini-chat.html#/zeit`, `#/heute`, `#/fallen`) und einen Chat-Befehl (`/zeit`, `/heute`, `/fallen`, `/endspielfehler`, `/zeitnot`, `/matt`, `/opfer`, `/repertoire`).
+- Aufgabenlisten lassen sich als PGN exportieren (Knopf „PGN“), zum Beispiel für eine Lichess-Studie.
+- Alle Aufgaben wurden mit Stockfish geprüft. Der Browser-Test (`tests/train-test.js`, `tests/smoke-new.js`) deckt alle Bereiche am Desktop und in Handy-Breite ab.
+
 ## 2026-11-09 (Aktualisierung)
 - 17 weitere Partien vom 08. und 09.11. mit Stockfish ausgewertet und eingerechnet. Jetzt **3091 Partien**, 1530–118–1443. Zeitprofil, Gewinnzüge, Eröffnungen/Endspiele und Chess.com-Gesamtübersicht sind neu berechnet.
 

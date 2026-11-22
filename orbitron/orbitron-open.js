@@ -86,6 +86,15 @@
     function sayT(a, b) { q('[data-say]').innerHTML = `<b>${kit.esc(a)}</b>${b ? `<span class="og-sub">${kit.esc(b)}</span>` : ''}`; }
     const score = (r) => (r[4] + r[5] / 2) / r[3] * 100;
 
+    // Empfehlung: staerkste und schwaechste Eroeffnung je Farbe (mindestens 20 Partien)
+    function recBlock() {
+      const part = ['w', 'b'].map((col) => {
+        const arr = REP.filter((r) => r[2] === col && r[3] >= 20).sort((a, b) => score(b) - score(a)); if (arr.length < 2) return '';
+        const best = arr[0], worst = arr[arr.length - 1]; const btn = (r) => `<button class="og-btn" data-i="${REP.indexOf(r)}" title="Diese Eröffnung üben">${kit.esc(r[0])} (${pct(score(r))}, ${r[3]} Partien)</button>`;
+        return `<div class="og-row" style="align-items:center"><span class="og-note"><b>Mit ${COLOR_DE[col]}:</b> spiel heute</span>${btn(best)}<span class="og-note">· vorsichtig mit</span>${btn(worst)}</div>`;
+      }).join('');
+      return part ? `<div class="og-say"><b>Empfehlung aus deinen Partien</b><span class="og-sub">Nur Eröffnungen mit mindestens 20 Partien, alle Bedenkzeiten zusammen. Tippe auf eine Eröffnung, um sie zu üben.</span>${part}</div>` : '';
+    }
     // Liste
     function drawList() {
       q('[data-tabs]').innerHTML = (REP.length ? `<button class="og-btn ${F.tab === 'mine' ? 'on' : ''}" data-tab="mine">Meine Eröffnungen (${REP.length})</button>` : '') + `<button class="og-btn ${F.tab === 'all' ? 'on' : ''}" data-tab="all">Alle Eröffnungen (Buch)</button>`;
@@ -95,7 +104,7 @@
         fl.innerHTML = [['all', 'Alle'], ['w', 'Mit Weiß'], ['b', 'Mit Schwarz']].map(([v, t]) => `<button class="og-btn ${F.col === v ? 'on' : ''}" data-col="${v}">${t}</button>`).join('');
         fl.querySelectorAll('[data-col]').forEach((b) => b.onclick = () => { F.col = b.dataset.col; drawList(); });
         const rows = REP.filter((r) => F.col === 'all' || r[2] === F.col);
-        list.innerHTML = rows.slice(0, 80).map((r, i) => {
+        list.innerHTML = (F.col === 'all' ? recBlock() : '') + rows.slice(0, 80).map((r, i) => {
           const lv = r[8][0]; const dev = lv ? `<div class="og-note">Du verlässt das Buch oft nach <b>${kit.esc(numbered(lv[0].split(' ').filter(Boolean)))}</b> mit <b>${kit.esc(lv[1])}</b> (Buch: ${kit.esc(lv[2].join(', '))}) · ${lv[3]}× · ${pct(lv[4])} Punkte</div>` : '';
           const done = stats[r[0] + '|' + r[2]] ? ` · ✓ ${stats[r[0] + '|' + r[2]]}×` : '';
           return `<button class="og-btn" style="display:block;width:100%;text-align:left;margin:4px 0" data-i="${REP.indexOf(r)}"><b>${kit.esc(r[0])}</b> <span class="og-note">${r[1]} · ${COLOR_DE[r[2]]} · ${r[3]} Partien · ${r[4]}/${r[5]}/${r[6]} (${pct(score(r))}) · Buchtiefe im Schnitt ${Math.max(1, Math.round(r[7] / 2))} Züge${done}</span>${dev}</button>`;
