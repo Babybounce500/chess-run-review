@@ -2,7 +2,7 @@
 
 ## 2026-11-22 (Orbitron: Taktik-Muster, Endspiel-Grundlagen, Ausspielen)
 - **Taktik-Muster:** 161 Aufgaben aus eigenen Partien, in denen der beste Zug ein klares Muster war (Gabel, Spieß, Fesselung, Abzug, hängende Figur). Muster werden automatisch erkannt und mit einer Materialprobe bestätigt, die Züge sind mit Stockfish geprüft.
-- **Endspiel-Grundlagen:** 10 Lehrbuchstellungen (Lucena, Philidor, Schlüsselfeld, Turm gegen Bauer, Leitermatt, Kasten-Methode), jeweils mit Erklärung.
+- **Endspiel-Grundlagen:** 14 Lehrbuchstellungen (Lucena, Philidor, Schlüsselfeld und Opposition, Springer gegen Randbauer, Turm gegen Bauer, Leitermatt, Kasten-Methode), jeweils mit Erklärung.
 - **Stellung ausspielen:** Jede Aufgabe lässt sich gegen Stockfish (einstellbare Stärke) zu Ende spielen, mit Tipp, Zug zurück und Auswertung (Ziel erreicht, größter Einbruch). Direktlinks: `#/taktik`, `#/grundlagen`, `#/ausspielen`.
 
 ## 2026-11-22 (Orbitron: neue Trainingsbereiche)
