@@ -1,5 +1,8 @@
 # Änderungsprotokoll
 
+## 2026-11-22 (Orbitron: Damenmatt-Muster)
+- **Damenmatt-Muster:** 470 Aufgaben aus eigenen Partien, die mit einem Damenmatt endeten (meist Matt in 2), sortiert nach Muster: Dame und Läufer auf der Diagonale, Matt auf dem Fianchetto-Feld, Matt auf der 7. Reihe, Grundreihenmatt. Direktlink `#/damenmatt`, auch als Station im Tagesplan.
+
 ## 2026-11-22 (Orbitron: Taktik-Muster, Endspiel-Grundlagen, Ausspielen)
 - **Taktik-Muster:** 161 Aufgaben aus eigenen Partien, in denen der beste Zug ein klares Muster war (Gabel, Spieß, Fesselung, Abzug, hängende Figur). Muster werden automatisch erkannt und mit einer Materialprobe bestätigt, die Züge sind mit Stockfish geprüft.
 - **Endspiel-Grundlagen:** 14 Lehrbuchstellungen (Lucena, Philidor, Schlüsselfeld und Opposition, Springer gegen Randbauer, Turm gegen Bauer, Leitermatt, Kasten-Methode), jeweils mit Erklärung.
