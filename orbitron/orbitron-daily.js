@@ -15,6 +15,7 @@
     { set: 'sac', name: 'Opfer-Trainer', target: 2, icon: 'bi-gem', note: 'das Opfer finden' },
     { set: 'endgame', name: 'Endspiel-Fehler', target: 2, icon: 'bi-flag', note: 'deine Endspielfehler' },
     { set: 'tactic', name: 'Taktik-Muster', target: 2, icon: 'bi-bullseye', note: 'Gabel, Spieß, Abzug erkennen' },
+    { set: 'mfig', name: 'Matt-Figuren', target: 2, icon: 'bi-grid-3x3-gap', note: 'Matt setzen und verhindern' },
     { set: 'dmatt', name: 'Damenmatt-Muster', target: 2, icon: 'bi-bounding-box', note: 'Dame und Läufer-Diagonale' },
     { set: 'basics', name: 'Endspiel-Grundlagen', target: 1, icon: 'bi-mortarboard', note: 'Lucena, Philidor, Schlüsselfeld' },
     { set: 'bullet', name: 'Bullet-Aufgaben', target: 2, icon: 'bi-lightning-charge', note: 'Fehler aus Bullet' },

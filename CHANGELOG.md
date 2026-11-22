@@ -1,5 +1,8 @@
 # Änderungsprotokoll
 
+## 2026-11-22 (Orbitron: Matt-Figuren)
+- **Matt-Figuren:** 355 Aufgaben aus eigenen Partien. Matt setzen (Grundreihe, Turm, Abzug, Doppelschach, Springer, Läufer, Bauer, erstickt, Schäfermatt) und Matt verhindern (Verteidigung mit Stockfish geprüft). Direktlink `#/mattfiguren`, auch als Station im Tagesplan.
+
 ## 2026-11-22 (Orbitron: Damenmatt-Muster)
 - **Damenmatt-Muster:** 470 Aufgaben aus eigenen Partien, die mit einem Damenmatt endeten (meist Matt in 2), sortiert nach Muster: Dame und Läufer auf der Diagonale, Matt auf dem Fianchetto-Feld, Matt auf der 7. Reihe, Grundreihenmatt. Direktlink `#/damenmatt`, auch als Station im Tagesplan.
 
