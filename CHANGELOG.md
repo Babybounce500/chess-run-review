@@ -1,5 +1,8 @@
 # Änderungsprotokoll
 
+## 2026-11-23 (Orbitron: Auto-Coach)
+- **Auto-Coach:** holt neue Chess.com-Partien über die öffentliche Schnittstelle und zählt sie in Rating-Hebel und Mattbild-Atlas. Stockfish im Browser analysiert die neuesten 6 bis 50 Partien und macht daraus neue Aufgaben (Fehler, Bullet, verpasste Matts, Zeitnot). Alles bleibt im Browser. Direktlink `#/coach`.
+
 ## 2026-11-22 (Orbitron: Drohungs-Scanner)
 - **Drohungs-Scanner:** Stellungen aus eigenen Partien kurz vor einem Patzer. In 3 bis 12 Sekunden antippen, was hängt (eigene und gegnerische Figuren) und ob Matt droht, 10 Runden pro Lauf mit Auswertung. Direktlink `#/scanner`, Station im Tagesplan.
 
