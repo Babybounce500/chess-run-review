@@ -1,5 +1,8 @@
 # Änderungsprotokoll
 
+## 2026-11-22 (Orbitron: Drohungs-Scanner)
+- **Drohungs-Scanner:** Stellungen aus eigenen Partien kurz vor einem Patzer. In 3 bis 12 Sekunden antippen, was hängt (eigene und gegnerische Figuren) und ob Matt droht, 10 Runden pro Lauf mit Auswertung. Direktlink `#/scanner`, Station im Tagesplan.
+
 ## 2026-11-22 (Orbitron: Rating-Hebel, Wochenfokus, Mattbild-Atlas)
 - **Rating-Hebel:** zeigt, welche Schwäche dich am meisten Rating kostet (Zeit, Grundreihe, Damenmatt, Turm-Matt, Aufgabe), je Zeitklasse und Zeitraum, mit grober Elo-Schätzung. Direktlink `#/hebel`.
 - **Wochenfokus:** ein Fokus pro Woche mit Messung der Erfolgsquote, erscheint im Tagesplan.

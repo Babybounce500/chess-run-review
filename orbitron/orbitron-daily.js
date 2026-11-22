@@ -15,6 +15,7 @@
     { set: 'sac', name: 'Opfer-Trainer', target: 2, icon: 'bi-gem', note: 'das Opfer finden' },
     { set: 'endgame', name: 'Endspiel-Fehler', target: 2, icon: 'bi-flag', note: 'deine Endspielfehler' },
     { set: 'tactic', name: 'Taktik-Muster', target: 2, icon: 'bi-bullseye', note: 'Gabel, Spieß, Abzug erkennen' },
+    { set: 'scan', name: 'Drohungs-Scanner', target: 3, icon: 'bi-binoculars', note: 'in Sekunden sehen, was hängt oder droht' },
     { set: 'mfig', name: 'Matt-Figuren', target: 2, icon: 'bi-grid-3x3-gap', note: 'Matt setzen und verhindern' },
     { set: 'dmatt', name: 'Damenmatt-Muster', target: 2, icon: 'bi-bounding-box', note: 'Dame und Läufer-Diagonale' },
     { set: 'basics', name: 'Endspiel-Grundlagen', target: 1, icon: 'bi-mortarboard', note: 'Lucena, Philidor, Schlüsselfeld' },
@@ -113,7 +114,7 @@
       q('[data-srs]').innerHTML = `<b>Wiederholung</b><span class="og-sub">${sr.due ? `<b>${sr.due}</b> Aufgabe${sr.due > 1 ? 'n' : ''} heute fällig` : 'Heute ist nichts fällig'} · ${sr.total} insgesamt im Wiederholungsplan · ${sr.mastered} gemeistert.</span>${sr.due ? '<div class="og-row"><button class="og-btn primary" data-due>Fällige Aufgaben jetzt wiederholen</button></div>' : ''}`;
       const db = q('[data-due]'); if (db) db.onclick = () => { const top = Object.entries(sr.dueBySet).sort((a, b) => b[1] - a[1])[0]; if (top) { focus = { set: top[0], until: Date.now() + 30 * 60000 }; openSet(top[0]); } };
     }
-    function openSet(set) { const T = window.OrbitronTrain; if (!T) return; T.openBlunderTrainer(set === 'blunder' ? {} : { set }); }
+    function openSet(set) { if (set === 'scan') { if (window.OrbitronScan) window.OrbitronScan.openScan(); return; } const T = window.OrbitronTrain; if (!T) return; T.openBlunderTrainer(set === 'blunder' ? {} : { set }); }
     q('[data-goal]').onchange = (e) => { const s = load(); s.goal = +e.target.value; save(s); draw(); };
     q('[data-refresh]').onclick = () => { draw(); };
     // Waechter

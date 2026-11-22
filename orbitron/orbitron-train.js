@@ -30,6 +30,7 @@
         <button class="og-btn" data-t="bullet"><i class="bi bi-stopwatch"></i> Bullet-Aufgaben: Fehler und verpasste Matts aus deiner Session</button>
         <button class="og-btn" data-t="sac"><i class="bi bi-gem"></i> Opfer-Trainer: finde das Opfer, das die Stellung verbessert</button>
         <button class="og-btn" data-t="tactic"><i class="bi bi-bullseye"></i> Taktik-Muster: Gabel, Spieß, Abzug und Co. aus deinen Patzern</button>
+        <button class="og-btn" data-t="scan"><i class="bi bi-binoculars"></i> Drohungs-Scanner: in wenigen Sekunden sehen, was hängt oder droht</button>
         <button class="og-btn" data-t="hebel"><i class="bi bi-graph-up-arrow"></i> Rating-Hebel: was dich am meisten Rating kostet, mit Wochenfokus</button>
         <button class="og-btn" data-t="mattbild"><i class="bi bi-grid-3x3"></i> Mattbild-Atlas: welche Mattfiguren du setzt und erleidest</button>
         <button class="og-btn" data-t="mfig"><i class="bi bi-grid-3x3-gap"></i> Matt-Figuren: Grundreihe, Turm, Abzug, Springer und Matt verhindern</button>
@@ -51,6 +52,7 @@
     card.querySelector('[data-t="bullet"]').onclick = () => openBlunderTrainer({ set: 'bullet' });
     card.querySelector('[data-t="sac"]').onclick = () => openBlunderTrainer({ set: 'sac' });
     card.querySelector('[data-t="tactic"]').onclick = () => openBlunderTrainer({ set: 'tactic' });
+    card.querySelector('[data-t="scan"]').onclick = () => window.OrbitronScan && window.OrbitronScan.openScan();
     card.querySelector('[data-t="hebel"]').onclick = () => window.OrbitronProfile && window.OrbitronProfile.openProfile('lever');
     card.querySelector('[data-t="mattbild"]').onclick = () => window.OrbitronProfile && window.OrbitronProfile.openProfile('atlas');
     card.querySelector('[data-t="mfig"]').onclick = () => openBlunderTrainer({ set: 'mfig' });
@@ -289,6 +291,7 @@
     if (window.OrbitronOpen && window.OrbitronOpen.match) { const r = window.OrbitronOpen.match(t); if (r) return r; }
     if (window.OrbitronTime && window.OrbitronTime.match) { const r = window.OrbitronTime.match(t); if (r) return r; }
     if (window.OrbitronDaily && window.OrbitronDaily.match) { const r = window.OrbitronDaily.match(t); if (r) return r; }
+    if (window.OrbitronScan && window.OrbitronScan.match) { const r = window.OrbitronScan.match(t); if (r) return r; }
     if (window.OrbitronProfile && window.OrbitronProfile.match) { const r = window.OrbitronProfile.match(t); if (r) return r; }
     if (window.OrbitronPlay && window.OrbitronPlay.match) { const r = window.OrbitronPlay.match(t); if (r) return r; }
     if (/^[/]taktik\b|^taktik-?(muster|trainer)\b/.test(s)) return { run: () => openBlunderTrainer({ set: 'tactic' }) };

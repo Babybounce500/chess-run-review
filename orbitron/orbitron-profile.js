@@ -20,10 +20,10 @@
     { id: 'dame', name: 'Damenmatt erlitten', pick: (L) => sumKeys(L.matt, (k) => /^Dame|^Schäfer/.test(k)), set: 'mfig', tag: 'Verhindern: Damenmatt', tip: 'Prüfe vor jedem Zug, wohin die gegnerische Dame Schach geben kann, besonders auf g2, g7, h2 und h7.' },
     { id: 'turm', name: 'Turm-Matt erlitten', pick: (L) => L.matt['Turm'] || 0, set: 'mfig', tag: 'Verhindern: Turm-Matt', tip: 'Gegnerische Türme auf offenen Linien und der 7. Reihe im Blick behalten.' },
     { id: 'mattx', name: 'Anderes Matt erlitten', pick: (L) => sumKeys(L.matt, (k) => !/^Dame|^Schäfer|^Grundreihe$|^Turm$/.test(k)), set: 'mfig', tag: 'Verhindern: Abzug und Doppelschach', tip: 'Abzugsmatt, Doppelschach, Springer-Matts: Schachs und Abzüge des Gegners vorher durchzählen.' },
-    { id: 'aufgabe', name: 'Aufgegeben (meist nach Figurenverlust)', pick: (L) => L.aufgabe, set: 'blunder', tag: null, tip: 'Hier ging vorher meist etwas verloren. Fehler-Trainer und Patzer-Check üben das Hinsehen vor dem Zug.' },
+    { id: 'aufgabe', name: 'Aufgegeben (meist nach Figurenverlust)', pick: (L) => L.aufgabe, set: 'scan', tag: null, tip: 'Hier ging vorher meist etwas verloren. Der Drohungs-Scanner übt das Hinsehen vor dem Zug (was hängt, was droht).' },
     { id: 'sonst', name: 'Sonstiges (Verlassen, andere)', pick: (L) => (L.verlassen || 0) + (L.sonst || 0), set: null, tag: null, tip: '' }
   ];
-  const SET_LABEL = { zeit: 'Zeitnot-Trainer', mfig: 'Matt-Figuren', blunder: 'Fehler-Trainer' };
+  const SET_LABEL = { zeit: 'Zeitnot-Trainer', mfig: 'Matt-Figuren', blunder: 'Fehler-Trainer', scan: 'Drohungs-Scanner' };
 
   function dataset(period) { const D = window.ORBITRON_PROFILE_DATA; return D ? (period === 'recent' ? D.letzte500 : D.alle) : null; }
   function total(period, tc) {
@@ -61,7 +61,7 @@
     return { s, line: parts.join(' · ') };
   }
   function focusSet() { const f = getFocus(); return f ? f.set : null; }
-  function openFocusTrainer(f) { const T = window.OrbitronTrain; if (!T) return; const o = f.set === 'blunder' ? {} : { set: f.set }; if (f.tag) o.tag = f.tag; T.openBlunderTrainer(o); }
+  function openFocusTrainer(f) { if (f.set === 'scan') { if (window.OrbitronScan) window.OrbitronScan.openScan(); return; } const T = window.OrbitronTrain; if (!T) return; const o = f.set === 'blunder' ? {} : { set: f.set }; if (f.tag) o.tag = f.tag; T.openBlunderTrainer(o); }
 
   // ---------------- Karte ----------------
   const ATLAS = [
@@ -120,7 +120,7 @@
       const col = { 'Schwäche': '#e53935', 'Stärke': '#2e9d4f', ausgeglichen: '#f5a623', selten: '#888' };
       return `<div class="og-note">Deine Mattfiguren: wie oft du sie setzt und wie oft du sie erleidest. „Schwäche“ heißt: erlitten mindestens 1,3-mal so oft wie gesetzt (ab 5 Fällen).</div>` + rows.map((r, i) => `<div style="padding:6px 0;border-bottom:1px solid var(--border,#e0e4e8)"><div class="og-row" style="margin:0;justify-content:space-between;flex-wrap:nowrap"><div><b>${kit.esc(r.name)}</b> <span class="og-note">gesetzt ${r.won} · erlitten ${r.lost}</span></div><b style="color:${col[r.verdict]};white-space:nowrap;margin-left:8px">${r.verdict}</b></div>${bar(r.won / maxN * 100, '#2e9d4f')}${bar(r.lost / maxN * 100, '#e53935')}<div class="og-row"><button class="og-btn" data-atlas="${i}:won"${r.won ? '' : ' disabled'}>Setzen üben</button><button class="og-btn${r.verdict === 'Schwäche' ? ' primary' : ''}" data-atlas="${i}:lost"${r.lost ? '' : ' disabled'}>Verhindern üben</button></div></div>`).join('');
     }
-    function openTrainer(t) { const T = window.OrbitronTrain; if (!T) return; const o = t.set === 'blunder' ? {} : { set: t.set }; if (t.tag) o.tag = t.tag; T.openBlunderTrainer(o); }
+    function openTrainer(t) { if (t.set === 'scan') { if (window.OrbitronScan) window.OrbitronScan.openScan(); return; } const T = window.OrbitronTrain; if (!T) return; const o = t.set === 'blunder' ? {} : { set: t.set }; if (t.tag) o.tag = t.tag; T.openBlunderTrainer(o); }
     function wire() {
       card.querySelectorAll('[data-focus]').forEach((b) => b.onclick = () => { setFocus(b.dataset.focus); draw(); });
       card.querySelectorAll('[data-open]').forEach((b) => b.onclick = () => { const c = CAUSES.find((x) => x.id === b.dataset.open); if (c) openTrainer(c); });
