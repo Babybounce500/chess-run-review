@@ -1,5 +1,10 @@
 # Änderungsprotokoll
 
+## 2026-11-22 (Orbitron: Taktik-Muster, Endspiel-Grundlagen, Ausspielen)
+- **Taktik-Muster:** 161 Aufgaben aus eigenen Partien, in denen der beste Zug ein klares Muster war (Gabel, Spieß, Fesselung, Abzug, hängende Figur). Muster werden automatisch erkannt und mit einer Materialprobe bestätigt, die Züge sind mit Stockfish geprüft.
+- **Endspiel-Grundlagen:** 10 Lehrbuchstellungen (Lucena, Philidor, Schlüsselfeld, Turm gegen Bauer, Leitermatt, Kasten-Methode), jeweils mit Erklärung.
+- **Stellung ausspielen:** Jede Aufgabe lässt sich gegen Stockfish (einstellbare Stärke) zu Ende spielen, mit Tipp, Zug zurück und Auswertung (Ziel erreicht, größter Einbruch). Direktlinks: `#/taktik`, `#/grundlagen`, `#/ausspielen`.
+
 ## 2026-11-22 (Orbitron: neue Trainingsbereiche)
 - **Orbitron-Live (Pfad /orbitron/):** Das Training-Menü hat jetzt 13 Bereiche: Tagesplan mit Wiederholungsplan und Serie, Fehler-Trainer, Bullet-Aufgaben, Opfer-Trainer, Zeitnot-Trainer und Mattjäger (jeweils mit Uhr), Endspiel-Fehler (nur Endspiele, auch lange Turmendspiele), Eröffnungs-Prüfer mit Buchzügen (Lichess-ECO), Eröffnungs-Fallen (stellen und erkennen), Zeit-Heatmap (Zeit pro Zug, Bullet und Blitz getrennt) und Session-Wächter.
 - Jeder Bereich hat einen Direktlink (zum Beispiel `gemini-chat.html#/zeit`, `#/heute`, `#/fallen`) und einen Chat-Befehl (`/zeit`, `/heute`, `/fallen`, `/endspielfehler`, `/zeitnot`, `/matt`, `/opfer`, `/repertoire`).

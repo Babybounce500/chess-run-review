@@ -14,6 +14,8 @@
     { set: 'zeit', name: 'Zeitnot-Trainer', target: 3, icon: 'bi-hourglass-split', note: 'Gewinn nach Hause bringen' },
     { set: 'sac', name: 'Opfer-Trainer', target: 2, icon: 'bi-gem', note: 'das Opfer finden' },
     { set: 'endgame', name: 'Endspiel-Fehler', target: 2, icon: 'bi-flag', note: 'deine Endspielfehler' },
+    { set: 'tactic', name: 'Taktik-Muster', target: 2, icon: 'bi-bullseye', note: 'Gabel, Spieß, Abzug erkennen' },
+    { set: 'basics', name: 'Endspiel-Grundlagen', target: 1, icon: 'bi-mortarboard', note: 'Lucena, Philidor, Schlüsselfeld' },
     { set: 'bullet', name: 'Bullet-Aufgaben', target: 2, icon: 'bi-lightning-charge', note: 'Fehler aus Bullet' },
     { set: 'blunder', name: 'Fehler-Trainer', target: 2, icon: 'bi-lightning-charge', note: 'Fehler aus Blitz' }
   ];
