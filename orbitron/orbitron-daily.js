@@ -94,6 +94,7 @@
     card.innerHTML = `<div class="og-title"><i class="bi bi-calendar-check"></i> Training heute <span class="og-badge" data-streak></span></div>
       <div class="og-note og-desc">Dein Tagesplan: kleine Aufgaben statt noch eine Partie. Fehler, die du nicht im ersten Versuch löst, kommen automatisch nach 1, 3, 7 und 14 Tagen wieder.</div>
       <div class="og-say" data-prog></div>
+      <div class="og-say" data-focus style="display:none"></div>
       <div class="og-row"><label class="og-note" for="og-goal">Tagesziel</label><select class="og-select" id="og-goal" data-goal>${[5, 10, 20].map((n) => `<option value="${n}" ${s0.goal === n ? 'selected' : ''}>${n} Aufgaben</option>`).join('')}</select><button class="og-btn" data-refresh>Aktualisieren</button></div>
       <div data-stations></div>
       <div class="og-say" data-srs></div>
@@ -106,6 +107,7 @@
       q('[data-streak]').textContent = st.n ? `Serie: ${st.n} ${st.n === 1 ? 'Tag' : 'Tage'}` : 'Noch keine Serie';
       q('[data-prog]').innerHTML = `<b>Heute: ${today.total} von ${s.goal} Aufgaben${st.todayDone ? ' ✓ Tagesziel erreicht' : ''}</b><span class="og-sub">${today.total ? today.ok + ' davon im ersten Versuch richtig. ' : ''}${st.todayDone ? 'Gut gemacht, die Serie läuft weiter.' : `Noch ${Math.max(0, s.goal - today.total)} bis zum Tagesziel${st.n ? ', dann wird deine Serie ' + (st.n + 1) + ' Tage lang' : ''}.`}</span><div style="height:8px;border-radius:6px;background:rgba(128,128,128,.25);margin-top:6px;overflow:hidden"><div data-bar style="height:100%;width:${pct}%;background:${st.todayDone ? '#2e9d4f' : '#1a73e8'}"></div></div>`;
       const rot = epochDay() % STATIONS.length; const rec = new Set([0, 1, 2, 3].map((i) => STATIONS[(rot + i) % STATIONS.length].set)); const sr = srsStats();
+      { const P = window.OrbitronProfile; const f = P && P.getFocus ? P.getFocus() : null; const fb = q('[data-focus]'); if (f) { rec.add(f.set); const ft = P.focusText(f); fb.style.display = ''; fb.innerHTML = `<b>Wochenfokus: ${kit.esc(f.name)}</b><span class="og-sub">${kit.esc(ft.line)}</span><div class="og-row"><button class="og-btn primary" data-fgo>Fokus üben</button><button class="og-btn" data-fall>Rating-Hebel ansehen</button></div>`; fb.querySelector('[data-fgo]').onclick = () => P.openFocusTrainer(f); fb.querySelector('[data-fall]').onclick = () => P.openProfile('lever'); } else if (fb) { fb.style.display = P && window.ORBITRON_PROFILE_DATA ? '' : 'none'; if (P && window.ORBITRON_PROFILE_DATA) { fb.innerHTML = '<b>Noch kein Wochenfokus</b><span class="og-sub">Der Rating-Hebel zeigt, was dich am meisten Rating kostet, und macht daraus deinen Fokus für die Woche.</span><div class="og-row"><button class="og-btn primary" data-fall>Rating-Hebel öffnen</button></div>'; fb.querySelector('[data-fall]').onclick = () => P.openProfile('lever'); } } }
       q('[data-stations]').innerHTML = STATIONS.map((x) => { const d = today.bySet[x.set] || [0, 0]; const fin = d[0] >= x.target; const dueN = sr.dueBySet[x.set] || 0; return `<button class="og-btn" style="display:block;width:100%;text-align:left;margin:4px 0" data-st="${x.set}"><i class="bi ${x.icon}"></i> <b>${x.name}</b> <span class="og-note">${x.note} · ${d[0]}/${x.target} heute${fin ? ' ✓' : ''}${rec.has(x.set) && !fin ? ' · heute empfohlen' : ''}${dueN ? ` · ${dueN} Wiederholung${dueN > 1 ? 'en' : ''} fällig` : ''}</span></button>`; }).join('');
       q('[data-stations]').querySelectorAll('[data-st]').forEach((b) => b.onclick = () => openSet(b.dataset.st));
       q('[data-srs]').innerHTML = `<b>Wiederholung</b><span class="og-sub">${sr.due ? `<b>${sr.due}</b> Aufgabe${sr.due > 1 ? 'n' : ''} heute fällig` : 'Heute ist nichts fällig'} · ${sr.total} insgesamt im Wiederholungsplan · ${sr.mastered} gemeistert.</span>${sr.due ? '<div class="og-row"><button class="og-btn primary" data-due>Fällige Aufgaben jetzt wiederholen</button></div>' : ''}`;
@@ -140,5 +142,5 @@
     if (/^[/](heute|tagesplan|wiederholung|serie)\b|^training heute\b/.test(s)) return { run: openToday };
     return null;
   }
-  ready(() => { window.OrbitronDaily = { openToday, record, due, srsStats, streak, guardText, guardCheck, match, version: '1.0' }; });
+  ready(() => { window.OrbitronDaily = { days: () => load().days, openToday, record, due, srsStats, streak, guardText, guardCheck, match, version: '1.0' }; });
 })();

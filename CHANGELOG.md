@@ -1,5 +1,10 @@
 # Änderungsprotokoll
 
+## 2026-11-22 (Orbitron: Rating-Hebel, Wochenfokus, Mattbild-Atlas)
+- **Rating-Hebel:** zeigt, welche Schwäche dich am meisten Rating kostet (Zeit, Grundreihe, Damenmatt, Turm-Matt, Aufgabe), je Zeitklasse und Zeitraum, mit grober Elo-Schätzung. Direktlink `#/hebel`.
+- **Wochenfokus:** ein Fokus pro Woche mit Messung der Erfolgsquote, erscheint im Tagesplan.
+- **Mattbild-Atlas:** 16 Mattfiguren, gesetzt gegen erlitten, mit Knopf zur passenden Übung. Direktlink `#/mattbild`.
+
 ## 2026-11-22 (Orbitron: Matt-Figuren)
 - **Matt-Figuren:** 355 Aufgaben aus eigenen Partien. Matt setzen (Grundreihe, Turm, Abzug, Doppelschach, Springer, Läufer, Bauer, erstickt, Schäfermatt) und Matt verhindern (Verteidigung mit Stockfish geprüft). Direktlink `#/mattfiguren`, auch als Station im Tagesplan.
 

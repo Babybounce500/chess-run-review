@@ -30,6 +30,8 @@
         <button class="og-btn" data-t="bullet"><i class="bi bi-stopwatch"></i> Bullet-Aufgaben: Fehler und verpasste Matts aus deiner Session</button>
         <button class="og-btn" data-t="sac"><i class="bi bi-gem"></i> Opfer-Trainer: finde das Opfer, das die Stellung verbessert</button>
         <button class="og-btn" data-t="tactic"><i class="bi bi-bullseye"></i> Taktik-Muster: Gabel, Spieß, Abzug und Co. aus deinen Patzern</button>
+        <button class="og-btn" data-t="hebel"><i class="bi bi-graph-up-arrow"></i> Rating-Hebel: was dich am meisten Rating kostet, mit Wochenfokus</button>
+        <button class="og-btn" data-t="mattbild"><i class="bi bi-grid-3x3"></i> Mattbild-Atlas: welche Mattfiguren du setzt und erleidest</button>
         <button class="og-btn" data-t="mfig"><i class="bi bi-grid-3x3-gap"></i> Matt-Figuren: Grundreihe, Turm, Abzug, Springer und Matt verhindern</button>
         <button class="og-btn" data-t="dmatt"><i class="bi bi-bounding-box"></i> Damenmatt-Muster: deine Matts mit Dame und Läufer-Diagonale</button>
         <button class="og-btn" data-t="basics"><i class="bi bi-mortarboard"></i> Endspiel-Grundlagen: Lucena, Philidor, Schlüsselfeld, Grundmatts</button>
@@ -49,6 +51,8 @@
     card.querySelector('[data-t="bullet"]').onclick = () => openBlunderTrainer({ set: 'bullet' });
     card.querySelector('[data-t="sac"]').onclick = () => openBlunderTrainer({ set: 'sac' });
     card.querySelector('[data-t="tactic"]').onclick = () => openBlunderTrainer({ set: 'tactic' });
+    card.querySelector('[data-t="hebel"]').onclick = () => window.OrbitronProfile && window.OrbitronProfile.openProfile('lever');
+    card.querySelector('[data-t="mattbild"]').onclick = () => window.OrbitronProfile && window.OrbitronProfile.openProfile('atlas');
     card.querySelector('[data-t="mfig"]').onclick = () => openBlunderTrainer({ set: 'mfig' });
     card.querySelector('[data-t="dmatt"]').onclick = () => openBlunderTrainer({ set: 'dmatt' });
     card.querySelector('[data-t="basics"]').onclick = () => openBlunderTrainer({ set: 'basics' });
@@ -110,7 +114,7 @@
     const prTxt = (pr) => pr < 1 ? 'unter 1' : String(Math.round(pr));
     const card = kit.newCard();
     const stats = kit.lsGet(STATS_KEY, {});
-    const F = { piece: (opts.phase || opts.set) ? 'all' : 'weak', phase: opts.phase || 'all', tag: 'all', kind: 'all' };
+    const F = { piece: (opts.phase || opts.set) ? 'all' : 'weak', phase: opts.phase || 'all', tag: opts.tag || 'all', kind: 'all' };
     let cur = null, chess = null, fails = 0, done = false, busy = false, order = [];
     card.innerHTML = `<div class="og-title"><i class="bi bi-lightning-charge"></i> ${SAC ? 'Opfer-Trainer' : ENDG ? 'Endspiel-Fehler' : MFIG ? 'Matt-Figuren' : DMAT ? 'Damenmatt-Muster' : TACT ? 'Taktik-Muster' : BASC ? 'Endspiel-Grundlagen' : ZEIT ? 'Zeitnot-Trainer' : OWNM ? 'Mattjäger: deine verpassten Matts' : opts.set === 'bullet' ? 'Bullet-Aufgaben' : 'Fehler-Trainer'} <span class="og-badge">${all.length} Aufgaben ${BASC ? 'mit Stockfish geprüft' : 'aus deinen ' + (opts.set === 'bullet' || TIMED ? 'Bullet- und Blitz-Partien' : 'Partien')}</span></div>
       <div class="og-note og-desc">${MFIG ? 'Mattfiguren aus deinen Partien: Bei „Setzen“ findest du das Matt (Grundreihe, Turm, Abzug, Doppelschach, Springer, Läufer, Bauer, erstickt). Bei „Verhindern“ droht dir Matt, und du findest die Verteidigung (Luft schaffen, Mattfeld besetzen, Figur decken), die in deiner Partie gefehlt hat. Wähle oben die Figur und Setzen oder Verhindern.' : DMAT ? 'Alle Stellungen stammen aus deinen Partien, die du mit einem Damenmatt gewonnen hast. Finde das erzwungene Matt (meist in 2 Zügen). Wähle ein Muster, zum Beispiel Dame und Läufer auf der Diagonale oder Matt auf dem Fianchetto-Feld. Nach der Lösung steht, warum das Matt klappte und wie es in deiner Partie lief.' : TACT ? 'Hier hast du in deiner Partie ein Muster übersehen: Gabel, Spieß, Fesselung, Abzug oder eine hängende Figur. Wähle ein Muster und finde den besten Zug. Nach der Lösung steht dabei, worin das Muster bestand. Das Muster wird automatisch erkannt und mit einer Materialprobe bestätigt.' : BASC ? 'Lehrbuchstellungen, die jeder kennen sollte: Lucena, Philidor, Schlüsselfeld, Turm gegen Bauer und Grundmatts. Finde den richtigen Zug; danach erklärt die Karte die Idee. Mit „Ausspielen“ kannst du die Stellung gegen Stockfish zu Ende spielen.' : ''}${TACT || BASC ? '' : ENDG ? 'Nur Fehler aus deinen Endspielen (wenig Material: höchstens 12 Figuren inklusive Bauern oder insgesamt höchstens 20 Punkte Figurenwert, also auch lange Turmendspiele mit vielen Bauern): verspielter Gewinn, verpasste Rettung oder verschenktes Remis. Wähle die Endspielart und finde den besseren Zug. Alle Stellungen stammen aus deinen eigenen Partien und sind mit Stockfish geprüft.' : SAC ? 'In jeder Stellung ist ein Opfer der beste Zug: Du gibst Material her und bekommst dafür eine bessere Stellung, einen Angriff oder Matt. Alle Stellungen stammen aus deinen Partien.' : ZEIT ? 'Du stehst klar auf Gewinn, aber deine Uhr läuft. Finde in wenigen Sekunden einen Zug, der den Vorsprung sichert (Tausch, Vereinfachen) oder Matt setzt. Die Uhr tickt ab Aufgabenstart; läuft sie ab, wird die Lösung gezeigt.' : OWNM ? 'Das sind Stellungen, in denen du in deiner Partie ein Matt verpasst hast. Setze es, bevor die Uhr abläuft (Matt in 1 bis 2: 10 Sekunden, in 3 bis 4: 15, länger: 20).' : 'Du siehst eine Stellung aus einer deiner Partien, in der du einen großen Fehler gemacht hast. Finde den besseren Zug.'}</div>
@@ -285,6 +289,7 @@
     if (window.OrbitronOpen && window.OrbitronOpen.match) { const r = window.OrbitronOpen.match(t); if (r) return r; }
     if (window.OrbitronTime && window.OrbitronTime.match) { const r = window.OrbitronTime.match(t); if (r) return r; }
     if (window.OrbitronDaily && window.OrbitronDaily.match) { const r = window.OrbitronDaily.match(t); if (r) return r; }
+    if (window.OrbitronProfile && window.OrbitronProfile.match) { const r = window.OrbitronProfile.match(t); if (r) return r; }
     if (window.OrbitronPlay && window.OrbitronPlay.match) { const r = window.OrbitronPlay.match(t); if (r) return r; }
     if (/^[/]taktik\b|^taktik-?(muster|trainer)\b/.test(s)) return { run: () => openBlunderTrainer({ set: 'tactic' }) };
     if (/^[/]grundlagen\b|^endspiel-?grundlagen\b/.test(s)) return { run: () => openBlunderTrainer({ set: 'basics' }) };
