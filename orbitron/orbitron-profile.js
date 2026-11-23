@@ -88,20 +88,20 @@
   }
 
   function openProfile(tab) {
-    const card = kit.newCard(); const S = { tab: tab === 'atlas' ? 'atlas' : 'lever', tc: 'all', period: 'all' };
+    const card = kit.newCard(); const S = { tab: tab === 'atlas' ? 'atlas' : tab === 'time' ? 'time' : 'lever', tc: 'all', period: 'all' };
     card.innerHTML = `<div class="og-title"><i class="bi bi-graph-up-arrow"></i> Rating-Hebel und Mattbild <span class="og-badge" data-badge></span></div>
-      <div class="og-row"><button class="og-btn" data-tab="lever">Rating-Hebel</button><button class="og-btn" data-tab="atlas">Mattbild-Atlas</button></div>
+      <div class="og-row"><button class="og-btn" data-tab="lever">Rating-Hebel</button><button class="og-btn" data-tab="atlas">Mattbild-Atlas</button><button class="og-btn" data-tab="time">Wann Fehler</button></div>
       <div class="og-row" data-ctl></div><div data-body></div>`;
     const q = (s) => card.querySelector(s);
     const D = window.ORBITRON_PROFILE_DATA;
     function sel(id, label, opts, val) { return `<select class="og-select" data-${id} aria-label="${label}">${opts.map(([v, t]) => `<option value="${v}" ${val === v ? 'selected' : ''}>${t}</option>`).join('')}</select>`; }
     function draw() {
       card.querySelectorAll('[data-tab]').forEach((b) => b.classList.toggle('primary', b.dataset.tab === S.tab));
-      q('[data-ctl]').innerHTML = (S.tab === 'lever' ? sel('tc', 'Zeitklasse', [['all', 'Alle Zeitklassen'], ['bullet', 'Bullet'], ['blitz', 'Blitz'], ['rapid', 'Rapid']], S.tc) : '') + sel('period', 'Zeitraum', [['all', 'Alle Partien'], ['recent', 'Letzte 500 Partien']], S.period);
-      const t = q('[data-tc]'); if (t) t.onchange = (e) => { S.tc = e.target.value; draw(); }; q('[data-period]').onchange = (e) => { S.period = e.target.value; draw(); };
+      q('[data-ctl]').innerHTML = (S.tab === 'lever' ? sel('tc', 'Zeitklasse', [['all', 'Alle Zeitklassen'], ['bullet', 'Bullet'], ['blitz', 'Blitz'], ['rapid', 'Rapid']], S.tc) : S.tab === 'time' ? sel('tc', 'Zeitklasse', [['all', 'Bullet und Blitz'], ['bullet', 'Bullet'], ['blitz', 'Blitz und Rapid']], S.tc) : '') + (S.tab === 'time' ? '' : sel('period', 'Zeitraum', [['all', 'Alle Partien'], ['recent', 'Letzte 500 Partien']], S.period));
+      const t = q('[data-tc]'); if (t) t.onchange = (e) => { S.tc = e.target.value; draw(); }; const pe = q('[data-period]'); if (pe) pe.onchange = (e) => { S.period = e.target.value; draw(); };
       if (!D) { q('[data-body]').innerHTML = '<div class="og-note">Die Profil-Daten konnten nicht geladen werden.</div>'; return; }
       q('[data-badge]').textContent = 'Stand ' + D.generiert;
-      q('[data-body]').innerHTML = S.tab === 'lever' ? drawLever() : drawAtlas();
+      q('[data-body]').innerHTML = S.tab === 'lever' ? drawLever() : S.tab === 'time' ? drawTime() : drawAtlas();
       wire();
     }
     function bar(pct, color) { return `<div style="height:8px;border-radius:5px;background:rgba(128,128,128,.22);overflow:hidden;margin:3px 0"><div style="height:100%;width:${Math.max(2, Math.min(100, pct))}%;background:${color}"></div></div>`; }
@@ -115,6 +115,18 @@
       html += L.rows.map((r) => { const top = !rank && r.c.set && r.n > 0; if (top) rank = 1; return `<div style="padding:6px 0;border-bottom:1px solid var(--border,#e0e4e8)"><div class="og-row" style="margin:0;justify-content:space-between;flex-wrap:nowrap"><div style="min-width:0"><b>${top ? '1. ' : ''}${kit.esc(r.c.name)}</b> <span class="og-note">${r.n} Niederlagen (${r.share.toFixed(0)} % aller) · ${r.per100.toFixed(1).replace('.', ',')} je 100 Partien${r.c.set ? ' · Hebel etwa +' + Math.round(r.elo) + ' Elo' : ''}</span></div></div>${bar(r.n / maxN * 100, top ? '#e53935' : '#1a73e8')}${r.c.tip ? `<div class="og-note">${kit.esc(r.c.tip)}</div>` : ''}${r.c.set && r.n ? `<div class="og-row"><button class="og-btn${top && !f ? ' primary' : ''}" data-focus="${r.c.id}">Als Wochenfokus</button><button class="og-btn" data-open="${r.c.id}">Üben</button></div>` : ''}</div>`; }).join('');
       html += '<div class="og-note">Die Elo-Zahl ist eine grobe Faustformel (Niederlagen halbieren, die Hälfte davon wird Sieg oder Remis). Verlässlicher ist die Reihenfolge der Ursachen.</div>';
       return html;
+    }
+    // Wann passieren die grossen Patzer (Verlust ab 3 Bauern): nach Zugnummer, aus den Fehler-Aufgaben
+    function timeBuckets(tc) {
+      const src = tc === 'bullet' ? [window.ORBITRON_BULLET] : tc === 'blitz' ? [window.ORBITRON_BLUNDERS] : [window.ORBITRON_BLUNDERS, window.ORBITRON_BULLET];
+      const B = [['Zug 1 bis 10', 1, 10], ['Zug 11 bis 20', 11, 20], ['Zug 21 bis 30', 21, 30], ['Zug 31 bis 40', 31, 40], ['ab Zug 41', 41, 999]].map(([name, a, b]) => ({ name, a, b, n: 0, loss: 0 })); let total = 0;
+      for (const arr of src) for (const t of (arr || [])) { if (t[8] === 'Matt verpasst') continue; const m = t[7] || 0; const b = B.find((x) => m >= x.a && m <= x.b); if (b) { b.n++; b.loss += t[5] || 0; total++; } }
+      return { B, total };
+    }
+    function drawTime() {
+      const { B, total } = timeBuckets(S.tc === 'all' ? 'all' : S.tc); if (!total) return '<div class="og-note">Keine Fehler-Aufgaben in dieser Auswahl.</div>';
+      const maxN = Math.max(...B.map((b) => b.n)); const top = B.slice().sort((a, b) => b.n - a.n)[0]; const early = B[0].n + B[1].n;
+      return `<div class="og-note"><b>${total} große Patzer</b> (Verlust ab 3 Bauern, ohne verpasste Matts), aus deinen Fehler-Aufgaben. Gezählt wird, in welchem Zug du den Fehler gemacht hast. Neue Partien aus dem Auto-Coach sind enthalten.</div>` + B.map((b) => `<div style="padding:6px 0;border-bottom:1px solid var(--border,#e0e4e8)"><div class="og-row" style="margin:0;justify-content:space-between;flex-wrap:nowrap"><b>${b.name}</b><span class="og-note">${b.n} (${Math.round(b.n / total * 100)} %) · Ø Verlust ${b.n ? (b.loss / b.n / 100).toFixed(1).replace('.', ',') : '0,0'} Bauern</span></div>${bar(b.n / maxN * 100, b === top ? '#e53935' : '#1a73e8')}</div>`).join('') + `<div class="og-say"><b>Die meisten Patzer fallen in ${top.name.toLowerCase()}</b><span class="og-sub">${Math.round(early / total * 100)} % deiner großen Patzer passieren in den ersten 20 Zügen. ${top.a <= 10 ? 'Dort hilft der Eröffnungs-Prüfer und das Eröffnungs-Labor.' : top.a <= 20 ? 'Das ist die Phase nach der Eröffnung: Drohungs-Scanner und Fehler-Trainer.' : 'Spät im Spiel liegt es oft an Müdigkeit und Zeitnot: Zeitnot-Trainer und Endspiel-Fehler.'}</span></div>`;
     }
     function drawAtlas() {
       const rows = atlas(S.period); if (!rows) return ''; const maxN = Math.max(1, ...rows.map((r) => Math.max(r.won, r.lost)));
@@ -137,6 +149,7 @@
   function match(t) {
     if (!t) return null; const s = t.toLowerCase();
     if (/^[/](hebel|rating-?hebel|rating|fokus|wochenfokus)\b|^rating-?hebel\b/.test(s)) return { run: () => openProfile('lever') };
+    if (/^[/](wann|fehlerprofil|fehlerzeit)|^wann fehler/.test(s)) return { run: () => openProfile('time') };
     if (/^[/](mattbild|atlas|mattatlas)\b|^mattbild-?atlas\b/.test(s)) return { run: () => openProfile('atlas') };
     return null;
   }

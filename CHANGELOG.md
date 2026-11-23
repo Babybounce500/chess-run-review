@@ -1,5 +1,10 @@
 # Änderungsprotokoll
 
+## 2026-11-23 (Orbitron: Eröffnungs-Labor, Sicherung, Wann Fehler)
+- **Eröffnungs-Labor und Ampel:** je Farbe 62 Eröffnungen mit Form der letzten 30 Partien (grün, gelb, rot), Ergebnis nach Variante, Bewertung nach Zug 10 und 168 wiederkehrende Fehlerstellungen als Übung. Direktlink `#/labor`.
+- **Sichern und Wiederherstellen:** Fortschritt als Datei sichern und laden. Direktlink `#/sicherung`.
+- **Wann Fehler:** große Patzer nach Zugnummer, neuer Reiter im Rating-Hebel (`#/wann`).
+
 ## 2026-11-23 (Orbitron: Auto-Coach)
 - **Auto-Coach:** holt neue Chess.com-Partien über die öffentliche Schnittstelle und zählt sie in Rating-Hebel und Mattbild-Atlas. Stockfish im Browser analysiert die neuesten 6 bis 50 Partien und macht daraus neue Aufgaben (Fehler, Bullet, verpasste Matts, Zeitnot). Alles bleibt im Browser. Direktlink `#/coach`.
 

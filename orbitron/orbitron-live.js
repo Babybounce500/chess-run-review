@@ -92,9 +92,10 @@
     }
     return out;
   }
+  function famOf(pgn) { const slug = ((pgn || '').match(/\[ECOUrl "[^"]*openings\/([^"]*)"/) || [])[1] || ''; const name = slug.replace(/-/g, ' ').replace(/ \d.*$/, '').replace(/\.\.\..*$/, '').trim(); const w = name.split(' '); const n = (w[1] && ['Kann', 'Pawn', 'Indian', 'Hungarian', 'Nimzowitsch'].includes(w[1])) ? 3 : 2; return w.slice(0, n).join(' ') || 'Unbekannt'; }
   function profileRow(g, user) {
     const meW = g.white.username.toLowerCase() === user; const mine = meW ? g.white : g.black, opp = meW ? g.black : g.white;
-    const res = mine.result === 'win' ? 'W' : DRAW.includes(mine.result) ? 'D' : 'L'; const row = { t: g.end_time, tc: g.time_class, res, end: res === 'W' ? opp.result : mine.result, fig: null };
+    const res = mine.result === 'win' ? 'W' : DRAW.includes(mine.result) ? 'D' : 'L'; const row = { t: g.end_time, tc: g.time_class, res, end: res === 'W' ? opp.result : mine.result, fig: null, col: meW ? 'white' : 'black', fam: famOf(g.pgn) };
     if (row.end === 'checkmated' && g.pgn) { try { const c = new C(); if (c.load_pgn(g.pgn, { sloppy: true })) { const h = c.history({ verbose: true }); const last = h[h.length - 1]; if (last && /#/.test(last.san)) row.fig = classify(h); } } catch (e) { /* egal */ } }
     return row;
   }
