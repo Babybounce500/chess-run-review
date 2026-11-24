@@ -1,5 +1,11 @@
 # Änderungsprotokoll
 
+## 2026-11-24 (Orbitron: Online Duell)
+- **Online Duell:** neuer Reiter ganz oben in der Sidebar. Freundespartien direkt von Browser zu Browser (WebRTC), Bedenkzeit 1+0 bis 15+10, Aufgeben, Remis, Revanche, PGN-Export. Ohne Server: Link und Antwort-Code per Chat austauschen. Direktlink `#/duell`, Chat-Befehl `/duell`. Die Partie läuft weiter, wenn das Fenster geschlossen wird.
+- Brett und Figuren wie in Orbitron, Figuren ziehen per Maus und Finger, Brett drehen, Zugton, Teilen-Knopf, Bildschirm bleibt wach. Einklappbare Seitenleiste, Neustart-Knopf, Notausgang `duell/?reset=1`.
+- Handy hochkant und quer, Tablet und sehr schmale Bildschirme geprüft.
+- Eigenständig erreichbar unter `/duell/`. Kein Betrugsschutz, keine Wertung.
+
 ## 2026-11-23 (Orbitron: Matt-Tempo)
 - **Matt-Tempo:** 99 Aufgaben aus verpassten erzwungenen Matts (Matt in 1 bis 4) in den letzten Bullet- und Blitz-Partien, mit knapper Uhr (5 bis 15 Sekunden). Direktlink `#/tempo`, Station im Tagesplan.
 
