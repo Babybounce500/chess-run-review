@@ -1,5 +1,9 @@
 # Änderungsprotokoll
 
+## 2026-11-24 (Orbitron: Chat & Anrufe)
+- **Reiter „Chat & Anrufe“** direkt unter „Online Duell“ in der Orbitron-Sidebar. Eigener Rahmen: Verbindung, Anruf und Duell laufen beim Schließen und Wechseln weiter. Abzeichen zeigt „n online“, „💬 n“ bei ungelesenen Nachrichten und „📞 Anruf“. Ein eingehender Anruf öffnet das Fenster von selbst. Direktlink `#/chat`, Befehl `/chat`.
+
+
 ## 2026-11-24 (Chat-Test: Quick Wins)
 - **Bildschirm bleibt im Anruf an**, Warnung beim Schließen während Anruf oder Übertragung, Verbindungsbalken (Ping, Paketverlust) an jeder Kachel, Geräte wählen (Mikrofon, Kamera, Lautsprecher).
 - **Speicherschutz** mit Hinweisleiste und **verschlüsseltes Backup** (Passwort, AES-GCM) inklusive Schlüssel, Einspielen in ein frisches Profil.

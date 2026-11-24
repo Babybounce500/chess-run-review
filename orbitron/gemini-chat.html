@@ -58,6 +58,12 @@ body{font-family:var(--font);background:var(--main-bg);color:var(--text);-webkit
 .nav-item.nav-duel .nav-badge{margin-left:auto;font-size:.62rem;font-weight:700;letter-spacing:.03em;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.26);color:#fff}
 .nav-item.nav-duel .nav-badge.live{background:#1fa463}
 .module-dock.duel .module-switcher{display:none}
+.nav-item.nav-chat{min-height:44px;background:linear-gradient(135deg,#1c8a90,#2f6f4e);color:#fff;font-weight:600;margin-bottom:6px;box-shadow:0 2px 8px rgba(28,138,144,.28)}
+.nav-item.nav-chat:hover{background:linear-gradient(135deg,#1c8a90,#2f6f4e);filter:brightness(1.08)}
+.nav-item.nav-chat i{color:#fff}
+.nav-item.nav-chat .nav-badge{margin-left:auto;font-size:.62rem;font-weight:700;letter-spacing:.03em;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.26);color:#fff}
+.nav-item.nav-chat .nav-badge.live{background:#1fa463}
+.nav-item.nav-chat .nav-badge.call{background:#d93a3a}
 .nav-divider{height:1px;background:var(--border);margin:4px 12px;transition:background var(--transition)}
 .convo-section{flex:1;min-height:0;display:flex;flex-direction:column}
 /* Sidebar scrollbar, weil mehr Eintraege: Navigation scrollt, Verlauf behaelt Mindesthoehe */
@@ -516,6 +522,7 @@ html,body,button,input,select,textarea{font-family:var(--neural-font)!important;
       <button class="btn-new-chat" onclick="newChat()"><i class="bi bi-plus-lg"></i> Neuer Chat</button>
       <div class="nav-section">
         <button class="nav-item nav-duel" id="navDuel" type="button" onclick="openOnlineDuel()" title="Gegen einen Freund spielen, direkt von Browser zu Browser"><i class="bi bi-people-fill"></i><span class="chess-nav-label">Online Duell</span><span class="nav-badge" id="navDuelBadge">NEU</span></button>
+        <button class="nav-item nav-chat" id="navChat" type="button" onclick="openOnlineChat()" title="Chat, Anrufe und Dateien direkt zwischen Browsern, ohne Server"><i class="bi bi-chat-dots-fill"></i><span class="chess-nav-label">Chat &amp; Anrufe</span><span class="nav-badge" id="navChatBadge">NEU</span></button>
         <button class="nav-item" onclick="window.location.href='chess-coach.html'"><i class="bi bi-clipboard2-pulse"></i><span class="chess-nav-label">Partie-Coach</span></button>
         <button class="nav-item" onclick="document.getElementById('fileInput').click()"><i class="bi bi-image"></i><span class="chess-nav-label">Screenshot prüfen</span></button>
         <button class="nav-item" onclick="openChessModule('chess-center.html','Chess Center')"><i class="bi bi-bullseye"></i><span class="chess-nav-label">Chess Center</span></button>
@@ -645,7 +652,8 @@ html,body,button,input,select,textarea{font-family:var(--neural-font)!important;
       </div>
       <button onclick="closeChessModule()" title="Modul schließen"><i class="bi bi-x-lg"></i></button>
     </div>
-    <iframe class="module-frame" id="moduleFrame" title="Chess App" allow="clipboard-write; clipboard-read; fullscreen; screen-wake-lock"></iframe>
+    <iframe class="module-frame" id="moduleFrame" title="Chess App" allow="clipboard-write; clipboard-read; fullscreen; screen-wake-lock; camera; microphone; display-capture; autoplay; web-share"></iframe>
+    <iframe class="module-frame" id="chatFrame" title="Chat und Anrufe" hidden allow="clipboard-write; clipboard-read; fullscreen; screen-wake-lock; camera; microphone; display-capture; autoplay; web-share"></iframe>
   </div>
 </div>
 
@@ -2124,18 +2132,35 @@ window.openChessModule=function(url,title){
   switchChessModule(url,title);
 };
 const DUEL_URL='duell/index.html?embed=1';
+const CHAT_URL='chat/index.html?embed=1';
 const isDuelUrl=u=>/(^|\/)duell\/index\.html/.test(u||'');
+const isChatUrl=u=>/(^|\/)chat\/index\.html/.test(u||'');
+const isKeepUrl=u=>isDuelUrl(u);
 window.switchChessModule=function(url,title){
   $('moduleTitle').textContent=title;
-  const f=$('moduleFrame'),duel=isDuelUrl(url);
+  const chat=isChatUrl(url),cf=$('chatFrame');
+  // Chat und Duell haben je einen eigenen Rahmen und laufen beim Wechseln weiter (Verbindung, Anruf, Partie bleiben bestehen)
+  cf.hidden=!chat;$('moduleFrame').hidden=chat;
+  if(chat){
+    if(!cf.dataset.url){cf.src=url;cf.dataset.url=url}
+    $('moduleDock').classList.add('duel','open');
+    document.querySelectorAll('.module-switcher button').forEach(b=>b.classList.remove('active'));
+    return;
+  }
+  const f=$('moduleFrame'),duel=isKeepUrl(url);
   $('moduleDock').classList.toggle('duel',duel);
   // Eine laufende Duell-Partie wird beim erneuten Öffnen nicht neu geladen
-  if(!duel||f.dataset.url!==url){f.src=url;f.dataset.url=url}
+  if(!duel||f.dataset.url!==url){
+    f.src=url;f.dataset.url=url}
   $('moduleDock').classList.add('open');
   document.querySelectorAll('.module-switcher button').forEach(b=>b.classList.toggle('active',b.dataset.module===url));
 };
 // Schließen blendet das Duell nur aus, damit eine laufende Partie und ihre Verbindung bestehen bleiben
-window.closeChessModule=function(){const f=$('moduleFrame');if(!isDuelUrl(f.dataset.url)){f.src='about:blank';f.dataset.url=''}$('moduleDock').classList.remove('open')};
+window.closeChessModule=function(){const f=$('moduleFrame');if(!isKeepUrl(f.dataset.url)){f.src='about:blank';f.dataset.url=''}$('moduleDock').classList.remove('open')};
+window.openOnlineChat=function(){
+  try{closeSidebar()}catch(e){}
+  openChessModule(CHAT_URL,'Chat & Anrufe');
+};
 window.openOnlineDuel=function(){
   try{closeSidebar()}catch(e){}
   openChessModule(DUEL_URL,'Online Duell');
@@ -2149,9 +2174,26 @@ setInterval(()=>{
     if(s&&isDuelUrl($('moduleFrame').dataset.url)){live=s.conn==='open'&&!s.over;unread=s.unread||0}
   }catch(e){}
   // Ungelesene Chat-Nachrichten zeigt der Reiter an, solange das Duell-Fenster ausgeblendet ist
-  if(unread>0&&!$('moduleDock').classList.contains('open')){b.textContent='💬 '+unread;b.classList.add('live')}
+  if(unread>0&&!($('moduleDock').classList.contains('open')&&!$('moduleFrame').hidden)){b.textContent='💬 '+unread;b.classList.add('live')}
   else{b.textContent=live?'LÄUFT':'NEU';b.classList.toggle('live',live)}
 },2500);
+// Reiter „Chat & Anrufe“: zeigt Verbindungen, ungelesene Nachrichten und laufende Anrufe, auch wenn das Fenster zu ist.
+// Ein eingehender Anruf öffnet das Fenster von selbst, sonst ginge das Klingeln im ausgeblendeten Rahmen unter.
+setInterval(()=>{
+  const b=$('navChatBadge');if(!b)return;
+  let conns=0,unread=0,call=false,ring=false;
+  try{
+    const f=$('chatFrame'),w=f.contentWindow;
+    if(f.dataset.url&&w.__chat){const s=w.__chat.state();conns=s.conns.length;unread=s.unread||0;call=!!w.__chat.call.info();ring=!!w.__chat.call.ring()}
+  }catch(e){}
+  const open=$('moduleDock').classList.contains('open')&&!$('chatFrame').hidden;
+  if(ring&&!open){openChessModule(CHAT_URL,'Chat & Anrufe');return}
+  b.classList.remove('live','call');
+  if(call&&!open){b.textContent='📞 Anruf';b.classList.add('call')}
+  else if(unread>0&&!open){b.textContent='💬 '+unread;b.classList.add('live')}
+  else if(conns>0){b.textContent=conns+' online';b.classList.add('live')}
+  else b.textContent='NEU';
+},1500);
 $('moduleDock').addEventListener('click',e=>{if(e.target.id==='moduleDock')closeChessModule()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeChessModule()});
 

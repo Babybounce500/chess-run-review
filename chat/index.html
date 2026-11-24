@@ -489,6 +489,9 @@ const $ = (s, r = document) => r.querySelector(s);
 const te = new TextEncoder();
 const now = () => Date.now();
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+// „Gesehen“ heißt: Tab sichtbar und, falls eingebettet (Orbitron), das Fenster des Rahmens ist offen
+const hiddenInHost = () => { try { const f = window.frameElement; return !!f && (f.hidden || f.getClientRects().length === 0); } catch (e) { return false; } };
+const shown = () => document.visibilityState === 'visible' && !hiddenInHost();
 const coarse = () => window.matchMedia && matchMedia('(pointer:coarse)').matches;
 function h(tag, props, ...kids) {
   const e = document.createElement(tag);
@@ -648,9 +651,9 @@ function beep(freq) {
 function totalUnread() { let n = 0; S.contacts.forEach((c) => n += c.unread || 0); return n; }
 function updateTitle() { const n = totalUnread(); document.title = (n ? '(' + n + ') ' : '') + 'Chat-Test'; }
 function notifyIncoming(c, m) {
-  if (document.visibilityState === 'visible' && document.hasFocus() && S.cur === c.id) return;
+  if (shown() && document.hasFocus() && S.cur === c.id) return;
   beep(660);
-  try { if (S.settings.notify && window.Notification && Notification.permission === 'granted' && document.visibilityState !== 'visible') new Notification(nameOf(c), { body: (isRoom(c) ? memName(c, m.from) + ': ' : '') + previewOf(m), tag: c.id, silent: true }); } catch (e) { /* ok */ }
+  try { if (S.settings.notify && window.Notification && Notification.permission === 'granted' && !shown()) new Notification(nameOf(c), { body: (isRoom(c) ? memName(c, m.from) + ': ' : '') + previewOf(m), tag: c.id, silent: true }); } catch (e) { /* ok */ }
 }
 
 /* ================= Nachrichten-Hilfen ================= */
@@ -939,7 +942,7 @@ async function onText(L, c, o) {
 }
 function incoming(c, m) {
   const atEnd = insertMsg(S.msgs.get(c.id), m); saveMsg(m); touchContact(c, m); c.typingUntil = 0;
-  const viewing = S.cur === c.id && document.visibilityState === 'visible';
+  const viewing = S.cur === c.id && shown();
   if (!viewing) { c.unread = (c.unread || 0) + 1; saveContact(c); }
   notifyIncoming(c, m); updateTitle(); renderList();
   if (S.cur === c.id) { if (atEnd) appendMsg(m); else renderMsgs(); renderHeader(); if (viewing) markRead(c.id); }
@@ -1013,7 +1016,7 @@ async function onStreamEnd(L, c, o) {
   S.blobs.set(m.id, blob);
   try { await DB.put('blobs', blob, m.id); } catch (e) { toast('Datei konnte nicht gespeichert werden.', true); }
   m.tx = 'done'; delete m.prog; saveMsg(m); refreshMsg(m); send(L, Object.assign({ t: 'ak', id: m.id }, rr(c)));
-  if (S.cur === c.id) { scrollIfNear(); if (document.visibilityState === 'visible') markRead(c.id); }
+  if (S.cur === c.id) { scrollIfNear(); if (shown()) markRead(c.id); }
 }
 function progress(xf) {
   const m = findMsg(xf.mkey, xf.id); if (!m) return;
@@ -1539,7 +1542,7 @@ function showRing() {
   $('#ringTxt').textContent = r.room ? who + ' hat in „' + nameOf(c) + '“ einen ' + kind + '-Anruf gestartet' : who + ' ruft an (' + kind + ')';
   $('#ringYes').textContent = r.room ? 'Beitreten' : 'Annehmen'; $('#ringNo').textContent = r.room ? 'Ignorieren' : 'Ablehnen';
   box.classList.remove('hidden');
-  try { if (S.settings.notify && window.Notification && Notification.permission === 'granted' && document.visibilityState !== 'visible') new Notification($('#ringTxt').textContent, { tag: 'call' }); } catch (e) { /* ok */ }
+  try { if (S.settings.notify && window.Notification && Notification.permission === 'granted' && !shown()) new Notification($('#ringTxt').textContent, { tag: 'call' }); } catch (e) { /* ok */ }
 }
 function callButton(video) {
   if (S.call) { showCall(); return; }
@@ -2075,7 +2078,9 @@ function bind() {
     for (const d of ['#bkDlg', '#pairDlg', '#infoDlg', '#rinfoDlg', '#roomDlg', '#setDlg']) if (!$(d).classList.contains('hidden')) { closeDlg(d); return; }
     if (S.reply) { S.reply = null; renderReply(); }
   });
-  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && S.cur) markRead(S.cur); });
+  document.addEventListener('visibilitychange', () => { if (shown() && S.cur) markRead(S.cur); });
+  window.addEventListener('resize', () => { if (shown() && S.cur) markRead(S.cur); });
+  try { new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting) && S.cur && shown()) markRead(S.cur); }).observe(document.body); } catch (e) { /* ok */ }   // eingebettet: das Fenster wird erst beim Öffnen sichtbar
   window.addEventListener('focus', () => { if (S.cur) markRead(S.cur); });
   window.addEventListener('hashchange', () => { if (/^#o=/.test(location.hash)) handleHash(); });
   grow();

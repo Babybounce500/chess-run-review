@@ -317,6 +317,7 @@
     if (/^\/er[oö]+ffnung\b|^\/eroeffnung\b|^er[oö]ffnungs-?trainer\b/.test(s)) return { run: () => openBlunderTrainer({ phase: 'o' }) };
     if (/^[/]endspiel(-?fehler)?\b|^endspiel-?(trainer|fehler)\b/.test(s)) return { run: () => openBlunderTrainer({ set: 'endgame' }) };
     if (/^\/duell?\b|^online[- ]?duell?\b/.test(s)) return { run: () => { if (window.openOnlineDuel) window.openOnlineDuel(); } };
+    if (/^\/(chat|messenger)\b|^messenger$/.test(s)) return { run: () => { if (window.openOnlineChat) window.openOnlineChat(); } };
     if (/^\/training\b|^training\b$/.test(s)) return { run: openMenu };
     return null;
   }

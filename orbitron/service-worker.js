@@ -1,4 +1,4 @@
-const CACHE_NAME='orbitron-chess-live-v18';
+const CACHE_NAME='orbitron-chess-live-v19';
 const SHELL=['./gemini-chat.html','./gemini-player.html','./chess-player-core.js','./orbitron-game-core.js','./orbitron-game.js','./orbitron-train.js','./orbitron-blunders.js','./orbitron-sacs.js','./orbitron-zeitnot.js','./orbitron-ownmates.js','./orbitron-traps.js','./orbitron-repertoire.js','./orbitron-open.js','./orbitron-timeheat.js','./orbitron-time.js','./orbitron-daily.js','./orbitron-endgame.js','./orbitron-tactics.js','./orbitron-dmatt.js','./orbitron-mfig.js','./orbitron-profile-data.js','./orbitron-profile.js','./orbitron-scan.js','./orbitron-live.js','./orbitron-tempo.js','./orbitron-labor-data.js','./orbitron-labor.js','./orbitron-backup.js','./orbitron-basics.js','./orbitron-play.js','./CLAUDE-ADDONS/orbitron-eco-data.js','./orbitron-bullet.js','./orbitron-mate-puzzles.js','./orbitron-light.css','./orbitron-manifest.webmanifest','./orbitron-icon.svg'];
 
 self.addEventListener('install',event=>{
