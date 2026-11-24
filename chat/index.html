@@ -150,6 +150,58 @@ audio{max-width:100%;width:250px;height:38px}
 #toast.bad{background:var(--bad)}
 #fatal{padding:30px;color:var(--bad)}
 
+/* ---------- Anrufe ---------- */
+#ring{position:fixed;top:max(10px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:90;display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center;background:var(--panel);border:2px solid var(--accent);border-radius:14px;padding:10px 14px;box-shadow:var(--shadow);width:max-content;max-width:min(94vw,540px)}
+.ringtxt{font-weight:600;min-width:0;overflow-wrap:anywhere}
+#callMini{position:fixed;left:50%;transform:translateX(-50%);bottom:max(10px,env(safe-area-inset-bottom));z-index:85;display:flex;gap:8px;align-items:center;background:#1c2a24;color:#fff;border-radius:99px;padding:6px 8px 6px 14px;box-shadow:var(--shadow);max-width:94vw}
+#callMini button{padding:4px 12px;border-radius:99px;font-size:.85rem}
+#call{position:fixed;inset:0;z-index:75;background:#0d1210;color:#fff;display:flex;flex-direction:column}
+.callTop{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:8px 14px;padding-top:max(8px,env(safe-area-inset-top));font-size:.9rem}
+.callTop span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#callTitle{font-weight:600;min-width:0}
+#callQ{opacity:.7;font-size:.78rem}
+#callGrid{flex:1;min-height:0;display:grid;gap:6px;padding:6px;grid-template-columns:1fr;grid-auto-rows:minmax(0,1fr);position:relative}
+#callGrid[data-n="2"]{display:block}
+#callGrid[data-n="3"],#callGrid[data-n="4"]{grid-template-columns:repeat(2,minmax(0,1fr))}
+#callGrid[data-n="5"],#callGrid[data-n="6"]{grid-template-columns:repeat(3,minmax(0,1fr))}
+#callGrid[data-n="7"],#callGrid[data-n="8"]{grid-template-columns:repeat(4,minmax(0,1fr))}
+#callGrid[data-n="3"] .tile:last-child:nth-child(odd){grid-column:1/-1}
+.tile{position:relative;background:#18221d;border-radius:12px;overflow:hidden;min-height:0;min-width:0;cursor:pointer}
+#callGrid[data-n="2"] .tile{position:absolute;inset:6px}
+#callGrid[data-n="2"] .tile.me{inset:auto;right:14px;bottom:14px;width:min(30%,190px);aspect-ratio:3/4;z-index:2;box-shadow:0 2px 14px rgba(0,0,0,.6)}
+.tile video{display:block;width:100%;height:100%;object-fit:cover;background:#000}
+.tile.me video{transform:scaleX(-1)} .tile.ss video{transform:none;object-fit:contain}
+.tile.speaking{outline:3px solid #34d17a;outline-offset:-3px}
+.avatarbig{position:absolute;inset:0;display:none;align-items:center;justify-content:center}
+.avatarbig span{width:clamp(56px,22%,110px);aspect-ratio:1;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:clamp(1.6rem,5vw,3rem);font-weight:700;color:#fff}
+.tile.nocam .avatarbig{display:flex} .tile.nocam video{visibility:hidden}
+.tinfo{position:absolute;left:8px;bottom:8px;display:flex;gap:6px;align-items:center;background:rgba(0,0,0,.55);padding:2px 10px;border-radius:99px;font-size:.8rem;max-width:calc(100% - 50px)}
+.tinfo .tname{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tile .tfull{position:absolute;right:6px;top:6px;border:none;background:rgba(0,0,0,.5);color:#fff;border-radius:8px;padding:2px 8px;opacity:0;min-height:0}
+.tile:hover .tfull,.tile .tfull:focus{opacity:1}
+@media (hover:none){.tile .tfull{display:none}}
+.tile.focus{outline:3px solid #6aa7ff;outline-offset:-3px}
+#callGrid.hasfocus:not([data-n="2"]){grid-template-columns:repeat(auto-fit,minmax(110px,1fr));grid-auto-rows:minmax(80px,.3fr)}
+#callGrid.hasfocus:not([data-n="2"]) .tile.focus{grid-column:1/-1;grid-row:1;min-height:50vh}
+#callBar{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;padding:10px;padding-bottom:max(12px,env(safe-area-inset-bottom));background:rgba(0,0,0,.35)}
+.cb{width:52px;height:52px;border-radius:50%;border:none;background:#2b3a33;color:#fff;font-size:1.3rem;display:flex;align-items:center;justify-content:center;padding:0;min-height:0}
+.cb:hover{background:#3a4d44}
+.cb[aria-pressed="false"].tg{background:#7a2a2a}
+.cb[aria-pressed="true"].on{background:#2f6f4e}
+#cEnd{background:#c0392b} #cEnd:hover{background:#d4493a}
+@media (max-width:760px) and (orientation:portrait){
+  #callGrid[data-n="5"],#callGrid[data-n="6"],#callGrid[data-n="7"],#callGrid[data-n="8"]{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cb{width:46px;height:46px;font-size:1.15rem}
+  #callBar{gap:8px}
+}
+@media (orientation:landscape) and (max-height:520px){
+  .callTop{padding-top:4px;padding-bottom:4px}
+  .cb{width:42px;height:42px;font-size:1.05rem}
+  #callBar{padding-top:6px;padding-bottom:6px;gap:8px}
+  #callGrid[data-n="2"] .tile.me{width:min(22%,150px)}
+}
+@media (max-width:380px){.cb{width:42px;height:42px;font-size:1rem}}
+
 /* ---------- Handy ---------- */
 @media (max-width:760px){
   #app{grid-template-columns:minmax(0,1fr)}
@@ -217,6 +269,8 @@ audio{max-width:100%;width:250px;height:38px}
         <div class="av" id="hav"></div>
         <div class="htext"><div class="hname" id="peerName"></div><div class="hstat" id="peerStatus"></div></div>
         <button id="btnReconnect" type="button" class="hidden">Verbinden</button>
+        <button id="btnCallA" class="ghost callbtn" type="button" aria-label="Sprachanruf" title="Sprachanruf">📞</button>
+        <button id="btnCallV" class="ghost callbtn" type="button" aria-label="Videoanruf" title="Videoanruf">📹</button>
         <button id="btnSearch" class="ghost" type="button" aria-label="Suchen" title="Im Verlauf suchen">🔍</button>
         <button id="btnInfo" class="ghost" type="button" aria-label="Info" title="Info">ⓘ</button>
       </header>
@@ -357,6 +411,26 @@ audio{max-width:100%;width:250px;height:38px}
   </div>
 </div>
 
+<!-- Anruf -->
+<div id="ring" class="hidden" role="alertdialog" aria-live="assertive" aria-label="Eingehender Anruf">
+  <div class="ringtxt" id="ringTxt"></div>
+  <button id="ringNo" type="button" class="danger">Ablehnen</button><button id="ringYes" type="button" class="primary">Annehmen</button>
+</div>
+<div id="callMini" class="hidden"><span id="miniTxt"></span><button id="miniBack" type="button">Zurück zum Anruf</button><button id="miniEnd" type="button" class="danger">Auflegen</button></div>
+<div id="call" class="hidden" role="dialog" aria-label="Anruf">
+  <div class="callTop"><span id="callTitle"></span><span id="callQ"></span><span id="callT">0:00</span></div>
+  <div id="callGrid" data-n="1"></div>
+  <div id="callBar">
+    <button id="cMic" class="cb tg" type="button" aria-pressed="true" aria-label="Mikrofon" title="Mikrofon stummschalten">🎤</button>
+    <button id="cCam" class="cb tg" type="button" aria-pressed="true" aria-label="Kamera" title="Kamera ein oder aus">📹</button>
+    <button id="cFlip" class="cb" type="button" aria-label="Kamera wechseln" title="Kamera wechseln">🔄</button>
+    <button id="cShare" class="cb on" type="button" aria-pressed="false" aria-label="Bildschirm teilen" title="Bildschirm teilen">🖥</button>
+    <button id="cLow" class="cb on" type="button" aria-pressed="false" aria-label="Datensparen" title="Datensparen: weniger Bildqualität">📉</button>
+    <button id="cFull" class="cb" type="button" aria-label="Vollbild" title="Vollbild">⛶</button>
+    <button id="cMin" class="cb" type="button" aria-label="Anruf minimieren" title="Zurück zum Chat, Anruf läuft weiter">⌄</button>
+    <button id="cEnd" class="cb" type="button" aria-label="Auflegen" title="Auflegen">📞</button>
+  </div>
+</div>
 <div id="lb" class="hidden" role="dialog" aria-modal="true" aria-label="Bild"><img id="lbImg" alt=""><div class="row"><a id="lbSave" class="hidden" style="color:#fff">Speichern</a><button id="lbClose" type="button">Schließen</button></div></div>
 <div id="msgMenu" class="hidden" role="menu"></div>
 <div id="toast" class="hidden" role="status"></div>
@@ -447,7 +521,8 @@ const S = {
   contacts: new Map(), msgs: new Map(), conns: new Map(), xfers: new Map(),
   blobs: new Map(), urls: new Map(), cur: null, reply: null, rec: null, search: '',
   shown: 200, audio: null, typingSent: 0,
-  pend: new Map(), permits: new Map(), invited: new Set(), relayIn: new Map(), riQueue: null
+  pend: new Map(), permits: new Map(), invited: new Set(), relayIn: new Map(), riQueue: null,
+  call: null, ringIn: null, ringT: 0, roomCalls: new Map(), actx: null, allTracks: []
 };
 let P = null;                                   // laufender Verbindungsaufbau über die Oberfläche
 
@@ -717,6 +792,7 @@ function registerConn(L) {
   saveContact(c);
   const old = S.conns.get(c.id); if (old && old !== L) { old.replaced = true; connClosed(old); }
   L.cid = c.id; L.open = true; L.lastRx = now(); L.closed = false; S.conns.set(c.id, L); S.pend.delete(c.id);
+  setupMedia(L); callPeerBack(L);
   if (P === L) { P = null; closeDlg('#pairDlg'); $('#invGo').textContent = 'Verbinden'; }
   send(L, { t: 'hi', n: S.settings.name, c: S.settings.color });
   loadMsgs(c.id).then(() => { flush(c.id); if (S.cur === c.id) renderMsgs(); });
@@ -735,7 +811,7 @@ function connClosed(L) {
   if (L.closed) return; L.closed = true; L.open = false;
   try { L.dc && L.dc.close(); } catch (e) { /* ok */ } try { L.pc && L.pc.close(); } catch (e) { /* ok */ }
   if (L.cid && S.conns.get(L.cid) === L) {
-    S.conns.delete(L.cid); failTransfers(L.cid); renderList();
+    S.conns.delete(L.cid); failTransfers(L.cid); callPeerGone(L.cid); renderList();
     if (S.cur) renderHeader();
   }
   if (L.peer && S.pend.get(L.peer.id) === L) S.pend.delete(L.peer.id);
@@ -778,6 +854,7 @@ function handleCtl(L, o) {
     case 'ping': return;
     case 'hi': { const k = S.contacts.get(peer); if (!k) return; const n = clean(o.n, 30); if (n && n !== k.name) { k.name = n; saveContact(k); renderList(); if (S.cur === peer) renderHeader(); } if (/^#[0-9a-f]{6}$/i.test(o.c || '')) k.color = o.c; return; }
     case 'ty': { if (o.r !== undefined) return; const k = S.contacts.get(peer); if (!k) return; k.typingUntil = now() + 5000; if (S.cur === peer) renderHeader(); return; }
+    case 'sg': return onSg(L, o);
     case 'ri': return onRi(L, o);
     case 'ra': return onRa(L, o);
     case 'rs': return onRs(L, o);
@@ -790,6 +867,7 @@ function handleCtl(L, o) {
   if (o.r !== undefined) { c = roomOf(o.r); if (!c || !isMember(c, peer)) return; } else c = S.contacts.get(peer);
   if (!c) return;
   switch (o.t) {
+    case 'cl': return onCl(L, c, o);
     case 'm': return onText(L, c, o);
     case 'of': return onOffer(L, c, o);
     case 'oa': return onAccept(L, c, o);
@@ -1192,6 +1270,392 @@ async function onRg(L, o) {
   } catch (e) { /* ungültig oder abgelaufen: ignorieren */ }
 }
 
+/* ================= Anrufe: Audio, Video, Bildschirm ================= */
+// Bildqualität nach Zahl der Teilnehmer (mit dir): Jeder sendet an jeden einzeln, deshalb wird es mit mehr Leuten kleiner und sparsamer
+const LADDER = [
+  { n: 2, h: 720, fps: 30, br: 1500000 }, { n: 3, h: 480, fps: 24, br: 700000 }, { n: 4, h: 360, fps: 20, br: 400000 },
+  { n: 6, h: 240, fps: 15, br: 220000 }, { n: 8, h: 180, fps: 10, br: 120000 }
+];
+function qualityFor(n, low) {
+  const q = LADDER.find((x) => n <= x.n) || LADDER[LADDER.length - 1];
+  return low ? { n: q.n, h: Math.min(q.h, 240), fps: Math.min(q.fps, 15), br: Math.min(q.br, 200000) } : q;
+}
+const fmtDur = (s) => Math.floor(s / 60) + ':' + pad2(s % 60);
+const hasV = (st) => !!st && st.getVideoTracks().some((t) => t.readyState === 'live');
+const mediaOk = () => !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+function mediaErr(e) {
+  const n = e && e.name;
+  if (n === 'NotAllowedError') return 'Kamera oder Mikrofon sind im Browser nicht erlaubt.';
+  if (n === 'NotFoundError' || n === 'OverconstrainedError') return 'Keine passende Kamera oder kein Mikrofon gefunden.';
+  if (n === 'NotReadableError') return 'Kamera oder Mikrofon werden von einer anderen App benutzt.';
+  return 'Kamera oder Mikrofon nicht verfügbar.';
+}
+const newPart = () => ({ stream: null, mic: true, cam: null, ss: false });
+async function gum(constraints) { const s = await navigator.mediaDevices.getUserMedia(constraints); s.getTracks().forEach((t) => S.allTracks.push(t)); return s; }
+function getLocal(video) {
+  const q = qualityFor(2, false);
+  return gum({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }, video: video ? { width: { ideal: 1280 }, height: { ideal: q.h }, frameRate: { ideal: q.fps }, facingMode: 'user' } : false });
+}
+function newCall(key, room, stream, state) {
+  const vt = stream.getVideoTracks()[0] || null;
+  return { key, room, id: '', state, t0: 0, local: stream, camTrack: vt, screenTrack: null, mic: true, cam: !!vt, ss: false, low: false, min: false, parts: new Map(), q: null, ana: new Map(), spoke: new Set(), speaking: null, sT: 0, focus: null, ringT: 0, timer: 0 };
+}
+
+/* --- Neuverhandlung über den vorhandenen Datenkanal (kein neuer Code-Austausch nötig) ---
+   Pro Verbindung bietet immer nur eine Seite an (die, die den Kanal angelegt hat, Rolle „host“). Die andere Seite („guest“)
+   bittet bei Bedarf darum (need). So gibt es keine gleichzeitigen Angebote und keine verlorenen Richtungen. */
+function setupMedia(L) {
+  const pc = L.pc; L.making = false; L.needLater = false; L.msend = null; L.sgRl = []; L.rstream = null;
+  pc.onnegotiationneeded = () => negotiate(L);
+  pc.onicecandidate = (e) => { if (e.candidate && L.open) send(L, { t: 'sg', c: e.candidate.toJSON ? e.candidate.toJSON() : e.candidate }); };
+  pc.ontrack = (e) => {
+    const st = (e.streams && e.streams[0]) || new MediaStream([e.track]);
+    L.rstream = st;
+    const part = S.call && S.call.parts.get(L.cid); if (part) { part.stream = st; renderCall(); }
+    e.track.onunmute = () => renderCall(); e.track.onended = () => renderCall();
+  };
+  pc.onsignalingstatechange = () => {
+    if (pc.signalingState === 'stable') { if (L.needLater && L.role === 'host') { L.needLater = false; offerNow(L); } if (S.call) setTimeout(applyQuality, 600); }
+  };
+}
+// Bei Bedarf sicherstellen, dass auch Spuren der Gegenseite Platz haben (Audio und Video), bevor angeboten wird
+function ensureTx(L) {
+  const pc = L.pc;
+  ['audio', 'video'].forEach((k) => { if (!pc.getTransceivers().some((t) => t.receiver.track.kind === k)) { try { pc.addTransceiver(k, { direction: 'recvonly' }); } catch (e) { /* ok */ } } });
+}
+function negotiate(L) {
+  if (!L.pc || !L.open) return;
+  if (L.role === 'host') offerNow(L); else { L.lastNeed = now(); send(L, { t: 'sg', need: 1 }); }
+}
+async function offerNow(L) {
+  const pc = L.pc; if (!pc || !L.open) return;
+  if (L.making || pc.signalingState !== 'stable') { L.needLater = true; return; }
+  try { L.making = true; L.lastNeg = now(); await pc.setLocalDescription(); L.offerT = now(); send(L, { t: 'sg', d: { type: pc.localDescription.type, sdp: pc.localDescription.sdp } }); }
+  catch (e) { /* Verbindung weg oder veraltet */ } finally { L.making = false; }
+}
+// Sicherheitsnetz: bleibt ein Angebot unbeantwortet oder sendet eine Spur nach der Verhandlung nicht wirklich, wird neu verhandelt
+async function watchLink(L) {
+  const pc = L.pc; if (!pc || !L.open || !L.msend || L.making) return;
+  const t = now();
+  if (L.role === 'host') {
+    if (pc.signalingState === 'have-local-offer' && t - (L.offerT || t) > 8000) { try { await pc.setLocalDescription({ type: 'rollback' }); } catch (e) { /* ok */ } offerNow(L); }
+    return;
+  }
+  if (pc.signalingState !== 'stable' || t - (L.lastNeed || 0) < 3000) return;
+  if (pc.getTransceivers().some((x) => x.sender.track && x.sender.track.readyState === 'live' && x.currentDirection !== 'sendrecv' && x.currentDirection !== 'sendonly')) { L.lastNeed = t; send(L, { t: 'sg', need: 1 }); }
+}
+async function onSg(L, o) {
+  const pc = L.pc; if (!pc || !L.open) return;
+  const t = now(); L.sgRl = (L.sgRl || []).filter((x) => t - x < 10000); if (L.sgRl.length > 60) return; L.sgRl.push(t);
+  try {
+    if (o.need) { if (L.role === 'host') { ensureTx(L); offerNow(L); } return; }
+    if (o.d && typeof o.d === 'object' && (o.d.type === 'offer' || o.d.type === 'answer') && typeof o.d.sdp === 'string' && o.d.sdp.length < 120000) {
+      if (o.d.type === 'offer') {
+        if (L.role !== 'guest') return;                                  // nur die Gegenseite des Anbieters nimmt Angebote an
+        await pc.setRemoteDescription({ type: 'offer', sdp: o.d.sdp });
+        await pc.setLocalDescription(); send(L, { t: 'sg', d: { type: pc.localDescription.type, sdp: pc.localDescription.sdp } });
+      } else {
+        if (L.role !== 'host' || pc.signalingState !== 'have-local-offer') return;
+        await pc.setRemoteDescription({ type: 'answer', sdp: o.d.sdp });
+      }
+    } else if (o.c && typeof o.c === 'object') {
+      try { await pc.addIceCandidate(o.c); } catch (e) { /* Kandidat gehört zu einer verworfenen Verhandlung */ }
+    }
+  } catch (e) { /* ungültige oder veraltete Verhandlung */ }
+}
+function syncLink(L) {
+  if (!L || !L.open || !L.pc) return;
+  const call = S.call, want = !!(call && call.parts.has(L.cid));
+  if (want && !L.msend) { L.msend = []; call.local.getTracks().forEach((t) => { try { L.msend.push(L.pc.addTrack(t, call.local)); } catch (e) { /* ok */ } }); setTimeout(applyQuality, 900); }
+  else if (!want && L.msend) { L.msend.forEach((s) => { try { L.pc.removeTrack(s); } catch (e) { /* ok */ } }); L.msend = null; }
+}
+const syncAll = () => S.conns.forEach(syncLink);
+function addPartTo(call, id) { if (!call.parts.has(id)) { const p = newPart(), L = S.conns.get(id); if (L && L.rstream) p.stream = L.rstream; call.parts.set(id, p); } }
+function replaceVideo(track) {
+  const call = S.call; if (!call) return;
+  S.conns.forEach((L) => {
+    if (!L.msend) return;
+    const s = L.msend.find((x) => x.track && x.track.kind === 'video') || L.msend.find((x) => !x.track);
+    if (s) s.replaceTrack(track).catch(() => {}); else if (track) { try { L.msend.push(L.pc.addTrack(track, call.local)); } catch (e) { /* ok */ } }
+  });
+}
+
+/* --- Qualität und Sprecher --- */
+const qualityNow = () => { const call = S.call; return qualityFor(Math.max(2, 1 + call.parts.size), call.low); };
+async function applyQuality() {
+  const call = S.call; if (!call) return;
+  const q = call.q = qualityNow();
+  const vt = call.ss ? null : call.camTrack;
+  if (vt && vt.readyState === 'live') { try { await vt.applyConstraints({ height: { ideal: q.h }, frameRate: { ideal: q.fps } }); } catch (e) { /* ok */ } }
+  for (const L of S.conns.values()) {
+    if (!L.msend) continue;
+    for (const s of L.msend) {
+      if (!s.track || s.track.kind !== 'video') continue;
+      try { const p = s.getParameters(); if (!p.encodings || !p.encodings.length) p.encodings = [{}]; p.encodings[0].maxBitrate = q.br; p.encodings[0].maxFramerate = q.fps; await s.setParameters(p); } catch (e) { /* vor der Verhandlung nicht möglich */ }
+    }
+  }
+  renderCall();
+}
+function levelOf(call, id, stream) {
+  if (!stream || !stream.getAudioTracks().some((t) => t.readyState === 'live')) return 0;
+  let a = call.ana.get(id);
+  if (!a || a.stream !== stream) {
+    try {
+      S.actx = S.actx || new (window.AudioContext || window.webkitAudioContext)();
+      if (S.actx.state === 'suspended') S.actx.resume();
+      const an = S.actx.createAnalyser(); an.fftSize = 512; S.actx.createMediaStreamSource(stream).connect(an);
+      a = { stream, an, buf: new Uint8Array(512) }; call.ana.set(id, a);
+    } catch (e) { return 0; }
+  }
+  a.an.getByteTimeDomainData(a.buf); let s = 0;
+  for (let i = 0; i < a.buf.length; i++) { const v = (a.buf[i] - 128) / 128; s += v * v; }
+  return Math.sqrt(s / a.buf.length);
+}
+// Audioenergie aus den Verbindungsstatistiken: unabhängig vom Zeitgeber, deshalb auch im Hintergrund-Tab zuverlässig
+async function pollEnergy(call) {
+  if (call.polling) return; call.polling = true;
+  try {
+    for (const [id, p] of call.parts) {
+      const L = S.conns.get(id); if (!L || !L.pc) continue;
+      let en = 0; (await L.pc.getStats()).forEach((r) => { if (r.type === 'inbound-rtp' && r.kind === 'audio') en += r.totalAudioEnergy || 0; });
+      p.dEn = p.en == null ? 0 : en - p.en; p.en = en;
+    }
+  } catch (e) { /* ok */ }
+  call.polling = false;
+}
+function callTick() {
+  const call = S.call; if (!call) return;
+  const c = S.contacts.get(call.key);
+  call.n = (call.n || 0) + 1; if (call.n % 2 === 0) pollEnergy(call);
+  if (call.n % 6 === 0) S.conns.forEach(watchLink);
+  if (call.t0) { const t = fmtDur(Math.round((now() - call.t0) / 1000)); $('#callT').textContent = t; $('#miniTxt').textContent = nameOf(c) + ' · ' + t; }
+  let best = null, bl = 0.02;
+  const mine = call.mic ? levelOf(call, 'me', call.local) : 0; if (mine > bl) { best = 'me'; bl = mine; }
+  call.parts.forEach((p, id) => {
+    let l = p.mic !== false ? levelOf(call, id, p.stream) : 0;
+    if (p.mic !== false && p.dEn > 0.002) l = Math.max(l, 0.03 + Math.min(0.5, p.dEn));
+    if (l > bl) { best = id; bl = l; }
+  });
+  if (best) { call.speaking = best; call.spoke.add(best); call.sT = now(); } else if (call.speaking && now() - call.sT > 700) call.speaking = null;
+  document.querySelectorAll('#callGrid .tile').forEach((el) => el.classList.toggle('speaking', el.dataset.id === call.speaking));
+}
+
+/* --- Anzeige des Anrufs --- */
+function tileEl(id) {
+  const call = S.call, me = id === 'me';
+  const el = h('div', { class: 'tile' + (me ? ' me' : ''), data: { id }, onClick: () => { call.focus = call.focus === id ? null : id; renderCall(); } },
+    h('video', { autoplay: true, playsinline: true }),
+    h('div', { class: 'avatarbig' }, h('span')),
+    h('div', { class: 'tinfo' }, h('span', { class: 'tmic' }), h('span', { class: 'tname' })),
+    h('button', { class: 'tfull', type: 'button', 'aria-label': 'Kachel im Vollbild', onClick: (e) => { e.stopPropagation(); const t = e.currentTarget.parentNode; const f = t.requestFullscreen || t.webkitRequestFullscreen; if (f) f.call(t); } }, '⛶'));
+  const v = el.querySelector('video'); v.muted = me; v.playsInline = true; v.autoplay = true;
+  return el;
+}
+function updateTile(el, id) {
+  const call = S.call, c = S.contacts.get(call.key), me = id === 'me', p = me ? null : call.parts.get(id);
+  const stream = me ? call.local : p.stream;
+  const camOn = me ? (call.cam || call.ss) && hasV(stream) : p.cam !== false && hasV(stream);
+  const mic = me ? call.mic : p.mic !== false, ss = me ? call.ss : p.ss;
+  const v = el.querySelector('video');
+  if (v.srcObject !== (stream || null)) { v.srcObject = stream || null; v.play().catch(() => {}); }
+  el.classList.toggle('nocam', !camOn); el.classList.toggle('ss', !!ss && camOn); el.classList.toggle('focus', call.focus === id); el.classList.toggle('muted', !mic);
+  el.querySelector('.tmic').textContent = mic ? '' : '🔇';
+  const nm = me ? 'Du' : memName(c, id); el.querySelector('.tname').textContent = nm + (ss ? ' · Bildschirm' : '');
+  const av = el.querySelector('.avatarbig span'); av.textContent = (nm.trim()[0] || '?').toUpperCase(); av.style.background = me ? S.settings.color : memColor(c, id);
+}
+function renderCall() {
+  const call = S.call, ov = $('#call'), mini = $('#callMini');
+  if (!call) { ov.classList.add('hidden'); mini.classList.add('hidden'); return; }
+  const c = S.contacts.get(call.key);
+  ov.classList.toggle('hidden', call.min); mini.classList.toggle('hidden', !call.min);
+  $('#callTitle').textContent = (c ? nameOf(c) : 'Anruf') + (call.state === 'out' ? ' · ruft an …' : '');
+  const grid = $('#callGrid'), ids = ['me', ...call.parts.keys()];
+  [...grid.children].forEach((el) => { if (!ids.includes(el.dataset.id)) el.remove(); });
+  ids.forEach((id) => { let el = grid.querySelector('.tile[data-id="' + id + '"]'); if (!el) { el = tileEl(id); grid.append(el); } updateTile(el, id); });
+  grid.dataset.n = String(ids.length); grid.classList.toggle('hasfocus', !!call.focus && ids.includes(call.focus));
+  const camOn = !!call.camTrack && call.cam;
+  $('#cMic').setAttribute('aria-pressed', String(call.mic)); $('#cMic').textContent = call.mic ? '🎤' : '🔇';
+  $('#cCam').setAttribute('aria-pressed', String(camOn)); $('#cCam').textContent = camOn ? '📹' : '🚫';
+  $('#cShare').setAttribute('aria-pressed', String(call.ss)); $('#cLow').setAttribute('aria-pressed', String(call.low));
+  $('#cFlip').classList.toggle('hidden', !call.camTrack || call.ss);
+  $('#callQ').textContent = call.q && hasV(call.local) ? call.q.h + 'p · ' + call.q.fps + ' Bilder/s' + (call.low ? ' · Datensparen' : '') : '';
+}
+function showCall() { const call = S.call; if (!call) return; call.min = false; renderCall(); callTick(); }
+function startCallLoop() { const call = S.call; if (call) { clearInterval(call.timer); call.timer = setInterval(callTick, 250); } }
+
+/* --- Anrufablauf --- */
+function ring(on) { clearInterval(S.ringT); if (on) { beep(520); S.ringT = setInterval(() => { beep(520); setTimeout(() => beep(620), 250); }, 1800); } }
+function showRing() {
+  const r = S.ringIn, box = $('#ring');
+  if (!r) { box.classList.add('hidden'); return; }
+  const c = S.contacts.get(r.key), who = memName(c, r.from), kind = r.video ? 'Video' : 'Audio';
+  $('#ringTxt').textContent = r.room ? who + ' hat in „' + nameOf(c) + '“ einen ' + kind + '-Anruf gestartet' : who + ' ruft an (' + kind + ')';
+  $('#ringYes').textContent = r.room ? 'Beitreten' : 'Annehmen'; $('#ringNo').textContent = r.room ? 'Ignorieren' : 'Ablehnen';
+  box.classList.remove('hidden');
+  try { if (S.settings.notify && window.Notification && Notification.permission === 'granted' && document.visibilityState !== 'visible') new Notification($('#ringTxt').textContent, { tag: 'call' }); } catch (e) { /* ok */ }
+}
+function callButton(video) {
+  if (S.call) { showCall(); return; }
+  const c = S.contacts.get(S.cur); if (!c) return;
+  const rc = isRoom(c) ? S.roomCalls.get(c.id) : null;
+  if (rc && rc.parts.size) { S.ringIn = { key: c.id, id: rc.id, video: !!video, room: true, from: [...rc.parts][0] }; acceptRing(); return; }   // der gewählte Knopf bestimmt, ob die eigene Kamera mitgeht
+  startCall(video);
+}
+async function startCall(video) {
+  const key = S.cur, c = S.contacts.get(key); if (!c || S.call) return;
+  const room = isRoom(c);
+  if (!mediaOk()) { toast('Dieser Browser kann keine Anrufe (Kamera und Mikrofon brauchen https).', true); return; }
+  if (!room && !isOnline(key)) { toast('Nicht verbunden: Anrufe gehen nur, wenn ihr verbunden seid.', true); return; }
+  if (room && !c.members.some((m) => m.id !== S.me.id && isOnline(m.id))) { toast('Niemand im Raum ist verbunden.', true); return; }
+  let stream; try { stream = await getLocal(video); } catch (e) { toast(mediaErr(e), true); return; }
+  const call = S.call = newCall(key, room, stream, room ? 'active' : 'out'); call.id = rid(6);
+  if (room) { call.t0 = now(); toPeers(c, { t: 'cl', k: 'start', id: call.id, v: !!video }); addSys(c, 'Du hast einen ' + (video ? 'Video' : 'Audio') + '-Anruf gestartet'); }
+  else {
+    addPartTo(call, key); toPeers(c, { t: 'cl', k: 'invite', id: call.id, v: !!video });
+    call.ringT = setTimeout(() => { if (S.call === call && call.state === 'out') endCall('Keine Antwort'); }, 45000);
+  }
+  startCallLoop(); syncAll(); showCall(); applyQuality();
+}
+async function acceptRing() {
+  const r = S.ringIn; if (!r || S.call) return;
+  S.ringIn = null; ring(false); showRing();
+  const c = S.contacts.get(r.key); if (!c) return;
+  let stream; try { stream = await getLocal(r.video); } catch (e) { toast(mediaErr(e), true); if (!r.room) toPeers(c, { t: 'cl', k: 'decline', id: r.id }); return; }
+  const call = S.call = newCall(r.key, r.room, stream, 'active'); call.id = r.id; call.t0 = now();
+  if (r.room) { const rc = S.roomCalls.get(r.key); if (rc) rc.parts.forEach((id) => addPartTo(call, id)); toPeers(c, { t: 'cl', k: 'join', id: r.id }); }
+  else { addPartTo(call, r.key); toPeers(c, { t: 'cl', k: 'accept', id: r.id }); }
+  await select(r.key); startCallLoop(); syncAll(); showCall(); call.parts.forEach((p, id) => sendSt(S.conns.get(id))); applyQuality();
+}
+function declineRing() {
+  const r = S.ringIn; S.ringIn = null; ring(false); showRing();
+  if (r && !r.room) { const c = S.contacts.get(r.key); toPeers(c, { t: 'cl', k: 'decline', id: r.id }); addSys(c, 'Anruf abgelehnt'); }
+}
+function endCall(note, remote) {
+  const call = S.call; if (!call) return; S.call = null;
+  clearTimeout(call.ringT); clearInterval(call.timer); ring(false);
+  const c = S.contacts.get(call.key);
+  if (!remote && c) toPeers(c, call.room ? { t: 'cl', k: 'leave', id: call.id } : { t: 'cl', k: 'end', id: call.id });
+  S.conns.forEach((L) => { if (L.msend) { L.msend.forEach((s) => { try { L.pc.removeTrack(s); } catch (e) { /* ok */ } }); L.msend = null; } });
+  call.local.getTracks().forEach((t) => t.stop()); if (call.camTrack) call.camTrack.stop(); if (call.screenTrack) call.screenTrack.stop();
+  call.ana.forEach((a) => { try { a.an.disconnect(); } catch (e) { /* ok */ } });
+  document.querySelectorAll('#callGrid .tile video').forEach((v) => { v.srcObject = null; });
+  $('#callGrid').textContent = ''; $('#call').classList.add('hidden'); $('#callMini').classList.add('hidden');
+  try { if (document.fullscreenElement) document.exitFullscreen(); } catch (e) { /* ok */ }
+  if (c) { const dur = call.t0 ? Math.round((now() - call.t0) / 1000) : 0; addSys(c, note || (dur ? (call.room ? 'Du hast den Anruf verlassen' : 'Anruf beendet') + ' · ' + fmtDur(dur) : 'Anruf beendet')); }
+  if (call.room) { const rc = S.roomCalls.get(call.key); if (rc && !rc.parts.size) S.roomCalls.delete(call.key); }
+  if (S.cur) renderHeader();
+}
+function callPeerGone(id) {
+  const call = S.call;
+  S.roomCalls.forEach((rc, key) => { if (rc.parts.has(id)) { rc.parts.delete(id); if (!rc.parts.size && !(call && call.key === key)) S.roomCalls.delete(key); } });
+  if (!call) return;
+  if (!call.room && call.key === id) { endCall('Verbindung verloren', true); return; }
+  if (call.parts.has(id)) { call.parts.delete(id); renderCall(); applyQuality(); }
+}
+function callPeerBack(L) { if (S.call && S.call.parts.has(L.cid)) { syncLink(L); sendSt(L); } }
+const stMsg = (call) => ({ t: 'cl', k: 'st', id: call.id, mic: call.mic, cam: call.ss || (!!call.camTrack && call.cam), ss: call.ss });
+function sendSt(L) { const call = S.call; if (!call || !L) return; send(L, Object.assign(stMsg(call), rr(S.contacts.get(call.key)))); }
+function broadcastSt() { const call = S.call; if (call) call.parts.forEach((p, id) => sendSt(S.conns.get(id))); }
+function onCl(L, c, o) {
+  const peer = L.cid, room = isRoom(c), call = S.call;
+  if (!okId(o.id)) return;
+  const mine = !!call && call.key === c.id && call.id === o.id;
+  switch (o.k) {
+    case 'invite':
+      if (room) return;
+      if (S.call || S.ringIn) { send(L, { t: 'cl', k: 'busy', id: o.id }); return; }
+      S.ringIn = { key: c.id, id: o.id, video: !!o.v, room: false, from: peer }; showRing(); ring(true); return;
+    case 'busy': if (mine && !room) endCall('Besetzt', true); return;
+    case 'accept': if (mine && !room && call.state === 'out') { call.state = 'active'; call.t0 = now(); clearTimeout(call.ringT); renderCall(); sendSt(L); applyQuality(); } return;
+    case 'decline': if (mine && !room) endCall('Anruf abgelehnt', true); return;
+    case 'end':
+      if (room) return;
+      if (mine) { endCall(null, true); return; }
+      if (S.ringIn && S.ringIn.id === o.id) { S.ringIn = null; ring(false); showRing(); addSys(c, 'Verpasster Anruf'); }
+      return;
+    case 'start':
+      if (!room) return;
+      S.roomCalls.set(c.id, { id: o.id, video: !!o.v, parts: new Set([peer]) });
+      if (!S.call && !S.ringIn) { S.ringIn = { key: c.id, id: o.id, video: !!o.v, room: true, from: peer }; showRing(); ring(true); }
+      addSys(c, memName(c, peer) + ' hat einen ' + (o.v ? 'Video' : 'Audio') + '-Anruf gestartet'); if (S.cur) renderHeader(); return;
+    case 'join': {
+      if (!room) return;
+      const rc = S.roomCalls.get(c.id) || { id: o.id, video: false, parts: new Set() }; if (rc.id !== o.id) return;
+      rc.parts.add(peer); S.roomCalls.set(c.id, rc);
+      if (mine) { addPartTo(call, peer); syncLink(L); send(L, { t: 'cl', k: 'in', id: o.id, r: roomId(c) }); sendSt(L); renderCall(); applyQuality(); }
+      return;
+    }
+    case 'in': { if (!room || !mine) return; addPartTo(call, peer); const rc = S.roomCalls.get(c.id); if (rc) rc.parts.add(peer); syncLink(L); sendSt(L); renderCall(); applyQuality(); return; }
+    case 'leave': {
+      if (!room) return;
+      const rc = S.roomCalls.get(c.id);
+      if (rc && rc.id === o.id) { rc.parts.delete(peer); if (!rc.parts.size && !mine) { S.roomCalls.delete(c.id); if (S.ringIn && S.ringIn.key === c.id) { S.ringIn = null; ring(false); showRing(); } } }
+      if (mine && call.parts.has(peer)) { call.parts.delete(peer); syncLink(L); renderCall(); applyQuality(); }
+      if (S.cur) renderHeader(); return;
+    }
+    case 'st': { if (!mine) return; const p = call.parts.get(peer); if (!p) return; p.mic = o.mic !== false; p.cam = o.cam === false ? false : o.cam === true ? true : p.cam; p.ss = !!o.ss; renderCall(); return; }
+  }
+}
+
+/* --- Bedienung im Anruf --- */
+function toggleMic() { const call = S.call; if (!call) return; call.mic = !call.mic; call.local.getAudioTracks().forEach((t) => { t.enabled = call.mic; }); broadcastSt(); renderCall(); }
+async function enableCamera() {
+  const call = S.call; if (!call) return;
+  try {
+    const q = qualityNow(), s = await gum({ video: { width: { ideal: 1280 }, height: { ideal: q.h }, frameRate: { ideal: q.fps }, facingMode: 'user' } });
+    const t = s.getVideoTracks()[0]; call.camTrack = t; call.cam = true;
+    if (!call.ss) { call.local.addTrack(t); S.conns.forEach((L) => { if (L.msend) { try { L.msend.push(L.pc.addTrack(t, call.local)); } catch (e) { /* ok */ } } }); }
+    broadcastSt(); renderCall(); setTimeout(applyQuality, 900);
+  } catch (e) { toast(mediaErr(e), true); }
+}
+function toggleCam() {
+  const call = S.call; if (!call) return;
+  if (!call.camTrack) { enableCamera(); return; }
+  call.cam = !call.cam; call.camTrack.enabled = call.cam; broadcastSt(); renderCall();
+}
+async function flipCamera() {
+  const call = S.call; if (!call || !call.camTrack || call.ss) return;
+  let devs = []; try { devs = (await navigator.mediaDevices.enumerateDevices()).filter((d) => d.kind === 'videoinput'); } catch (e) { /* ok */ }
+  const cur = call.camTrack.getSettings ? call.camTrack.getSettings() : {}, q = qualityNow();
+  const base = { height: { ideal: q.h }, frameRate: { ideal: q.fps } };
+  let constraint;
+  if (devs.length > 1) { const i = Math.max(0, devs.findIndex((d) => d.deviceId === cur.deviceId)); constraint = { deviceId: { exact: devs[(i + 1) % devs.length].deviceId } }; }
+  else constraint = { facingMode: cur.facingMode === 'environment' ? 'user' : 'environment' };
+  let s; call.camTrack.stop();
+  try { s = await gum({ video: Object.assign({}, base, constraint) }); } catch (e) { try { s = await gum({ video: base }); } catch (e2) { toast(mediaErr(e2), true); return; } }
+  const nt = s.getVideoTracks()[0], old = call.camTrack; nt.enabled = call.cam; call.camTrack = nt;
+  try { call.local.removeTrack(old); } catch (e) { /* ok */ } call.local.addTrack(nt); replaceVideo(nt); renderCall(); applyQuality();
+}
+async function toggleShare() {
+  const call = S.call; if (!call) return;
+  if (call.ss) { stopShare(); return; }
+  if (!navigator.mediaDevices.getDisplayMedia) { toast('Dieser Browser kann den Bildschirm nicht teilen.', true); return; }
+  let s; try { s = await navigator.mediaDevices.getDisplayMedia({ video: { frameRate: 15 }, audio: false }); } catch (e) { toast(e && e.name === 'NotAllowedError' ? 'Bildschirmfreigabe abgelehnt.' : 'Bildschirmfreigabe nicht möglich.', true); return; }
+  const st = s.getVideoTracks()[0]; S.allTracks.push(st);
+  call.screenTrack = st; call.ss = true;
+  if (call.camTrack) { try { call.local.removeTrack(call.camTrack); } catch (e) { /* ok */ } }
+  call.local.addTrack(st); replaceVideo(st);
+  st.onended = () => { if (S.call === call && call.ss) stopShare(); };
+  broadcastSt(); renderCall(); applyQuality();
+}
+function stopShare() {
+  const call = S.call; if (!call || !call.ss) return;
+  const st = call.screenTrack; call.ss = false; call.screenTrack = null;
+  try { call.local.removeTrack(st); } catch (e) { /* ok */ } st.stop();
+  if (call.camTrack) { call.local.addTrack(call.camTrack); replaceVideo(call.camTrack); } else replaceVideo(null);
+  broadcastSt(); renderCall(); applyQuality();
+}
+function toggleLow() { const call = S.call; if (!call) return; call.low = !call.low; applyQuality(); }
+function toggleFull() {
+  const el = $('#call'), exit = document.exitFullscreen || document.webkitExitFullscreen, req = el.requestFullscreen || el.webkitRequestFullscreen;
+  if (document.fullscreenElement || document.webkitFullscreenElement) { if (exit) exit.call(document); }
+  else if (req) { const r = req.call(el); if (r && r.catch) r.catch(() => toast('Vollbild nicht möglich.', true)); }
+}
+function callButtonsState(c) {
+  const ok = mediaOk();
+  ['#btnCallA', '#btnCallV'].forEach((s) => { const b = $(s); b.classList.toggle('hidden', !ok); if (ok) b.disabled = isRoom(c) ? !(c.members.some((m) => m.id !== S.me.id && isOnline(m.id)) || S.roomCalls.has(c.id)) : !isOnline(c.id); });
+}
+
 /* ================= Anzeige ================= */
 function renderList() {
   const list = $('#list'); list.textContent = '';
@@ -1222,6 +1686,7 @@ function renderHeader() {
     $('#btnReconnect').textContent = 'Verbinden'; $('#btnReconnect').classList.toggle('hidden', on);
   }
   $('#typing').classList.add('hidden');
+  callButtonsState(c);
 }
 async function select(cid) {
   const c = S.contacts.get(cid); if (!c) return;
@@ -1511,6 +1976,17 @@ function bind() {
     if (wipeArmed > now()) { for (const s of ['kv', 'contacts', 'msgs', 'blobs']) await DB.clear(s).catch(() => {}); location.replace(location.pathname + (NO_STUN ? '?ice=none' : '')); return; }
     wipeArmed = now() + 4000; $('#setWipe').textContent = 'Wirklich alles löschen?'; setTimeout(() => { if (wipeArmed <= now()) $('#setWipe').textContent = 'Alle Daten löschen'; }, 4100);
   };
+  // Anrufe
+  $('#btnCallA').onclick = () => callButton(false); $('#btnCallV').onclick = () => callButton(true);
+  $('#ringYes').onclick = acceptRing; $('#ringNo').onclick = declineRing;
+  $('#cMic').onclick = toggleMic; $('#cCam').onclick = toggleCam; $('#cFlip').onclick = flipCamera; $('#cShare').onclick = toggleShare;
+  $('#cLow').onclick = toggleLow; $('#cFull').onclick = toggleFull; $('#cEnd').onclick = () => endCall(); $('#miniEnd').onclick = () => endCall();
+  $('#cMin').onclick = () => { if (S.call) { S.call.min = true; renderCall(); } };
+  $('#miniBack').onclick = () => showCall();
+  const hasShare = !!(navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) && !coarse();          // Bildschirm teilen nur am Rechner
+  $('#cShare').classList.toggle('hidden', !hasShare);
+  $('#cFull').classList.toggle('hidden', !(document.fullscreenEnabled || document.webkitFullscreenEnabled));
+  document.addEventListener('fullscreenchange', () => $('#cFull').setAttribute('aria-pressed', String(!!document.fullscreenElement)));
   // Composer
   const inp = $('#msgIn');
   const grow = () => { inp.style.height = 'auto'; inp.style.height = Math.max(40, Math.min(inp.scrollHeight, 140)) + 'px'; const has = inp.value.trim().length > 0; $('#btnSend').classList.toggle('hidden', !has); $('#btnMic').classList.toggle('hidden', has); };
@@ -1571,6 +2047,17 @@ window.__chat = {
   drop: (cid) => { const L = S.conns.get(cid || S.cur); if (L) connClosed(L); },
   hash: async (id) => { const b = await blobOf(id); return b ? hex(await sha256(await b.arrayBuffer())) : null; },
   codec: { decode: decodeCode, encode: encodeCode },
+  call: {
+    info: () => { const c = S.call; return c ? { state: c.state, key: c.key, room: c.room, id: c.id, video: hasV(c.local), mic: c.mic, cam: c.cam, ss: c.ss, low: c.low, min: c.min, q: c.q, speaking: c.speaking, spoke: [...c.spoke],
+      parts: [...c.parts].map(([id, p]) => ({ id, mic: p.mic, cam: p.cam, ss: p.ss, stream: !!p.stream, v: p.stream ? p.stream.getVideoTracks().length : 0, a: p.stream ? p.stream.getAudioTracks().length : 0 })),
+      senders: [...S.conns.values()].flatMap((L) => (L.msend || []).map((s) => { let br = null; try { const e = s.getParameters().encodings; br = e && e[0] ? e[0].maxBitrate : null; } catch (x) { /* ok */ } return { peer: L.cid, kind: s.track ? s.track.kind : null, br }; })),
+      tracks: c.local.getTracks().map((t) => ({ kind: t.kind, state: t.readyState, enabled: t.enabled, id: t.id, h: t.getSettings ? (t.getSettings().height || 0) : 0 })) } : null; },
+    dump: () => [...S.conns.values()].map((L) => ({ peer: L.cid.slice(0, 4), role: L.role, via: L.via, sig: L.pc.signalingState, making: L.making, tr: L.pc.getTransceivers().map((t) => ({ mid: t.mid, k: t.receiver.track.kind, d: t.direction, c: t.currentDirection, send: !!t.sender.track, mute: t.receiver.track.muted })) })),
+    ring: () => S.ringIn ? { key: S.ringIn.key, video: S.ringIn.video, room: S.ringIn.room, from: S.ringIn.from } : null,
+    rooms: () => [...S.roomCalls].map(([k, v]) => ({ key: k, parts: v.parts.size })),
+    live: () => S.allTracks.filter((t) => t.readyState === 'live').length,
+    stats: async () => { const out = {}; for (const L of S.conns.values()) { const o = { ab: 0, vb: 0, vf: 0, vw: 0 }; try { (await L.pc.getStats()).forEach((r) => { if (r.type === 'inbound-rtp') { if (r.kind === 'audio') o.ab += r.bytesReceived || 0; if (r.kind === 'video') { o.vb += r.bytesReceived || 0; o.vf += r.framesDecoded || 0; o.vw = r.frameWidth || o.vw; } } }); } catch (e) { /* ok */ } out[L.cid] = o; } return out; }
+  },
   sendText
 };
 

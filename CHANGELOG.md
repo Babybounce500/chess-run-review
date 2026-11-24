@@ -1,5 +1,8 @@
 # Änderungsprotokoll
 
+## 2026-11-24 (Chat-Test: Anrufe)
+- **Audio-, Video- und Bildschirmanrufe** im Chat-Test, einzeln und in Räumen, ohne Server und ohne neuen Code-Austausch (die Absprache läuft über den bestehenden Datenkanal). Klingeln, Annehmen, Besetzt, Verpasst; Kachelraster mit Sprecher-Hervorhebung; Mikrofon stumm, Kamera an/aus und wechseln, Bildschirm teilen (nur Rechner), Datensparen, Vollbild, Minimieren. Bildqualität sinkt automatisch mit der Zahl der Teilnehmer (720p bei 2 bis 180p bei 8). Handy hochkant und quer, Tablet, 320 px.
+
 ## 2026-11-24 (Chat-Test: Gruppenräume)
 - **Gruppenräume** bis 8 Personen, ohne Server. Wer neu dazukommt, braucht nur eine Verbindung zu einem Mitglied, die Verbindungen zu allen anderen entstehen von selbst (signierte Verbindungsdaten werden über bestehende Kanäle weitergereicht). Absendernamen, Antworten, Reaktionen mit Zähler, Löschen für alle, Bilder und Dateien an jedes Mitglied, Ausgangsfach pro Mitglied, Verlauf der letzten 30 Textnachrichten für Neue, Mitgliederliste, Direkteinladung verbundener Kontakte, Raum verlassen.
 
