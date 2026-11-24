@@ -41,9 +41,9 @@ textarea{resize:none}
 
 #app{display:grid;grid-template-columns:340px minmax(0,1fr);height:100vh;height:100dvh}
 #side{display:flex;flex-direction:column;min-height:0;background:var(--panel);border-right:1px solid var(--line)}
-.shead{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;padding-top:max(10px,env(safe-area-inset-top));border-bottom:1px solid var(--line)}
+.shead{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:10px 12px;padding-top:max(10px,env(safe-area-inset-top));border-bottom:1px solid var(--line)}
 .shead b{font-size:1.05rem}
-.sbtns{display:flex;gap:6px}
+.sbtns{display:flex;gap:6px;flex-wrap:wrap}
 #list{flex:1;overflow:auto;min-height:0}
 .ci{display:flex;gap:10px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line);cursor:pointer}
 .ci:hover{background:var(--hover)} .ci.sel{background:var(--sel)}
@@ -66,11 +66,12 @@ textarea{resize:none}
 .chead .av{width:38px;height:38px;font-size:1rem}
 .htext{flex:1;min-width:0}
 .hname{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hstat{font-size:.8rem;color:var(--muted)} .hstat.on{color:#1fa463}
+.hstat{font-size:.8rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis} .hstat.on{color:#1fa463}
 #btnBack{display:none}
 #searchBar{padding:6px 10px;background:var(--panel);border-bottom:1px solid var(--line)}
 #msgs{flex:1;min-height:0;overflow:auto;padding:10px 10px 6px;display:flex;flex-direction:column;gap:3px;-webkit-overflow-scrolling:touch}
 .day{align-self:center;margin:8px 0 4px;padding:2px 12px;border-radius:99px;background:var(--panel);color:var(--muted);font-size:.74rem;box-shadow:0 1px 1px rgba(0,0,0,.1)}
+.sys{align-self:center;margin:6px 0;padding:2px 12px;border-radius:99px;background:var(--panel);color:var(--muted);font-size:.78rem;text-align:center;max-width:90%}
 .older{align-self:center}
 .msg{display:flex;max-width:100%} .msg.me{justify-content:flex-end}
 .msg.flash .bub{outline:2px solid var(--accent)}
@@ -78,6 +79,7 @@ textarea{resize:none}
 .bub{position:relative;max-width:100%;padding:6px 10px 3px;border-radius:10px;box-shadow:0 1px 1px rgba(0,0,0,.12);overflow-wrap:anywhere;min-width:64px}
 .me .bub{background:var(--me);border-top-right-radius:3px} .them .bub{background:var(--them);border-top-left-radius:3px}
 .bub.media{padding:4px 4px 3px}
+.sname{font-size:.78rem;font-weight:700;margin:0 0 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .txt{white-space:pre-wrap}
 .txt a{color:var(--blue)}
 .del .bub{opacity:.65;font-style:italic}
@@ -88,7 +90,7 @@ textarea{resize:none}
 @media (hover:none) and (pointer:coarse){.mbtn{opacity:.6;min-height:22px;min-width:30px;margin:-2px 0}}
 .quote{border-left:3px solid var(--accent);background:rgba(0,0,0,.06);border-radius:6px;padding:3px 8px;margin-bottom:4px;font-size:.84rem;cursor:pointer;display:flex;flex-direction:column;max-width:100%;overflow:hidden}
 .quote span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--muted)}
-.rx{display:flex;gap:4px;margin:2px 0 0 4px;font-size:.85rem}
+.rx{display:flex;gap:4px;margin:2px 0 0 4px;font-size:.85rem;flex-wrap:wrap}
 .rx span{background:var(--hover);border:1px solid var(--line);border-radius:99px;padding:0 6px}
 .pic{display:block;width:100%;height:auto;border-radius:8px;cursor:zoom-in;background:var(--hover)}
 .ph{width:100%;background:var(--hover);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.82rem;min-height:90px;text-align:center;padding:8px}
@@ -136,16 +138,22 @@ audio{max-width:100%;width:250px;height:38px}
 .safety{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:1.05rem;letter-spacing:.04em;line-height:1.8;background:var(--bg);border-radius:8px;padding:8px 10px;word-spacing:.5em}
 .switch{display:flex;align-items:center;gap:8px;margin:8px 0}
 .switch input{width:auto}
+.mrow,.addrow{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.mrow .mname,.addrow .mname{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+.mdot{width:10px;height:10px;border-radius:50%;background:var(--line);flex:none} .mdot.on{background:#1fa463}
+.mrow button,.addrow button{padding:2px 10px;font-size:.8rem}
+.roombadge{display:inline-block;padding:0 8px;border-radius:99px;background:var(--hover);border:1px solid var(--line);font-size:.78rem;margin-top:4px}
 #lb{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:70;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px}
 #lb img{max-width:96vw;max-height:84vh;object-fit:contain}
 #lb .row{color:#fff}
-#toast{position:fixed;left:50%;bottom:78px;transform:translateX(-50%);background:#222;color:#fff;padding:8px 16px;border-radius:99px;z-index:80;max-width:92vw;font-size:.9rem;box-shadow:var(--shadow)}
+#toast{position:fixed;left:50%;bottom:78px;transform:translateX(-50%);background:#222;color:#fff;padding:8px 16px;border-radius:99px;z-index:80;max-width:92vw;font-size:.9rem;box-shadow:var(--shadow);pointer-events:none}
 #toast.bad{background:var(--bad)}
 #fatal{padding:30px;color:var(--bad)}
 
 /* ---------- Handy ---------- */
 @media (max-width:760px){
-  #app{grid-template-columns:1fr}
+  #app{grid-template-columns:minmax(0,1fr)}
+  #side,#chat{min-width:0}
   #chat{display:none}
   body.show-chat #side{display:none}
   body.show-chat #chat{display:flex}
@@ -156,8 +164,10 @@ audio{max-width:100%;width:250px;height:38px}
 }
 @media (max-width:380px){
   .shead .primary{padding:6px 8px;font-size:.85rem}
+  .shead button{padding:6px 8px}
   #composer{gap:4px;padding-left:6px;padding-right:6px}
   #composer .ico{width:36px;height:36px}
+  .chead{gap:6px}
 }
 @media (hover:none) and (pointer:coarse){
   button{min-height:40px}
@@ -177,26 +187,28 @@ audio{max-width:100%;width:250px;height:38px}
       <b>Chat-Test</b>
       <span class="sbtns">
         <button id="btnNew" class="primary" type="button">Neue Verbindung</button>
+        <button id="btnRoom" type="button" title="Gruppenraum anlegen">＋ Raum</button>
         <button id="btnSet" type="button" aria-label="Einstellungen" title="Einstellungen">⚙</button>
       </span>
     </header>
-    <div id="list" role="list" aria-label="Kontakte"></div>
+    <div id="list" role="list" aria-label="Kontakte und Räume"></div>
     <div id="listEmpty">
       <h3>Noch keine Kontakte</h3>
-      <p>Direkt von Browser zu Browser, ohne Server dazwischen. Nachrichten, Bilder, Dateien und Sprachnachrichten gehen nur zwischen euch beiden.</p>
+      <p>Direkt von Browser zu Browser, ohne Server dazwischen. Nachrichten, Bilder, Dateien und Sprachnachrichten gehen nur zwischen euch.</p>
       <ol>
         <li>„Neue Verbindung“ tippen und den Link an die andere Person schicken.</li>
         <li>Sie öffnet den Link und schickt dir ihren Antwort-Code zurück.</li>
         <li>Code einfügen, fertig.</li>
       </ol>
-      <p>Beide müssen dafür kurz online sein. Danach bleibt der Verlauf auf deinem Gerät.</p>
+      <p>Mit „＋ Raum“ legst du einen Gruppenraum an (bis 8 Personen). Wer neu dazukommt, braucht nur eine Verbindung zu einem Mitglied.</p>
+      <p>Alle müssen dafür kurz online sein. Danach bleibt der Verlauf auf deinem Gerät.</p>
     </div>
     <footer class="sfoot" id="myInfo"></footer>
   </aside>
 
   <main id="chat">
     <div id="chatEmpty">
-      <h2>Wähle einen Kontakt</h2>
+      <h2>Wähle einen Kontakt oder Raum</h2>
       <p>Oder starte mit „Neue Verbindung“ ein Gespräch.</p>
     </div>
     <section id="chatBox" class="hidden">
@@ -206,7 +218,7 @@ audio{max-width:100%;width:250px;height:38px}
         <div class="htext"><div class="hname" id="peerName"></div><div class="hstat" id="peerStatus"></div></div>
         <button id="btnReconnect" type="button" class="hidden">Verbinden</button>
         <button id="btnSearch" class="ghost" type="button" aria-label="Suchen" title="Im Verlauf suchen">🔍</button>
-        <button id="btnInfo" class="ghost" type="button" aria-label="Kontaktinfo" title="Kontaktinfo">ⓘ</button>
+        <button id="btnInfo" class="ghost" type="button" aria-label="Info" title="Info">ⓘ</button>
       </header>
       <div id="searchBar" class="hidden"><input id="searchIn" type="text" placeholder="Im Verlauf suchen …" aria-label="Im Verlauf suchen" autocomplete="off"></div>
       <div id="msgs" role="log" aria-live="polite" aria-label="Nachrichten"></div>
@@ -239,6 +251,7 @@ audio{max-width:100%;width:250px;height:38px}
     <div class="tabs"><button id="tabInvite" type="button" class="on">Ich lade ein</button><button id="tabJoin" type="button">Ich wurde eingeladen</button></div>
 
     <div id="paneInvite">
+      <p id="invRoomNote" class="roombadge hidden"></p>
       <label for="invLink">1. Diesen Link an die andere Person schicken</label>
       <div class="row"><input id="invLink" type="text" readonly placeholder="Code wird erzeugt …" style="flex:1;min-width:0"><button id="invCopy" type="button">Kopieren</button><button id="invShare" type="button" class="hidden">Teilen</button></div>
       <label for="invAns">2. Antwort-Code der anderen Person hier einfügen</label>
@@ -285,6 +298,43 @@ audio{max-width:100%;width:250px;height:38px}
   </div>
 </div>
 
+<!-- Raum anlegen -->
+<div id="roomDlg" class="modal hidden" role="dialog" aria-modal="true" aria-label="Raum anlegen">
+  <div class="box">
+    <h2>Neuer Gruppenraum</h2>
+    <label for="roomName">Name des Raums</label>
+    <input id="roomName" type="text" maxlength="40" autocomplete="off" placeholder="z. B. Schachclub">
+    <p class="note">Du bist zuerst allein im Raum. Danach lädst du Leute per Link ein. Wer neu dazukommt, braucht nur eine Verbindung zu irgendeinem Mitglied, die anderen Verbindungen entstehen von selbst. Bis zu 8 Personen.</p>
+    <div class="row" style="justify-content:flex-end;margin-top:10px"><button id="roomCancel" type="button">Abbrechen</button><button id="roomCreate" class="primary" type="button">Raum anlegen</button></div>
+  </div>
+</div>
+
+<!-- Rauminfo -->
+<div id="rinfoDlg" class="modal hidden" role="dialog" aria-modal="true" aria-label="Rauminfo">
+  <div class="box">
+    <h2 id="rinfoName"></h2>
+    <p class="muted" id="rinfoSub"></p>
+    <label for="rinfoAlias">Anzeigename des Raums (nur bei dir)</label>
+    <input id="rinfoAlias" type="text" maxlength="40" autocomplete="off">
+    <label>Mitglieder</label>
+    <div id="rinfoMembers"></div>
+    <div class="row" style="margin-top:10px"><button id="rinfoInvite" class="primary" type="button">Person per Link einladen</button></div>
+    <div id="rinfoAddBox" class="hidden"><label>Verbundene Kontakte direkt hinzufügen</label><div id="rinfoAdd"></div></div>
+    <p class="note">Nachrichten gehen direkt an jedes Mitglied, nichts läuft über einen Server. Neue Mitglieder sehen die letzten 30 Textnachrichten und alles ab ihrem Beitritt. Es gibt keinen Raumverwalter: Jeder kann einladen, niemand kann jemanden ausschließen.</p>
+    <div class="row" style="margin-top:6px"><button id="rinfoExport" type="button">Verlauf als Text speichern</button><button id="rinfoLeave" type="button" class="danger">Raum verlassen</button></div>
+    <div class="row" style="justify-content:flex-end;margin-top:12px"><button id="rinfoClose" class="primary" type="button">Fertig</button></div>
+  </div>
+</div>
+
+<!-- Raumeinladung (direkt von einem verbundenen Kontakt) -->
+<div id="riDlg" class="modal hidden" role="dialog" aria-modal="true" aria-label="Raumeinladung">
+  <div class="box">
+    <h2>Einladung in einen Raum</h2>
+    <p id="riText"></p>
+    <div class="row" style="justify-content:flex-end;margin-top:10px"><button id="riNo" type="button">Ablehnen</button><button id="riYes" class="primary" type="button">Beitreten</button></div>
+  </div>
+</div>
+
 <!-- Einstellungen -->
 <div id="setDlg" class="modal hidden" role="dialog" aria-modal="true" aria-label="Einstellungen">
   <div class="box">
@@ -316,7 +366,7 @@ audio{max-width:100%;width:250px;height:38px}
 'use strict';
 
 /* ================= Grundlagen ================= */
-const MAX_FILE = 50 * 1024 * 1024, MAX_AUTO = 15 * 1024 * 1024, MAX_TEXT = 4000, CHUNK = 16 * 1024, MAX_DIM = 1600;
+const MAX_FILE = 50 * 1024 * 1024, MAX_AUTO = 15 * 1024 * 1024, MAX_TEXT = 4000, CHUNK = 16 * 1024, MAX_DIM = 1600, MAX_ROOM = 8;
 const qs = new URLSearchParams(location.search);
 const NO_STUN = qs.get('ice') === 'none';
 const $ = (s, r = document) => r.querySelector(s);
@@ -355,6 +405,7 @@ function dayLabel(ts) {
   if (dayKey(ts) === dayKey(y.getTime())) return 'Gestern';
   return pad2(d.getDate()) + '.' + pad2(d.getMonth() + 1) + '.' + d.getFullYear();
 }
+const clampTs = (t) => (isFinite(t) && t > now() - 30 * 864e5 && t <= now() + 5 * 60000) ? +t : now();
 const DANGER = /\.(exe|msi|bat|cmd|com|scr|js|jse|jar|apk|vbs|ps1|sh|dll|lnk|iso|dmg|pkg|app|reg|hta|cpl)$/i;
 
 /* ================= Speicher (IndexedDB, sonst nur Arbeitsspeicher) ================= */
@@ -392,12 +443,13 @@ const DB = (() => {
 
 /* ================= Zustand ================= */
 const S = {
-  me: { id: '', pub: null, priv: null, pubKey: null }, settings: null,
+  me: { id: '', pub: null, priv: null }, settings: null,
   contacts: new Map(), msgs: new Map(), conns: new Map(), xfers: new Map(),
   blobs: new Map(), urls: new Map(), cur: null, reply: null, rec: null, search: '',
-  pair: null, shown: 200, audio: null, typingSent: 0, rl: []
+  shown: 200, audio: null, typingSent: 0,
+  pend: new Map(), permits: new Map(), invited: new Set(), relayIn: new Map(), riQueue: null
 };
-let P = null;                                   // laufender Verbindungsaufbau
+let P = null;                                   // laufender Verbindungsaufbau über die Oberfläche
 
 async function loadSettings() {
   const d = (await DB.get('kv', 'settings')) || {};
@@ -418,14 +470,46 @@ async function loadIdentity() {
 }
 async function loadContacts() { for (const c of await DB.all('contacts')) S.contacts.set(c.id, c); }
 
+/* ================= Räume: Hilfen ================= */
+const isRoom = (c) => !!c && c.kind === 'room';
+const rr = (c) => isRoom(c) ? { r: c.id.slice(2) } : {};              // Raumkennung für Nachrichten im Raum
+const roomOf = (r) => typeof r === 'string' && /^[a-f0-9]{16}$/.test(r) ? S.contacts.get('r:' + r) : null;
+const isMember = (c, id) => isRoom(c) && c.members.some((m) => m.id === id);
+const memberOf = (c, id) => c.members.find((m) => m.id === id);
+const myEntry = () => ({ id: S.me.id, pub: b64u.enc(S.me.pub), n: S.settings.name, c: S.settings.color });
+const pubMember = (m) => ({ id: m.id, pub: m.pub, n: m.n, c: m.c });
+function memName(c, id) {
+  if (id === S.me.id) return 'Du';
+  const k = S.contacts.get(id); if (k && !isRoom(k)) return nameOf(k);
+  const m = c && isRoom(c) ? memberOf(c, id) : null; return m ? m.n : 'Unbekannt';
+}
+function memColor(c, id) { const m = c && isRoom(c) ? memberOf(c, id) : null; const k = S.contacts.get(id); return (m && m.c) || (k && k.color) || '#2f6f4e'; }
+async function validMembers(list) {
+  const out = [];
+  if (!Array.isArray(list)) return out;
+  for (const x of list.slice(0, MAX_ROOM)) {
+    try {
+      if (!x || typeof x.id !== 'string' || !/^[a-f0-9]{32}$/.test(x.id) || typeof x.pub !== 'string') continue;
+      const pub = b64u.dec(x.pub); if (pub.length !== 65) continue;
+      if (hex((await sha256(pub)).subarray(0, 16)) !== x.id) continue;
+      out.push({ id: x.id, pub: x.pub, n: clean(x.n, 30) || 'Unbekannt', c: /^#[0-9a-f]{6}$/i.test(x.c || '') ? x.c : '#2f6f4e', j: now() });
+    } catch (e) { /* ungültiger Eintrag */ }
+  }
+  return out;
+}
+
 /* ================= Kleine UI-Helfer ================= */
-let toastT = 0;
-function toast(msg, bad) { const t = $('#toast'); t.textContent = msg; t.className = bad ? 'bad' : ''; clearTimeout(toastT); toastT = setTimeout(() => t.classList.add('hidden'), 4200); }
+let toastT = 0, toastUntil = 0;
+function toast(msg, bad) { const t = $('#toast'); t.textContent = msg; t.className = bad ? 'bad' : ''; clearTimeout(toastT); toastUntil = now() + 4200; toastT = setTimeout(() => t.classList.add('hidden'), 4200); }
 const openDlg = (id) => $(id).classList.remove('hidden');
 const closeDlg = (id) => $(id).classList.add('hidden');
 const nameOf = (c) => c ? (c.alias || c.name || 'Unbekannt') : 'Unbekannt';
-const avatar = (c) => h('div', { class: 'av', style: 'background:' + (c.color || '#2f6f4e') }, (nameOf(c).trim()[0] || '?').toUpperCase(), isOnline(c.id) ? h('span', { class: 'dot' }) : null);
-const isOnline = (cid) => { const L = S.conns.get(cid); return !!(L && L.open); };
+const isOnline = (id) => {
+  const c = S.contacts.get(id);
+  if (isRoom(c)) return c.members.some((m) => m.id !== S.me.id && isOnline(m.id));
+  const L = S.conns.get(id); return !!(L && L.open);
+};
+const avatar = (c) => h('div', { class: 'av', style: 'background:' + (c.color || '#2f6f4e') }, isRoom(c) ? '#' : (nameOf(c).trim()[0] || '?').toUpperCase(), isOnline(c.id) ? h('span', { class: 'dot' }) : null);
 function copyText(text, btn) {
   const done = () => { if (!btn) return; const o = btn.textContent; btn.textContent = 'Kopiert'; setTimeout(() => btn.textContent = o, 1400); };
   try { navigator.clipboard.writeText(text).then(done, () => toast('Kopieren nicht erlaubt. Bitte von Hand markieren.', true)); } catch (e) { toast('Kopieren nicht möglich.', true); }
@@ -449,12 +533,13 @@ function updateTitle() { const n = totalUnread(); document.title = (n ? '(' + n 
 function notifyIncoming(c, m) {
   if (document.visibilityState === 'visible' && document.hasFocus() && S.cur === c.id) return;
   beep(660);
-  try { if (S.settings.notify && window.Notification && Notification.permission === 'granted' && document.visibilityState !== 'visible') new Notification(nameOf(c), { body: previewOf(m), tag: c.id, silent: true }); } catch (e) { /* ok */ }
+  try { if (S.settings.notify && window.Notification && Notification.permission === 'granted' && document.visibilityState !== 'visible') new Notification(nameOf(c), { body: (isRoom(c) ? memName(c, m.from) + ': ' : '') + previewOf(m), tag: c.id, silent: true }); } catch (e) { /* ok */ }
 }
 
 /* ================= Nachrichten-Hilfen ================= */
 function previewOf(m) {
   if (m.deleted) return 'Nachricht gelöscht';
+  if (m.kind === 'sys') return m.text;
   if (m.kind === 'image') return '🖼 Bild';
   if (m.kind === 'audio') return '🎤 Sprachnachricht';
   if (m.kind === 'file') return '📎 ' + (m.file && m.file.name || 'Datei');
@@ -466,18 +551,28 @@ async function loadMsgs(cid) {
   arr.sort((a, b) => a.ts - b.ts || (a.id < b.id ? -1 : 1));
   S.msgs.set(cid, arr); return arr;
 }
+function insertMsg(arr, m) { let i = arr.length; while (i > 0 && arr[i - 1].ts > m.ts) i--; arr.splice(i, 0, m); return i === arr.length - 1; }
 const saveMsg = (m) => { const copy = Object.assign({}, m); delete copy._load; return DB.put('msgs', copy).catch(() => {}); };
-const saveContact = (c) => DB.put('contacts', c).catch(() => {});
+const saveContact = (c) => { const copy = Object.assign({}, c); delete copy.typingUntil; return DB.put('contacts', copy).catch(() => {}); };
 function findMsg(cid, id) { return (S.msgs.get(cid) || []).find((m) => m.id === id); }
 const ORDER = { queued: 0, sent: 1, delivered: 2, read: 3 };
 function setState(m, st) { if (ORDER[st] > ORDER[m.state]) { m.state = st; saveMsg(m); refreshMsg(m); } }
+function roomMsgState(c, m) {
+  const others = c.members.filter((x) => x.id !== S.me.id).map((x) => x.id);
+  if (!others.length) return m.state;
+  const acks = m.acks || [], rds = m.rds || [];
+  if (others.every((i) => rds.includes(i))) return 'read';
+  if (others.every((i) => acks.includes(i) || rds.includes(i))) return 'delivered';
+  return m.state;
+}
 async function blobOf(id) { if (S.blobs.has(id)) return S.blobs.get(id); let b = null; try { b = await DB.get('blobs', id); } catch (e) { b = null; } if (b) S.blobs.set(id, b); return b; }
 async function urlOf(m) {
   if (S.urls.has(m.id)) return S.urls.get(m.id);
   const b = await blobOf(m.id); if (!b) return null;
   const u = URL.createObjectURL(b); S.urls.set(m.id, u); return u;
 }
-function touchContact(c, m) { c.last = m.ts; c.preview = previewOf(m); saveContact(c); }
+function touchContact(c, m) { c.last = m.ts; c.preview = (isRoom(c) && m.kind !== 'sys' ? memName(c, m.from) + ': ' : '') + previewOf(m); saveContact(c); }
+const xk = (id, peer) => id + '|' + peer;
 
 /* ================= Verbindungscodes (signiert) ================= */
 async function deflate(u8) {
@@ -541,7 +636,7 @@ function gathered(pc, ms) {
   });
 }
 function closePairing() { if (P && !P.cid) { P.closed = true; try { P.dc && P.dc.close(); } catch (e) { /* ok */ } try { P.pc && P.pc.close(); } catch (e) { /* ok */ } } P = null; }
-function makeLink(pc, role) { return { pc, role, dc: null, peer: null, cid: null, open: false, closed: false, lastRx: 0, wire: new Set(), idx: 0, inIdx: new Map(), rl: [], tyUntil: 0 }; }
+function makeLink(pc, role, via) { return { pc, role, via: via || 'ui', dc: null, peer: null, cid: null, open: false, closed: false, lastRx: 0, wire: new Set(), idx: 0, inIdx: new Map(), rl: [], t: now() }; }
 
 function attachDC(L, ch) {
   L.dc = ch; ch.binaryType = 'arraybuffer'; ch.bufferedAmountLowThreshold = 256 * 1024;
@@ -553,10 +648,12 @@ function attachDC(L, ch) {
   if (ch.readyState === 'open') opened();                          // ein per ondatachannel erhaltener Kanal kann schon offen sein
 }
 
-async function startInvite(expectCid) {
+async function startInvite(expectCid, roomKey) {
   closePairing();
   $('#invLink').value = ''; $('#invErr').textContent = ''; $('#invAns').value = ''; $('#invLink').placeholder = 'Code wird erzeugt …';
-  const pc = newPC(), L = makeLink(pc, 'host'); L.expect = expectCid || null; P = L;
+  const room = roomKey ? S.contacts.get(roomKey) : null;
+  const note = $('#invRoomNote'); note.classList.toggle('hidden', !room); if (room) note.textContent = 'Einladung in den Raum „' + nameOf(room) + '“';
+  const pc = newPC(), L = makeLink(pc, 'host'); L.expect = expectCid || null; L.invRoom = room ? room.id : null; P = L;
   pc.onconnectionstatechange = () => { if (P === L && pc.connectionState === 'failed') $('#invErr').textContent = 'Verbindung fehlgeschlagen. Eine Firewall oder ein Mobilfunknetz blockiert sie vielleicht. Versucht es mit einem anderen Netz.'; else if (L.cid && pc.connectionState === 'failed') connClosed(L); };
   attachDC(L, pc.createDataChannel('chat', { ordered: true }));
   try {
@@ -564,12 +661,15 @@ async function startInvite(expectCid) {
     await gathered(pc);
     if (P !== L) return;
     const sdp = pc.localDescription.sdp; L.offerSdp = sdp;
-    const code = await encodeCode({ v: 2, t: 'o', id: S.me.id, pub: b64u.enc(S.me.pub), n: S.settings.name, c: S.settings.color, sdp, sig: await signPayload('o', sdp, '') });
+    const payload = { v: 2, t: 'o', id: S.me.id, pub: b64u.enc(S.me.pub), n: S.settings.name, c: S.settings.color, sdp, sig: await signPayload('o', sdp, room ? 'room:' + roomId(room) : '') };
+    if (room) payload.rm = { id: roomId(room), name: room.name };
+    const code = await encodeCode(payload);
     L.code = code;
     const base = shareBase();
     $('#invLink').value = base ? base + '#o=' + code : code;
   } catch (e) { $('#invErr').textContent = 'Konnte keinen Code erzeugen: ' + e.message; }
 }
+const roomId = (c) => c.id.slice(2);
 async function invConnect() {
   const err = $('#invErr'); err.textContent = '';
   if (!P || P.role !== 'host' || !P.offerSdp) { err.textContent = 'Der Link ist noch nicht fertig.'; return; }
@@ -589,12 +689,14 @@ async function joinProcess(text) {
   try {
     const o = await decodeCode(text);
     if (o.t !== 'o') throw new Error('Das ist ein Antwort-Code. Hier gehört der Einladungslink hin.');
-    const peer = await verifyPayload(o, '');
+    const rm = o.rm && typeof o.rm.id === 'string' && /^[a-f0-9]{16}$/.test(o.rm.id) ? { id: o.rm.id, name: clean(o.rm.name, 40) || 'Raum' } : null;
+    const peer = await verifyPayload(o, rm ? 'room:' + rm.id : '');
     if (peer.id === S.me.id) throw new Error('Das ist dein eigener Link.');
     closePairing();
     const known = S.contacts.get(peer.id);
-    info.textContent = 'Einladung von „' + peer.n + '“' + (known ? ' (bekannter Kontakt)' : ' (neuer Kontakt)') + '. Antwort wird erzeugt …';
-    const pc = newPC(), L = makeLink(pc, 'guest'); L.peer = peer; P = L;
+    const who = 'Einladung von „' + peer.n + '“' + (known && !known.roomOnly ? ' (bekannter Kontakt)' : ' (neuer Kontakt)') + (rm ? ' in den Raum „' + rm.name + '“' : '');
+    info.textContent = who + '. Antwort wird erzeugt …';
+    const pc = newPC(), L = makeLink(pc, 'guest'); L.peer = peer; L.joinRoom = rm; P = L;
     pc.onconnectionstatechange = () => { if (P === L && pc.connectionState === 'failed') err.textContent = 'Verbindung fehlgeschlagen. Eine Firewall oder ein Mobilfunknetz blockiert sie vielleicht.'; else if (L.cid && pc.connectionState === 'failed') connClosed(L); };
     pc.ondatachannel = (e) => { if (L.dc || P !== L && !L.cid) return; attachDC(L, e.channel); };
     await pc.setRemoteDescription({ type: 'offer', sdp: o.sdp });
@@ -604,48 +706,61 @@ async function joinProcess(text) {
     const sdp = pc.localDescription.sdp;
     $('#joinOut').value = await encodeCode({ v: 2, t: 'a', id: S.me.id, pub: b64u.enc(S.me.pub), n: S.settings.name, c: S.settings.color, sdp, sig: await signPayload('a', sdp, fpOf(o.sdp)) });
     $('#joinOutBox').classList.remove('hidden');
-    info.textContent = 'Einladung von „' + peer.n + '“' + (known ? ' (bekannter Kontakt)' : ' (neuer Kontakt)') + '.';
+    info.textContent = who + '.';
   } catch (e) { err.textContent = e.message || 'Der Code passt nicht.'; }
 }
 
 function registerConn(L) {
   const p = L.peer; let c = S.contacts.get(p.id); const isNew = !c;
-  if (!c) { c = { id: p.id, pub: p.pubB64, name: p.n, alias: '', color: p.c, verified: false, last: now(), unread: 0, created: now(), preview: '' }; S.contacts.set(c.id, c); }
-  else { c.name = p.n || c.name; c.color = p.c || c.color; if (!c.pub) c.pub = p.pubB64; }
+  if (!c) { c = { id: p.id, pub: p.pubB64, name: p.n, alias: '', color: p.c, verified: false, last: now(), unread: 0, created: now(), preview: '', roomOnly: L.via === 'relay' }; S.contacts.set(c.id, c); }
+  else { c.name = p.n || c.name; c.color = p.c || c.color; if (!c.pub) c.pub = p.pubB64; if (L.via === 'ui' && c.roomOnly) { c.roomOnly = false; c.last = now(); } }
   saveContact(c);
   const old = S.conns.get(c.id); if (old && old !== L) { old.replaced = true; connClosed(old); }
-  L.cid = c.id; L.open = true; L.lastRx = now(); L.closed = false; S.conns.set(c.id, L);
+  L.cid = c.id; L.open = true; L.lastRx = now(); L.closed = false; S.conns.set(c.id, L); S.pend.delete(c.id);
   if (P === L) { P = null; closeDlg('#pairDlg'); $('#invGo').textContent = 'Verbinden'; }
   send(L, { t: 'hi', n: S.settings.name, c: S.settings.color });
   loadMsgs(c.id).then(() => { flush(c.id); if (S.cur === c.id) renderMsgs(); });
-  renderList();
-  select(c.id);
-  toast(isNew ? 'Verbunden mit „' + nameOf(c) + '“. Vergleicht den Sicherheitscode unter ⓘ.' : 'Wieder verbunden mit „' + nameOf(c) + '“.');
+  S.contacts.forEach((r) => { if (isMember(r, c.id)) loadMsgs(r.id).then(() => { flush(r.id); if (S.cur === r.id) renderMsgs(); }); });
+  sendRsy(L);
+  if (L.invRoom) { const room = S.contacts.get(L.invRoom); if (room) roomWelcome(L, room); }
+  if (L.joinRoom) S.permits.set(L.joinRoom.id, c.id);
+  renderList(); if (isRoom(S.contacts.get(S.cur))) renderHeader();
+  if (L.via === 'ui' && !L.joinRoom && !L.invRoom) {
+    select(c.id);
+    toast(isNew ? 'Verbunden mit „' + nameOf(c) + '“. Vergleicht den Sicherheitscode unter ⓘ.' : 'Wieder verbunden mit „' + nameOf(c) + '“.');
+  } else if (L.via === 'ui' && L.invRoom) toast('„' + nameOf(c) + '“ ist verbunden und wird in den Raum aufgenommen.');
+  S.contacts.forEach((r) => { if (isRoom(r) && isMember(r, c.id)) ensureMesh(r); });
 }
 function connClosed(L) {
   if (L.closed) return; L.closed = true; L.open = false;
   try { L.dc && L.dc.close(); } catch (e) { /* ok */ } try { L.pc && L.pc.close(); } catch (e) { /* ok */ }
   if (L.cid && S.conns.get(L.cid) === L) {
     S.conns.delete(L.cid); failTransfers(L.cid); renderList();
-    if (S.cur === L.cid) renderHeader();
+    if (S.cur) renderHeader();
   }
+  if (L.peer && S.pend.get(L.peer.id) === L) S.pend.delete(L.peer.id);
   if (P === L && !L.cid) P = null;
 }
-function failTransfers(cid) {
-  for (const [id, xf] of [...S.xfers]) {
-    if (xf.cid !== cid) continue;
-    xf.cancel = true; S.xfers.delete(id);
-    const m = findMsg(cid, id); if (!m) continue;
-    m.tx = xf.dir === 'out' ? 'queued' : 'failed'; saveMsg(m); refreshMsg(m);
+function failTransfers(peer) {
+  for (const [key, xf] of [...S.xfers]) {
+    if (xf.peer !== peer) continue;
+    xf.cancel = true; S.xfers.delete(key);
+    const m = findMsg(xf.mkey, xf.id); if (!m) continue;
+    const c = S.contacts.get(m.cid);
+    if (xf.dir === 'out') { if (!isRoom(c)) m.tx = 'queued'; } else m.tx = 'failed';
+    saveMsg(m); refreshMsg(m);
   }
 }
 function send(L, o) { try { if (L && L.dc && L.dc.readyState === 'open') { L.dc.send(JSON.stringify(o)); return true; } } catch (e) { /* weiter */ } return false; }
 function beat() {
   const t = now();
+  if (toastUntil && t > toastUntil) { toastUntil = 0; $('#toast').classList.add('hidden'); }      // falls der Zeitgeber im Hintergrund-Tab ausgebremst wurde
   S.conns.forEach((L) => {
     send(L, { t: 'ping' });
     if (L.open && t - L.lastRx > 15000) connClosed(L);
   });
+  S.pend.forEach((L, k) => { if (t - L.t > 30000) { S.pend.delete(k); connClosed(L); } });
+  S.contacts.forEach((c) => { if (isRoom(c)) ensureMesh(c); });
   if (S.cur) { const c = S.contacts.get(S.cur); if (c && c.typingUntil && c.typingUntil < t) { c.typingUntil = 0; renderHeader(); } }
 }
 
@@ -658,46 +773,63 @@ function onData(L, d) {
 }
 const okId = (id) => typeof id === 'string' && /^[a-f0-9]{8,32}$/.test(id);
 function handleCtl(L, o) {
-  const cid = L.cid; if (!cid) return;
-  const c = S.contacts.get(cid); if (!c) return;
-  switch (o.t) {
+  const peer = L.cid; if (!peer) return;
+  switch (o.t) {                                     // Verbindung und Räume
     case 'ping': return;
-    case 'hi': { const n = clean(o.n, 30); if (n && n !== c.name) { c.name = n; saveContact(c); renderList(); if (S.cur === cid) renderHeader(); } if (/^#[0-9a-f]{6}$/i.test(o.c || '')) c.color = o.c; return; }
-    case 'ty': c.typingUntil = now() + 5000; if (S.cur === cid) renderHeader(); return;
+    case 'hi': { const k = S.contacts.get(peer); if (!k) return; const n = clean(o.n, 30); if (n && n !== k.name) { k.name = n; saveContact(k); renderList(); if (S.cur === peer) renderHeader(); } if (/^#[0-9a-f]{6}$/i.test(o.c || '')) k.color = o.c; return; }
+    case 'ty': { if (o.r !== undefined) return; const k = S.contacts.get(peer); if (!k) return; k.typingUntil = now() + 5000; if (S.cur === peer) renderHeader(); return; }
+    case 'ri': return onRi(L, o);
+    case 'ra': return onRa(L, o);
+    case 'rs': return onRs(L, o);
+    case 'rn': return onRn(L, o);
+    case 'rsy': return onRsy(L, o);
+    case 'rl': return onRl(L, o);
+    case 'rg': return onRg(L, o);
+  }
+  let c;                                             // Nachrichten und Übertragungen: 1:1 oder Raum
+  if (o.r !== undefined) { c = roomOf(o.r); if (!c || !isMember(c, peer)) return; } else c = S.contacts.get(peer);
+  if (!c) return;
+  switch (o.t) {
     case 'm': return onText(L, c, o);
     case 'of': return onOffer(L, c, o);
     case 'oa': return onAccept(L, c, o);
-    case 'od': { const m = findMsg(cid, o.id); if (m && m.me) { m.tx = 'declined'; saveMsg(m); refreshMsg(m); } return; }
+    case 'od': { const m = findMsg(c.id, o.id); if (m && m.me && !isRoom(c)) { m.tx = 'declined'; saveMsg(m); refreshMsg(m); } return; }
     case 'fs': return onStreamStart(L, c, o);
     case 'fe': return onStreamEnd(L, c, o);
-    case 'fx': { const xf = S.xfers.get(o.id); if (xf && xf.cid === cid) { xf.cancel = true; S.xfers.delete(o.id); } const m = findMsg(cid, o.id); if (m) { m.tx = m.me ? 'cancelled' : 'failed'; saveMsg(m); refreshMsg(m); } return; }
-    case 'ak': { const m = findMsg(cid, o.id); if (m && m.me) setState(m, 'delivered'); return; }
-    case 'rd': { if (Array.isArray(o.ids)) o.ids.slice(0, 200).forEach((id) => { const m = findMsg(cid, id); if (m && m.me) setState(m, 'read'); }); return; }
-    case 're': { const m = findMsg(cid, o.id); if (m && typeof o.e === 'string') { m.rx = m.rx || {}; const e = clean(o.e, 8); if (e) m.rx.them = e; else delete m.rx.them; saveMsg(m); refreshMsg(m); } return; }
-    case 'dl': { const m = findMsg(cid, o.id); if (m && !m.me) wipeMsg(m); return; }
+    case 'fx': { const xf = S.xfers.get(xk(o.id, peer)); if (xf) { xf.cancel = true; S.xfers.delete(xk(o.id, peer)); } const m = findMsg(c.id, o.id); if (m && !(m.me && isRoom(c))) { m.tx = m.me ? 'cancelled' : 'failed'; saveMsg(m); refreshMsg(m); } return; }
+    case 'ak': { const m = findMsg(c.id, o.id); if (!m || !m.me) return; if (isRoom(c)) { m.acks = m.acks || []; if (!m.acks.includes(peer)) m.acks.push(peer); m.state = m.state === 'queued' ? 'sent' : m.state; setState(m, roomMsgState(c, m)); saveMsg(m); refreshMsg(m); } else setState(m, 'delivered'); return; }
+    case 'rd': { if (!Array.isArray(o.ids)) return; o.ids.slice(0, 200).forEach((id) => { const m = findMsg(c.id, id); if (!m || !m.me) return; if (isRoom(c)) { m.rds = m.rds || []; if (!m.rds.includes(peer)) m.rds.push(peer); setState(m, roomMsgState(c, m)); saveMsg(m); refreshMsg(m); } else setState(m, 'read'); }); return; }
+    case 're': { const m = findMsg(c.id, o.id); if (!m || typeof o.e !== 'string') return; const e = clean(o.e, 8); if (isRoom(c)) { m.rxm = m.rxm || {}; if (e) m.rxm[peer] = e; else delete m.rxm[peer]; } else { m.rx = m.rx || {}; if (e) m.rx.them = e; else delete m.rx.them; } saveMsg(m); refreshMsg(m); return; }
+    case 'dl': { const m = findMsg(c.id, o.id); if (m && (isRoom(c) ? m.from === peer : !m.me)) wipeMsg(m); return; }
   }
 }
-function replyOf(o) { const r = o.rp; if (r && okId(r.id) && typeof r.p === 'string') return { id: r.id, p: clean(r.p, 80), me: !r.me }; return null; }
+function replyOf(o, c) {
+  const r = o.rp; if (!r || !okId(r.id) || typeof r.p !== 'string') return null;
+  if (isRoom(c)) return { id: r.id, p: clean(r.p, 80), from: typeof r.from === 'string' && /^[a-f0-9]{32}$/.test(r.from) ? r.from : '' };
+  return { id: r.id, p: clean(r.p, 80), me: !r.me };
+}
 async function onText(L, c, o) {
   if (!okId(o.id) || typeof o.x !== 'string' || !rateOk(L)) return;
   await loadMsgs(c.id);
-  if (findMsg(c.id, o.id)) { send(L, { t: 'ak', id: o.id }); return; }
+  if (findMsg(c.id, o.id)) { send(L, Object.assign({ t: 'ak', id: o.id }, rr(c))); return; }
   const text = clean(o.x, MAX_TEXT); if (!text) return;
-  const m = { id: o.id, cid: c.id, me: false, kind: 'text', text, ts: now(), state: 'delivered', rp: replyOf(o) };
-  incoming(c, m); send(L, { t: 'ak', id: m.id });
+  const m = { id: o.id, cid: c.id, me: false, from: L.cid, kind: 'text', text, ts: isRoom(c) ? clampTs(o.ts) : now(), state: 'delivered', rp: replyOf(o, c) };
+  incoming(c, m); send(L, Object.assign({ t: 'ak', id: m.id }, rr(c)));
 }
 function incoming(c, m) {
-  S.msgs.get(c.id).push(m); saveMsg(m); touchContact(c, m); c.typingUntil = 0;
+  const atEnd = insertMsg(S.msgs.get(c.id), m); saveMsg(m); touchContact(c, m); c.typingUntil = 0;
   const viewing = S.cur === c.id && document.visibilityState === 'visible';
   if (!viewing) { c.unread = (c.unread || 0) + 1; saveContact(c); }
   notifyIncoming(c, m); updateTitle(); renderList();
-  if (S.cur === c.id) { appendMsg(m); renderHeader(); if (viewing) markRead(c.id); }
+  if (S.cur === c.id) { if (atEnd) appendMsg(m); else renderMsgs(); renderHeader(); if (viewing) markRead(c.id); }
 }
 function markRead(cid) {
-  const L = S.conns.get(cid); const arr = S.msgs.get(cid) || []; const ids = [];
-  arr.forEach((m) => { if (!m.me && !m.rs && !m.deleted && (m.kind === 'text' || m.tx === 'done')) { m.rs = true; ids.push(m.id); saveMsg(m); } });
-  const c = S.contacts.get(cid); if (c && c.unread) { c.unread = 0; saveContact(c); updateTitle(); renderList(); }
-  if (ids.length && S.settings.receipts && L && L.open) send(L, { t: 'rd', ids });
+  const c = S.contacts.get(cid); const arr = S.msgs.get(cid) || []; const ids = [];
+  arr.forEach((m) => { if (!m.me && !m.rs && !m.deleted && (m.kind === 'text' || (m.kind !== 'sys' && m.tx === 'done'))) { m.rs = true; ids.push(m.id); saveMsg(m); } });
+  if (c && c.unread) { c.unread = 0; saveContact(c); updateTitle(); renderList(); }
+  if (!ids.length || !S.settings.receipts || !c) return;
+  if (isRoom(c)) c.members.forEach((mm) => { const L = S.conns.get(mm.id); if (mm.id !== S.me.id && L && L.open) send(L, { t: 'rd', r: roomId(c), ids }); });
+  else { const L = S.conns.get(cid); if (L && L.open) send(L, { t: 'rd', ids }); }
 }
 
 /* --- Dateien --- */
@@ -709,28 +841,29 @@ function onOffer(L, c, o) {
   loadMsgs(c.id).then(() => {
     let m = findMsg(c.id, o.id);
     if (m && m.me) return;
-    if (size > MAX_FILE) { send(L, { t: 'od', id: o.id, why: 'zu groß' }); return; }
+    if (size > MAX_FILE) { send(L, Object.assign({ t: 'od', id: o.id, why: 'zu groß' }, rr(c))); return; }
     if (!m) {
-      m = { id: o.id, cid: c.id, me: false, kind, ts: now(), state: 'delivered', tx: 'offered', rp: replyOf(o),
+      m = { id: o.id, cid: c.id, me: false, from: L.cid, kind, ts: isRoom(c) ? clampTs(o.ts) : now(), state: 'delivered', tx: 'offered', rp: replyOf(o, c),
         file: { name: safeName(o.name), size, mime: clean(o.mime, 80) || 'application/octet-stream', w: +o.w || 0, h: +o.h || 0, dur: +o.dur || 0, hash: /^[a-f0-9]{64}$/.test(o.hash || '') ? o.hash : '' } };
       incoming(c, m);
-    } else if (m.tx === 'done') { send(L, { t: 'ak', id: m.id }); return; }
+    } else if (m.tx === 'done') { send(L, Object.assign({ t: 'ak', id: m.id }, rr(c))); return; }
     else { m.tx = 'offered'; saveMsg(m); refreshMsg(m); }
     if ((kind === 'image' || kind === 'audio') && size <= MAX_AUTO) acceptOffer(L, m);
   });
 }
 function acceptOffer(L, m) {
   if (!L || !L.open) return;
-  S.xfers.set(m.id, { id: m.id, cid: m.cid, dir: 'in', got: 0, size: m.file.size, chunks: [], cancel: false, last: 0 });
+  const c = S.contacts.get(m.cid);
+  S.xfers.set(xk(m.id, L.cid), { id: m.id, mkey: m.cid, peer: L.cid, dir: 'in', got: 0, size: m.file.size, chunks: [], cancel: false, last: 0 });
   m.tx = 'active'; m.prog = 0; saveMsg(m); refreshMsg(m);
-  send(L, { t: 'oa', id: m.id });
+  send(L, Object.assign({ t: 'oa', id: m.id }, rr(c)));
 }
 function onAccept(L, c, o) {
   const m = findMsg(c.id, o.id); if (!m || !m.me || m.kind === 'text') return;
-  streamOut(L, m);
+  streamOut(L, c, m);
 }
 function onStreamStart(L, c, o) {
-  const xf = S.xfers.get(o.id); if (!xf || xf.dir !== 'in' || xf.cid !== c.id || !Number.isInteger(o.x)) return;
+  const xf = S.xfers.get(xk(o.id, L.cid)); if (!xf || xf.dir !== 'in' || xf.mkey !== c.id || !Number.isInteger(o.x)) return;
   xf.idx = o.x; L.inIdx.set(o.x, xf);
 }
 function handleChunk(L, buf) {
@@ -743,13 +876,14 @@ function handleChunk(L, buf) {
   const t = now(); if (t - xf.last > 120) { xf.last = t; progress(xf); }
 }
 function abortIn(L, xf, why) {
-  xf.cancel = true; S.xfers.delete(xf.id); L.inIdx.delete(xf.idx); send(L, { t: 'fx', id: xf.id, why });
-  const m = findMsg(xf.cid, xf.id); if (m) { m.tx = 'failed'; saveMsg(m); refreshMsg(m); }
+  xf.cancel = true; S.xfers.delete(xk(xf.id, xf.peer)); L.inIdx.delete(xf.idx);
+  const c = S.contacts.get(xf.mkey); send(L, Object.assign({ t: 'fx', id: xf.id, why }, rr(c)));
+  const m = findMsg(xf.mkey, xf.id); if (m) { m.tx = 'failed'; saveMsg(m); refreshMsg(m); }
 }
 async function onStreamEnd(L, c, o) {
-  const xf = S.xfers.get(o.id); if (!xf || xf.dir !== 'in' || xf.cid !== c.id) return;
+  const key = xk(o.id, L.cid), xf = S.xfers.get(key); if (!xf || xf.dir !== 'in' || xf.mkey !== c.id) return;
   const m = findMsg(c.id, o.id); if (!m) return;
-  S.xfers.delete(o.id); L.inIdx.delete(xf.idx);
+  S.xfers.delete(key); L.inIdx.delete(xf.idx);
   if (xf.got !== xf.size) { abortIn(L, xf, 'unvollständig'); return; }
   const type = (m.kind === 'image' && /^image\/(png|jpeg|webp|gif)$/.test(m.file.mime)) ? m.file.mime : (m.kind === 'audio' && /^audio\/(webm|mp4|ogg|mpeg|wav|x-m4a|aac)/.test(m.file.mime)) ? m.file.mime : 'application/octet-stream';
   const blob = new Blob(xf.chunks, { type });
@@ -757,24 +891,25 @@ async function onStreamEnd(L, c, o) {
   if (m.kind === 'image') { try { const bm = await createImageBitmap(blob); m.file.w = bm.width; m.file.h = bm.height; bm.close && bm.close(); } catch (e) { m.kind = 'file'; } }
   S.blobs.set(m.id, blob);
   try { await DB.put('blobs', blob, m.id); } catch (e) { toast('Datei konnte nicht gespeichert werden.', true); }
-  m.tx = 'done'; delete m.prog; saveMsg(m); refreshMsg(m); send(L, { t: 'ak', id: m.id });
-  if (S.cur === c.id) { scrollIfNear(); if (document.visibilityState === 'visible') markRead(c.id); } else { c.unread = (c.unread || 0); }
+  m.tx = 'done'; delete m.prog; saveMsg(m); refreshMsg(m); send(L, Object.assign({ t: 'ak', id: m.id }, rr(c)));
+  if (S.cur === c.id) { scrollIfNear(); if (document.visibilityState === 'visible') markRead(c.id); }
 }
 function progress(xf) {
-  const m = findMsg(xf.cid, xf.id); if (!m) return;
+  const m = findMsg(xf.mkey, xf.id); if (!m) return;
   m.prog = xf.size ? Math.round(100 * xf.got / xf.size) : 0;
   const el = document.querySelector('.msg[data-id="' + m.id + '"] progress.prog'); if (el) el.value = m.prog;
   const lb = document.querySelector('.msg[data-id="' + m.id + '"] .pp'); if (lb) lb.textContent = m.prog + ' %';
 }
 const bufLow = (dc) => new Promise((res) => { const f = () => { dc.removeEventListener('bufferedamountlow', f); res(); }; dc.addEventListener('bufferedamountlow', f); setTimeout(f, 250); });
-async function streamOut(L, m) {
-  if (S.xfers.has(m.id)) return;
+async function streamOut(L, c, m) {
+  const key = xk(m.id, L.cid); if (S.xfers.has(key)) return;
   const blob = await blobOf(m.id);
-  if (!blob) { m.tx = 'failed'; saveMsg(m); refreshMsg(m); return; }
-  const xf = { id: m.id, cid: m.cid, dir: 'out', got: 0, size: blob.size, cancel: false, last: 0 };
-  S.xfers.set(m.id, xf);
-  const idx = ++L.idx; send(L, { t: 'fs', id: m.id, x: idx });
-  m.tx = 'active'; m.prog = 0; refreshMsg(m);
+  const room = isRoom(c);
+  if (!blob) { if (!room) { m.tx = 'failed'; saveMsg(m); refreshMsg(m); } return; }
+  const xf = { id: m.id, mkey: m.cid, peer: L.cid, dir: 'out', got: 0, size: blob.size, cancel: false, last: 0 };
+  S.xfers.set(key, xf);
+  const idx = ++L.idx; send(L, Object.assign({ t: 'fs', id: m.id, x: idx }, rr(c)));
+  if (!room) { m.tx = 'active'; m.prog = 0; refreshMsg(m); }
   let off = 0; const READ = 256 * 1024;
   try {
     while (off < blob.size && !xf.cancel && L.open) {
@@ -785,36 +920,44 @@ async function streamOut(L, m) {
         while (L.open && L.dc.bufferedAmount > 1024 * 1024) await bufLow(L.dc);
         if (xf.cancel || !L.open) break;
         L.dc.send(fr); off += part.length; xf.got = off;
-        const t = now(); if (t - xf.last > 120) { xf.last = t; progress(xf); }
+        const t = now(); if (!room && t - xf.last > 120) { xf.last = t; progress(xf); }
       }
     }
   } catch (e) { /* Verbindung weg */ }
-  S.xfers.delete(m.id);
+  S.xfers.delete(key);
+  if (room) { if (!xf.cancel && L.open && off >= blob.size) send(L, Object.assign({ t: 'fe', id: m.id }, rr(c))); return; }
   if (xf.cancel) { m.tx = 'cancelled'; delete m.prog; }
   else if (!L.open || off < blob.size) { m.tx = 'queued'; delete m.prog; }
   else { send(L, { t: 'fe', id: m.id }); m.tx = 'done'; delete m.prog; }
   saveMsg(m); refreshMsg(m);
 }
 function cancelTransfer(m) {
-  const xf = S.xfers.get(m.id), L = S.conns.get(m.cid);
-  if (xf) { xf.cancel = true; S.xfers.delete(m.id); }
-  if (L) send(L, { t: 'fx', id: m.id });
+  const c = S.contacts.get(m.cid), peer = isRoom(c) ? m.from : m.cid;
+  const key = xk(m.id, peer), xf = S.xfers.get(key), L = S.conns.get(peer);
+  if (xf) { xf.cancel = true; S.xfers.delete(key); }
+  if (L) send(L, Object.assign({ t: 'fx', id: m.id }, rr(c)));
   m.tx = m.me ? 'cancelled' : 'declined'; delete m.prog; saveMsg(m); refreshMsg(m);
 }
 
 /* ================= Senden ================= */
 function wireSend(L, m) {
-  if (m.deleted) return;
-  const rp = m.rp ? { id: m.rp.id, p: m.rp.p, me: m.rp.me } : undefined;
-  if (m.kind === 'text') send(L, { t: 'm', id: m.id, x: m.text, rp });
-  else send(L, { t: 'of', id: m.id, k: m.kind, name: m.file.name, size: m.file.size, mime: m.file.mime, w: m.file.w, h: m.file.h, dur: m.file.dur, hash: m.file.hash, rp });
+  if (m.deleted || m.kind === 'sys') return;
+  const c = S.contacts.get(m.cid), room = isRoom(c);
+  const rp = m.rp ? (room ? { id: m.rp.id, p: m.rp.p, from: m.rp.from } : { id: m.rp.id, p: m.rp.p, me: m.rp.me }) : undefined;
+  const base = Object.assign({ id: m.id, rp }, rr(c)); if (room) base.ts = m.ts;
+  if (m.kind === 'text') send(L, Object.assign({ t: 'm', x: m.text }, base));
+  else send(L, Object.assign({ t: 'of', k: m.kind, name: m.file.name, size: m.file.size, mime: m.file.mime, w: m.file.w, h: m.file.h, dur: m.file.dur, hash: m.file.hash }, base));
   L.wire.add(m.id);
   if (m.state === 'queued') { m.state = 'sent'; saveMsg(m); refreshMsg(m); }
 }
-function flush(cid) {
-  const L = S.conns.get(cid); if (!L || !L.open) return;
-  (S.msgs.get(cid) || []).forEach((m) => {
-    if (!m.me || m.deleted || L.wire.has(m.id)) return;
+function flushPeer(L, c) {
+  const room = isRoom(c), mem = room ? memberOf(c, L.cid) : null;
+  (S.msgs.get(c.id) || []).forEach((m) => {
+    if (!m.me || m.deleted || m.kind === 'sys' || L.wire.has(m.id)) return;
+    if (room) {
+      if (!mem || m.ts < (mem.j || 0) - 2000 || (m.acks || []).includes(L.cid) || (m.rds || []).includes(L.cid)) return;   // Neue Mitglieder bekommen nur, was ab ihrem Beitritt gesendet wurde
+      wireSend(L, m); return;
+    }
     const acked = m.state === 'delivered' || m.state === 'read';
     if (m.kind === 'text') { if (acked) return; }
     else {
@@ -824,23 +967,31 @@ function flush(cid) {
     wireSend(L, m);
   });
 }
+function flush(key) {
+  const c = S.contacts.get(key); if (!c) return;
+  if (isRoom(c)) c.members.forEach((mm) => { if (mm.id === S.me.id) return; const L = S.conns.get(mm.id); if (L && L.open) flushPeer(L, c); });
+  else { const L = S.conns.get(key); if (L && L.open) flushPeer(L, c); }
+}
+function newOutgoing(c, kind, extra) {
+  const m = Object.assign({ id: rid(12), cid: c.id, me: true, from: S.me.id, kind, ts: now(), state: 'queued', rp: S.reply ? Object.assign({}, S.reply) : null }, extra);
+  if (isRoom(c)) { m.acks = []; m.rds = []; }
+  S.reply = null; renderReply(); return m;
+}
 async function addOutgoing(cid, kind, blob, meta) {
   const c = S.contacts.get(cid); if (!c) return;
   await loadMsgs(cid);
   meta.hash = hex(await sha256(await blob.arrayBuffer()));
-  const m = { id: rid(12), cid, me: true, kind, ts: now(), state: 'queued', tx: 'queued', file: meta, rp: S.reply ? Object.assign({}, S.reply) : null };
-  S.reply = null; renderReply();
+  const m = newOutgoing(c, kind, { tx: isRoom(c) ? 'done' : 'queued', file: meta });
   S.blobs.set(m.id, blob); try { await DB.put('blobs', blob, m.id); } catch (e) { toast('Datei konnte nicht gespeichert werden.', true); }
-  S.msgs.get(cid).push(m); saveMsg(m); touchContact(c, m); renderList();
-  if (S.cur === cid) appendMsg(m, true);
+  const atEnd = insertMsg(S.msgs.get(cid), m); saveMsg(m); touchContact(c, m); renderList();
+  if (S.cur === cid) { if (atEnd) appendMsg(m, true); else renderMsgs(); }
   flush(cid);
 }
 function sendText(text) {
   const cid = S.cur; if (!cid) return false;
   text = clean(text, MAX_TEXT); if (!text) return false;
-  const c = S.contacts.get(cid), m = { id: rid(12), cid, me: true, kind: 'text', text, ts: now(), state: 'queued', rp: S.reply ? Object.assign({}, S.reply) : null };
-  S.reply = null; renderReply();
-  loadMsgs(cid).then((arr) => { arr.push(m); saveMsg(m); touchContact(c, m); renderList(); if (S.cur === cid) appendMsg(m, true); flush(cid); });
+  const c = S.contacts.get(cid), m = newOutgoing(c, 'text', { text });
+  loadMsgs(cid).then((arr) => { const atEnd = insertMsg(arr, m); saveMsg(m); touchContact(c, m); renderList(); if (S.cur === cid) { if (atEnd) appendMsg(m, true); else renderMsgs(); } flush(cid); });
   return true;
 }
 async function prepImage(file) {
@@ -891,27 +1042,185 @@ async function recStart() {
 }
 function recStop(sendIt) { const r = S.rec; if (!r) return; r.cancel = !sendIt; try { r.mr.stop(); } catch (e) { r.stream.getTracks().forEach((t) => t.stop()); S.rec = null; $('#rec').classList.add('hidden'); } }
 
+/* ================= Räume: Verbindung und Mitglieder ================= */
+function addSys(c, text) {
+  const arr = S.msgs.get(c.id) || (S.msgs.set(c.id, []), S.msgs.get(c.id));
+  const m = { id: rid(12), cid: c.id, me: false, from: '', kind: 'sys', text, ts: now(), state: 'delivered' };
+  const atEnd = insertMsg(arr, m); saveMsg(m);
+  if (S.cur === c.id) { if (atEnd) appendMsg(m); else renderMsgs(); }
+}
+async function newRoom(name) {
+  const id = rid(8), color = ['#2f6f4e', '#2a6fb0', '#c26a1a', '#b03a48', '#7a4bb0', '#1c8a90'][Math.floor(Math.random() * 6)];
+  const c = { id: 'r:' + id, kind: 'room', name: clean(name, 40) || 'Raum', alias: '', color, members: [Object.assign(myEntry(), { j: 0 })], last: now(), unread: 0, created: now(), preview: '' };
+  S.contacts.set(c.id, c); S.msgs.set(c.id, []); saveContact(c);
+  addSys(c, 'Raum „' + c.name + '“ angelegt. Lade Leute über „Einladen“ ein.');
+  renderList(); await select(c.id);
+  return c;
+}
+async function roomWelcome(L, room) {
+  const p = L.peer;
+  if (!isMember(room, p.id)) {
+    if (room.members.length >= MAX_ROOM) { send(L, { t: 'rs', r: roomId(room), err: 'voll' }); toast('Der Raum ist voll (höchstens ' + MAX_ROOM + ' Personen).', true); return; }
+    room.members.push({ id: p.id, pub: p.pubB64, n: p.n, c: p.c, j: now() }); saveContact(room);
+    addSys(room, p.n + ' ist beigetreten');
+  }
+  await loadMsgs(room.id);
+  const hist = (S.msgs.get(room.id) || []).filter((m) => m.kind === 'text' && !m.deleted).slice(-30).map((m) => ({ id: m.id, from: m.from, x: m.text.slice(0, 500), ts: m.ts }));
+  send(L, { t: 'rs', r: roomId(room), name: room.name, members: room.members.map(pubMember), hist });
+  room.members.forEach((mm) => { if (mm.id === S.me.id || mm.id === p.id) return; const X = S.conns.get(mm.id); if (X && X.open) send(X, { t: 'rn', r: roomId(room), m: pubMember(room.members.find((x) => x.id === p.id)) }); });
+  flush(room.id); renderList(); if (S.cur === room.id) renderHeader();
+}
+async function onRs(L, o) {
+  const peer = L.cid; if (typeof o.r !== 'string' || !/^[a-f0-9]{16}$/.test(o.r)) return;
+  if (S.permits.get(o.r) !== peer) return;
+  S.permits.delete(o.r);
+  if (o.err) { toast('Der Raum ist voll.', true); return; }
+  const mem = await validMembers(o.members); if (!mem.length || mem.length > MAX_ROOM) return;
+  const key = 'r:' + o.r; let c = S.contacts.get(key);
+  if (!c) { c = { id: key, kind: 'room', name: clean(o.name, 40) || 'Raum', alias: '', color: '#2f6f4e', members: [], last: now(), unread: 0, created: now(), preview: '' }; S.contacts.set(key, c); }
+  mem.forEach((m) => { if (!isMember(c, m.id)) c.members.push(m); });
+  if (!isMember(c, S.me.id)) c.members.push(Object.assign(myEntry(), { j: 0 }));
+  await loadMsgs(key);
+  const arr = S.msgs.get(key);
+  (Array.isArray(o.hist) ? o.hist.slice(-30) : []).forEach((x) => {
+    if (!x || !okId(x.id) || typeof x.x !== 'string' || typeof x.from !== 'string' || !isMember(c, x.from) || findMsg(key, x.id)) return;
+    const m = { id: x.id, cid: key, me: x.from === S.me.id, from: x.from, kind: 'text', text: clean(x.x, 500), ts: clampTs(x.ts), state: 'delivered', hist: true, rs: true, acks: [], rds: [] };
+    if (m.text) { insertMsg(arr, m); saveMsg(m); }
+  });
+  saveContact(c); addSys(c, 'Du bist dem Raum „' + c.name + '“ beigetreten');
+  const last = arr.filter((m) => m.kind !== 'sys').slice(-1)[0]; if (last) touchContact(c, last);
+  renderList(); await select(key); ensureMesh(c);
+}
+async function onRn(L, o) {
+  const c = roomOf(o.r); if (!c || !isMember(c, L.cid)) return;
+  const [m] = await validMembers([o.m]); if (!m || isMember(c, m.id) || c.members.length >= MAX_ROOM) return;
+  c.members.push(m); saveContact(c); addSys(c, m.n + ' ist beigetreten'); renderList(); if (S.cur === c.id) renderHeader(); ensureMesh(c);
+}
+function sendRsy(L) {
+  const rooms = [];
+  S.contacts.forEach((c) => { if (isRoom(c) && isMember(c, L.cid)) rooms.push({ r: roomId(c), ms: c.members.map(pubMember) }); });
+  if (rooms.length) send(L, { t: 'rsy', rooms });
+}
+async function onRsy(L, o) {
+  if (!Array.isArray(o.rooms)) return;
+  for (const e of o.rooms.slice(0, 20)) {
+    const c = e && roomOf(e.r); if (!c || !isMember(c, L.cid) || !isMember(c, S.me.id)) continue;
+    const mem = await validMembers(e.ms); let changed = false;
+    mem.forEach((m) => { if (!isMember(c, m.id) && c.members.length < MAX_ROOM) { c.members.push(m); changed = true; addSys(c, m.n + ' ist beigetreten'); } });
+    if (changed) { saveContact(c); renderList(); if (S.cur === c.id) renderHeader(); }
+    ensureMesh(c);
+  }
+}
+function onRl(L, o) {
+  const c = roomOf(o.r); if (!c || !isMember(c, L.cid)) return;
+  const m = memberOf(c, L.cid); c.members = c.members.filter((x) => x.id !== L.cid); saveContact(c);
+  addSys(c, (m ? m.n : 'Jemand') + ' hat den Raum verlassen'); renderList(); if (S.cur === c.id) renderHeader();
+}
+function leaveRoom(c) {
+  c.members.forEach((mm) => { const L = S.conns.get(mm.id); if (mm.id !== S.me.id && L && L.open) send(L, { t: 'rl', r: roomId(c) }); });
+}
+function onRi(L, o) {
+  const c = roomOf(o.r);
+  if (c && isMember(c, S.me.id)) { send(L, { t: 'ra', r: o.r }); return; }
+  if (typeof o.r !== 'string' || !/^[a-f0-9]{16}$/.test(o.r) || S.riQueue) return;
+  const k = S.contacts.get(L.cid);
+  S.riQueue = { r: o.r, peer: L.cid };
+  $('#riText').textContent = '„' + nameOf(k) + '“ lädt dich in den Raum „' + (clean(o.name, 40) || 'Raum') + '“ ein. Du siehst danach die Nachrichten ab deinem Beitritt (und die letzten 30 Textnachrichten).';
+  openDlg('#riDlg');
+}
+function onRa(L, o) {
+  const key = o.r + ':' + L.cid; if (!S.invited.has(key)) return;
+  S.invited.delete(key);
+  const room = roomOf(o.r); if (room && isMember(room, S.me.id)) roomWelcome(L, room);
+}
+function ensureMesh(c) {
+  if (!isRoom(c) || !isMember(c, S.me.id)) return;
+  c.members.forEach((m) => {
+    if (m.id === S.me.id || m.id > S.me.id) return;                  // nur das Mitglied mit der größeren Kennung baut die Verbindung auf (verhindert doppelte Angebote)
+    const L = S.conns.get(m.id); if (L && L.open) return;
+    initRelay(c, m);
+  });
+}
+async function initRelay(room, mem) {
+  const old = S.pend.get(mem.id); if (old && now() - old.t < 25000) return;
+  const relays = [...S.conns.values()].filter((x) => x.open && x.cid !== mem.id);
+  if (!relays.length) return;
+  if (old) connClosed(old);
+  const pc = newPC(), L = makeLink(pc, 'host', 'relay'); L.sid = rid(6); L.peer = { id: mem.id, pubB64: mem.pub, n: mem.n, c: mem.c };
+  S.pend.set(mem.id, L);
+  pc.onconnectionstatechange = () => { if (pc.connectionState === 'failed') connClosed(L); };
+  attachDC(L, pc.createDataChannel('chat', { ordered: true }));
+  try {
+    await pc.setLocalDescription(await pc.createOffer()); await gathered(pc);
+    if (S.pend.get(mem.id) !== L) return;
+    const sdp = pc.localDescription.sdp; L.offerSdp = sdp;
+    const code = await encodeCode({ v: 2, t: 'o', id: S.me.id, pub: b64u.enc(S.me.pub), n: S.settings.name, c: S.settings.color, sdp, sig: await signPayload('o', sdp, 'rg:' + L.sid + ':' + mem.id) });
+    relays.forEach((R) => send(R, { t: 'rg', r: roomId(room), from: S.me.id, to: mem.id, k: 'o', sid: L.sid, code, hop: 0 }));
+  } catch (e) { connClosed(L); }
+}
+async function onRg(L, o) {
+  if (typeof o.to !== 'string' || typeof o.from !== 'string' || !/^[a-f0-9]{32}$/.test(o.to) || !/^[a-f0-9]{32}$/.test(o.from) || typeof o.code !== 'string' || o.code.length > 20000 || typeof o.sid !== 'string' || o.sid.length > 16) return;
+  if (o.to !== S.me.id) {                                            // weiterreichen, wenn der Empfänger mit uns verbunden ist
+    if ((o.hop || 0) >= 2) return;
+    const T = S.conns.get(o.to); if (T && T.open && T !== L) send(T, Object.assign({}, o, { hop: (o.hop || 0) + 1 }));
+    return;
+  }
+  const c = roomOf(o.r); if (!c || !isMember(c, S.me.id) || !isMember(c, o.from)) return;
+  const mem = memberOf(c, o.from);
+  try {
+    const payload = await decodeCode(o.code);
+    if (o.k === 'o') {
+      if (o.from < S.me.id || payload.t !== 'o') return;            // das Mitglied mit der größeren Kennung bietet an (wie in ensureMesh)
+      if (S.relayIn.get(o.from) === o.sid) return; S.relayIn.set(o.from, o.sid);
+      const cur = S.conns.get(o.from); if (cur && cur.open) return;
+      const peer = await verifyPayload(payload, 'rg:' + o.sid + ':' + S.me.id);
+      if (peer.id !== o.from || peer.pubB64 !== mem.pub) return;
+      const pc = newPC(), R = makeLink(pc, 'guest', 'relay'); R.peer = peer; S.pend.set(peer.id, R);
+      pc.onconnectionstatechange = () => { if (pc.connectionState === 'failed') connClosed(R); };
+      pc.ondatachannel = (e) => { if (!R.dc) attachDC(R, e.channel); };
+      await pc.setRemoteDescription({ type: 'offer', sdp: payload.sdp });
+      await pc.setLocalDescription(await pc.createAnswer()); await gathered(pc);
+      const sdp = pc.localDescription.sdp;
+      const code = await encodeCode({ v: 2, t: 'a', id: S.me.id, pub: b64u.enc(S.me.pub), n: S.settings.name, c: S.settings.color, sdp, sig: await signPayload('a', sdp, fpOf(payload.sdp)) });
+      send(L, { t: 'rg', r: o.r, from: S.me.id, to: o.from, k: 'a', sid: o.sid, code, hop: 0 });
+    } else if (o.k === 'a') {
+      const I = S.pend.get(o.from); if (!I || I.sid !== o.sid || I.role !== 'host' || !I.offerSdp || payload.t !== 'a') return;
+      const peer = await verifyPayload(payload, fpOf(I.offerSdp));
+      if (peer.id !== o.from || peer.pubB64 !== mem.pub) return;
+      await I.pc.setRemoteDescription({ type: 'answer', sdp: payload.sdp });
+    }
+  } catch (e) { /* ungültig oder abgelaufen: ignorieren */ }
+}
+
 /* ================= Anzeige ================= */
 function renderList() {
   const list = $('#list'); list.textContent = '';
-  const arr = [...S.contacts.values()].sort((a, b) => (b.last || 0) - (a.last || 0));
+  const arr = [...S.contacts.values()].filter((c) => !c.roomOnly).sort((a, b) => (b.last || 0) - (a.last || 0));
   $('#listEmpty').classList.toggle('hidden', arr.length > 0);
   arr.forEach((c) => {
-    list.append(h('div', { class: 'ci' + (S.cur === c.id ? ' sel' : ''), role: 'listitem', tabindex: '0', data: { cid: c.id }, onClick: () => select(c.id), onKeydown: (e) => { if (e.key === 'Enter') select(c.id); } },
+    list.append(h('div', { class: 'ci' + (S.cur === c.id ? ' sel' : ''), role: 'listitem', tabindex: '0', data: { cid: c.id, kind: isRoom(c) ? 'room' : 'chat' }, onClick: () => select(c.id), onKeydown: (e) => { if (e.key === 'Enter') select(c.id); } },
       avatar(c),
-      h('div', { class: 'cbody' }, h('div', { class: 'cname', text: nameOf(c) + (c.verified ? ' ✔' : '') }), h('div', { class: 'cprev', text: c.typingUntil > now() ? 'schreibt …' : (c.preview || (isOnline(c.id) ? 'online' : 'Verlauf lokal')) })),
+      h('div', { class: 'cbody' }, h('div', { class: 'cname', text: nameOf(c) + (c.verified ? ' ✔' : '') }), h('div', { class: 'cprev', text: c.typingUntil > now() ? 'schreibt …' : (c.preview || (isRoom(c) ? c.members.length + ' Personen' : isOnline(c.id) ? 'online' : 'Verlauf lokal')) })),
       h('div', { class: 'cmeta' }, h('span', { text: c.last ? fmtTime(c.last) : '' }), c.unread ? h('span', { class: 'badge', text: c.unread }) : null)));
   });
   $('#myInfo').textContent = 'Du: ' + S.settings.name + ' · Kennung ' + S.me.id.slice(0, 8);
 }
 function renderHeader() {
   const c = S.contacts.get(S.cur); if (!c) return;
-  const on = isOnline(c.id);
+  const room = isRoom(c), on = isOnline(c.id);
   const av = $('#hav'); av.replaceWith(Object.assign(avatar(c), { id: 'hav' }));
   $('#peerName').textContent = nameOf(c) + (c.verified ? ' ✔' : '');
-  const st = $('#peerStatus'); st.textContent = (c.typingUntil || 0) > now() ? 'schreibt …' : on ? 'online' : 'offline · Nachrichten werden gesendet, sobald ihr wieder verbunden seid';
-  st.className = 'hstat' + (on ? ' on' : '');
-  $('#btnReconnect').classList.toggle('hidden', on);
+  const st = $('#peerStatus');
+  if (room) {
+    const onl = c.members.filter((m) => m.id !== S.me.id && isOnline(m.id)).length;
+    st.textContent = c.members.length + ' Personen · ' + (onl + 1) + ' online';
+    st.className = 'hstat' + (onl ? ' on' : '');
+    $('#btnReconnect').textContent = 'Einladen'; $('#btnReconnect').classList.toggle('hidden', c.members.length >= MAX_ROOM);
+  } else {
+    st.textContent = (c.typingUntil || 0) > now() ? 'schreibt …' : on ? 'online' : 'offline · Nachrichten werden gesendet, sobald ihr wieder verbunden seid';
+    st.className = 'hstat' + (on ? ' on' : '');
+    $('#btnReconnect').textContent = 'Verbinden'; $('#btnReconnect').classList.toggle('hidden', on);
+  }
   $('#typing').classList.add('hidden');
 }
 async function select(cid) {
@@ -925,16 +1234,27 @@ async function select(cid) {
   if (!coarse()) mi.focus();
 }
 function bubbleFor(m) {
-  const c = S.contacts.get(m.cid), media = !m.deleted && (m.kind === 'image' && m.tx === 'done' || m.kind === 'audio' && m.tx === 'done');
+  if (m.kind === 'sys') return h('div', { class: 'sys', data: { id: m.id }, text: m.text });
+  const c = S.contacts.get(m.cid), room = isRoom(c), media = !m.deleted && (m.kind === 'image' && m.tx === 'done' || m.kind === 'audio' && m.tx === 'done');
   const box = h('div', { class: 'bub' + (media ? ' media' : '') });
-  if (m.rp && !m.deleted) box.append(h('div', { class: 'quote', onClick: () => jumpTo(m.rp.id) }, h('b', { text: m.rp.me ? 'Du' : nameOf(c) }), h('span', { text: m.rp.p })));
+  if (room && !m.me && !m.deleted) box.append(h('div', { class: 'sname', style: 'color:' + memColor(c, m.from), text: memName(c, m.from) }));
+  if (m.rp && !m.deleted) {
+    const who = room ? (m.rp.from === S.me.id ? 'Du' : (m.rp.from ? memName(c, m.rp.from) : '')) : (m.rp.me ? 'Du' : nameOf(c));
+    box.append(h('div', { class: 'quote', onClick: () => jumpTo(m.rp.id) }, h('b', { text: who }), h('span', { text: m.rp.p })));
+  }
   if (m.deleted) box.append(h('span', { text: 'Nachricht gelöscht' }));
   else if (m.kind === 'text') box.append(h('div', { class: 'txt' }, linkify(m.text)));
   else box.append(fileBody(m));
   const mbtn = m.deleted ? null : h('button', { class: 'mbtn', type: 'button', 'aria-label': 'Optionen', onClick: (e) => { e.stopPropagation(); openMenu(m, e.currentTarget); } }, '⋯');
-  const tick = m.me && !m.deleted ? h('span', { class: 'tick ' + m.state, title: { queued: 'wartet auf Verbindung', sent: 'gesendet', delivered: 'zugestellt', read: 'gelesen' }[m.state], text: { queued: '⏱', sent: '✓', delivered: '✓✓', read: '✓✓' }[m.state] }) : null;
+  let title = { queued: 'wartet auf Verbindung', sent: 'gesendet', delivered: 'zugestellt', read: 'gelesen' }[m.state];
+  if (room && m.me) { const others = c.members.filter((x) => x.id !== S.me.id); title += ' · ' + Math.min(others.length, new Set([...(m.acks || []), ...(m.rds || [])]).size) + ' von ' + others.length + ' Personen'; }
+  const tick = m.me && !m.deleted ? h('span', { class: 'tick ' + m.state, title, text: { queued: '⏱', sent: '✓', delivered: '✓✓', read: '✓✓' }[m.state] }) : null;
   box.append(h('div', { class: 'meta' }, mbtn, h('span', { text: fmtTime(m.ts) }), tick));
-  const rx = m.rx && (m.rx.me || m.rx.them) && !m.deleted ? h('div', { class: 'rx' }, m.rx.me ? h('span', { title: 'Deine Reaktion', text: m.rx.me }) : null, m.rx.them ? h('span', { title: 'Reaktion', text: m.rx.them }) : null) : null;
+  let rx = null;
+  if (!m.deleted) {
+    if (room && m.rxm && Object.keys(m.rxm).length) { const cnt = {}; Object.values(m.rxm).forEach((e) => cnt[e] = (cnt[e] || 0) + 1); rx = h('div', { class: 'rx' }, Object.keys(cnt).map((e) => h('span', { title: 'Reaktionen', text: e + (cnt[e] > 1 ? ' ' + cnt[e] : '') }))); }
+    else if (!room && m.rx && (m.rx.me || m.rx.them)) rx = h('div', { class: 'rx' }, m.rx.me ? h('span', { title: 'Deine Reaktion', text: m.rx.me }) : null, m.rx.them ? h('span', { title: 'Reaktion', text: m.rx.them }) : null);
+  }
   return h('div', { class: 'msg ' + (m.me ? 'me' : 'them') + (m.deleted ? ' del' : ''), data: { id: m.id } }, h('div', { class: 'wrap' + (media ? ' media' : '') }, box, rx));
 }
 function linkify(text) {
@@ -949,13 +1269,13 @@ function linkify(text) {
   frag.append(text.slice(last)); return frag;
 }
 function fileBody(m) {
-  const f = m.file || {}, done = m.tx === 'done';
+  const f = m.file || {}, done = m.tx === 'done', c = S.contacts.get(m.cid), room = isRoom(c), peer = room ? m.from : m.cid;
   const status = () => {
     if (m.tx === 'active') return h('div', null, h('progress', { class: 'prog', max: '100', value: String(m.prog || 0) }), h('div', { class: 'fsub' }, m.me ? 'Senden ' : 'Empfangen ', h('span', { class: 'pp', text: (m.prog || 0) + ' %' }), ' ', h('button', { class: 'ghost f-cancel', type: 'button', onClick: () => cancelTransfer(m) }, 'Abbrechen')));
-    if (m.tx === 'offered') return h('div', { class: 'fbtns' }, h('button', { class: 'f-accept primary', type: 'button', onClick: () => { const L = S.conns.get(m.cid); if (L) acceptOffer(L, m); else toast('Nicht verbunden.', true); } }, 'Annehmen'), h('button', { class: 'f-decline', type: 'button', onClick: () => { const L = S.conns.get(m.cid); if (L) send(L, { t: 'od', id: m.id }); m.tx = 'declined'; saveMsg(m); refreshMsg(m); } }, 'Ablehnen'));
+    if (m.tx === 'offered') return h('div', { class: 'fbtns' }, h('button', { class: 'f-accept primary', type: 'button', onClick: () => { const L = S.conns.get(peer); if (L) acceptOffer(L, m); else toast('Nicht verbunden.', true); } }, 'Annehmen'), h('button', { class: 'f-decline', type: 'button', onClick: () => { const L = S.conns.get(peer); if (L) send(L, Object.assign({ t: 'od', id: m.id }, rr(c))); m.tx = 'declined'; saveMsg(m); refreshMsg(m); } }, 'Ablehnen'));
     if (m.tx === 'queued' && m.me) return h('div', { class: 'fsub', text: 'Wartet auf Verbindung oder Annahme' });
-    if (m.tx === 'declined') return h('div', { class: 'fsub' }, m.me ? 'Abgelehnt' : 'Abgelehnt ', !m.me ? h('button', { class: 'f-again', type: 'button', onClick: () => { const L = S.conns.get(m.cid); if (L) acceptOffer(L, m); } }, 'Doch annehmen') : h('button', { class: 'f-retry', type: 'button', onClick: () => retry(m) }, 'Erneut anbieten'));
-    if (m.tx === 'cancelled' || m.tx === 'failed') return h('div', { class: 'fsub' }, m.tx === 'cancelled' ? 'Abgebrochen ' : 'Fehlgeschlagen ', m.me ? h('button', { class: 'f-retry', type: 'button', onClick: () => retry(m) }, 'Erneut senden') : h('button', { class: 'f-again', type: 'button', onClick: () => { const L = S.conns.get(m.cid); if (L) acceptOffer(L, m); } }, 'Erneut laden'));
+    if (m.tx === 'declined') return h('div', { class: 'fsub' }, m.me ? 'Abgelehnt' : 'Abgelehnt ', !m.me ? h('button', { class: 'f-again', type: 'button', onClick: () => { const L = S.conns.get(peer); if (L) acceptOffer(L, m); } }, 'Doch annehmen') : h('button', { class: 'f-retry', type: 'button', onClick: () => retry(m) }, 'Erneut anbieten'));
+    if (m.tx === 'cancelled' || m.tx === 'failed') return h('div', { class: 'fsub' }, m.tx === 'cancelled' ? 'Abgebrochen ' : 'Fehlgeschlagen ', m.me ? h('button', { class: 'f-retry', type: 'button', onClick: () => retry(m) }, 'Erneut senden') : h('button', { class: 'f-again', type: 'button', onClick: () => { const L = S.conns.get(peer); if (L) acceptOffer(L, m); } }, 'Erneut laden'));
     return null;
   };
   if (m.kind === 'image' && done) {
@@ -1002,7 +1322,7 @@ function renderMsgs() {
 }
 function appendMsg(m, mine) {
   const box = $('#msgs'), near = box.scrollHeight - box.scrollTop - box.clientHeight < 140;
-  const prev = box.querySelectorAll('.msg'); const last = prev.length ? S.msgs.get(S.cur).find((x) => x.id === prev[prev.length - 1].dataset.id) : null;
+  const prev = box.querySelectorAll('.msg, .sys'); const last = prev.length ? S.msgs.get(S.cur).find((x) => x.id === prev[prev.length - 1].dataset.id) : null;
   if (!last || dayKey(last.ts) !== dayKey(m.ts)) box.append(h('div', { class: 'day', text: dayLabel(m.ts) }));
   box.append(bubbleFor(m));
   if (mine || near) box.scrollTop = box.scrollHeight; else $('#toBottom').classList.remove('hidden');
@@ -1011,11 +1331,11 @@ function scrollIfNear() { const box = $('#msgs'); if (box.scrollHeight - box.scr
 function refreshMsg(m) {
   if (S.cur !== m.cid) return;
   const old = document.querySelector('.msg[data-id="' + m.id + '"]'); if (old) old.replaceWith(bubbleFor(m));
-  const c = S.contacts.get(m.cid); if (c && S.msgs.get(m.cid) && S.msgs.get(m.cid).slice(-1)[0] === m) { c.preview = previewOf(m); renderList(); }
+  const c = S.contacts.get(m.cid); if (c && S.msgs.get(m.cid) && S.msgs.get(m.cid).slice(-1)[0] === m) { c.preview = (isRoom(c) ? memName(c, m.from) + ': ' : '') + previewOf(m); renderList(); }
 }
 function jumpTo(id) { const el = document.querySelector('.msg[data-id="' + id + '"]'); if (!el) { toast('Die Nachricht ist nicht mehr im Verlauf.'); return; } el.scrollIntoView({ block: 'center', behavior: 'smooth' }); el.classList.add('flash'); setTimeout(() => el.classList.remove('flash'), 1400); }
 function wipeMsg(m) {
-  m.deleted = true; m.text = ''; m.file = m.file ? { name: '', size: 0, mime: '' } : null; m.rx = null;
+  m.deleted = true; m.text = ''; m.file = m.file ? { name: '', size: 0, mime: '' } : null; m.rx = null; m.rxm = null;
   S.blobs.delete(m.id); const u = S.urls.get(m.id); if (u) { URL.revokeObjectURL(u); S.urls.delete(m.id); } DB.del('blobs', m.id).catch(() => {});
   saveMsg(m); refreshMsg(m); const c = S.contacts.get(m.cid); if (c) { const arr = S.msgs.get(m.cid); if (arr[arr.length - 1] === m) { c.preview = 'Nachricht gelöscht'; saveContact(c); renderList(); } }
 }
@@ -1027,27 +1347,37 @@ async function lightbox(m) {
 /* --- Menü an der Nachricht --- */
 function openMenu(m, anchor) {
   const menu = $('#msgMenu'); menu.textContent = '';
-  const close = () => menu.classList.add('hidden');
+  const close = () => menu.classList.add('hidden'), c = S.contacts.get(m.cid);
   const rx = h('div', { class: 'rxrow' }); ['👍', '❤️', '😂', '😮', '😢', '🙏'].forEach((e) => rx.append(h('button', { type: 'button', class: 'rxb', onClick: () => { react(m, e); close(); } }, e)));
   menu.append(rx);
   const add = (label, fn, cls) => menu.append(h('button', { type: 'button', class: cls || '', onClick: () => { close(); fn(); } }, label));
-  add('Antworten', () => { S.reply = { id: m.id, p: previewOf(m), me: m.me }; renderReply(); $('#msgIn').focus(); }, 'm-reply');
+  add('Antworten', () => { S.reply = { id: m.id, p: previewOf(m), me: m.me, from: m.from || '' }; renderReply(); $('#msgIn').focus(); }, 'm-reply');
   if (m.kind === 'text') add('Text kopieren', () => copyText(m.text), 'm-copy');
   if (m.kind !== 'text' && m.tx === 'done') add('Speichern', () => saveFile(m), 'm-save');
-  if (m.me) add('Für beide löschen', () => deleteBoth(m), 'm-delboth');
+  if (m.me) add(isRoom(c) ? 'Für alle löschen' : 'Für beide löschen', () => deleteBoth(m), 'm-delboth');
   add('Nur bei mir löschen', () => deleteLocal(m), 'm-dellocal');
   menu.classList.remove('hidden');
   const r = anchor.getBoundingClientRect(), mw = menu.offsetWidth, mh = menu.offsetHeight;
   menu.style.left = Math.max(8, Math.min(r.right - mw, innerWidth - mw - 8)) + 'px';
   menu.style.top = Math.max(8, Math.min(r.bottom + 4, innerHeight - mh - 8)) + 'px';
 }
-function react(m, e) { m.rx = m.rx || {}; if (m.rx.me === e) delete m.rx.me; else m.rx.me = e; saveMsg(m); refreshMsg(m); const L = S.conns.get(m.cid); if (L) send(L, { t: 're', id: m.id, e: m.rx.me || '' }); }
-function deleteBoth(m) { const L = S.conns.get(m.cid); if (L && L.open) send(L, { t: 'dl', id: m.id }); else toast('Nicht verbunden: nur bei dir gelöscht.', true); cancelXfer(m); wipeMsg(m); }
-function cancelXfer(m) { const xf = S.xfers.get(m.id); if (xf) { xf.cancel = true; S.xfers.delete(m.id); } }
+function toPeers(c, o) {
+  if (isRoom(c)) c.members.forEach((mm) => { const L = S.conns.get(mm.id); if (mm.id !== S.me.id && L && L.open) send(L, Object.assign({}, o, rr(c))); });
+  else { const L = S.conns.get(c.id); if (L && L.open) send(L, o); else return false; }
+  return true;
+}
+function react(m, e) {
+  const c = S.contacts.get(m.cid);
+  if (isRoom(c)) { m.rxm = m.rxm || {}; if (m.rxm[S.me.id] === e) delete m.rxm[S.me.id]; else m.rxm[S.me.id] = e; toPeers(c, { t: 're', id: m.id, e: m.rxm[S.me.id] || '' }); }
+  else { m.rx = m.rx || {}; if (m.rx.me === e) delete m.rx.me; else m.rx.me = e; toPeers(c, { t: 're', id: m.id, e: m.rx.me || '' }); }
+  saveMsg(m); refreshMsg(m);
+}
+function deleteBoth(m) { const c = S.contacts.get(m.cid); if (!toPeers(c, { t: 'dl', id: m.id })) toast('Nicht verbunden: nur bei dir gelöscht.', true); cancelXfer(m); wipeMsg(m); }
+function cancelXfer(m) { for (const [k, xf] of [...S.xfers]) if (xf.id === m.id) { xf.cancel = true; S.xfers.delete(k); } }
 function deleteLocal(m) { cancelXfer(m); const arr = S.msgs.get(m.cid); const i = arr.indexOf(m); if (i >= 0) arr.splice(i, 1); DB.del('msgs', m.id).catch(() => {}); DB.del('blobs', m.id).catch(() => {}); S.blobs.delete(m.id); renderMsgs(); }
 function renderReply() {
   const bar = $('#replyBar'); bar.classList.toggle('hidden', !S.reply);
-  if (S.reply) { const c = S.contacts.get(S.cur); $('#replyQ').textContent = ''; $('#replyQ').append(h('b', { text: S.reply.me ? 'Du' : nameOf(c) }), h('span', { text: S.reply.p })); }
+  if (S.reply) { const c = S.contacts.get(S.cur); const who = isRoom(c) ? memName(c, S.reply.from) : (S.reply.me ? 'Du' : nameOf(c)); $('#replyQ').textContent = ''; $('#replyQ').append(h('b', { text: who }), h('span', { text: S.reply.p })); }
 }
 function closePanels() { ['#attMenu', '#emojiPanel', '#msgMenu'].forEach((s) => $(s).classList.add('hidden')); $('#btnAttach').setAttribute('aria-expanded', 'false'); }
 
@@ -1056,30 +1386,63 @@ function showTab(which) {
   $('#paneInvite').classList.toggle('hidden', which !== 'invite'); $('#paneJoin').classList.toggle('hidden', which !== 'join');
   $('#tabInvite').classList.toggle('on', which === 'invite'); $('#tabJoin').classList.toggle('on', which === 'join');
 }
-function openPair(tab, expectCid, code) {
+function openPair(tab, expectCid, code, roomKey) {
   openDlg('#pairDlg'); showTab(tab);
-  if (tab === 'invite') startInvite(expectCid);
+  if (tab === 'invite') startInvite(expectCid, roomKey);
   else { $('#joinIn').value = code || ''; $('#joinOutBox').classList.add('hidden'); $('#joinErr').textContent = ''; $('#joinInfo').textContent = ''; if (code) joinProcess(code); }
 }
 async function openInfo() {
   const c = S.contacts.get(S.cur); if (!c) return;
+  if (isRoom(c)) return openRoomInfo();
   $('#infoName').textContent = nameOf(c); $('#infoId').textContent = 'Kennung ' + c.id.slice(0, 12) + ' · ' + (isOnline(c.id) ? 'online' : 'offline');
   $('#infoAlias').value = c.alias || ''; $('#infoVerified').checked = !!c.verified; $('#infoSafety').textContent = 'wird berechnet …';
   openDlg('#infoDlg');
   $('#infoSafety').textContent = await safetyNumber(c);
 }
+function openRoomInfo() {
+  const c = S.contacts.get(S.cur); if (!isRoom(c)) return;
+  $('#rinfoName').textContent = nameOf(c); $('#rinfoSub').textContent = c.members.length + ' von höchstens ' + MAX_ROOM + ' Personen · Raumkennung ' + roomId(c).slice(0, 8);
+  $('#rinfoAlias').value = c.alias || '';
+  const list = $('#rinfoMembers'); list.textContent = '';
+  c.members.forEach((m) => {
+    const me = m.id === S.me.id, on = !me && isOnline(m.id);
+    list.append(h('div', { class: 'mrow', data: { id: m.id } }, h('span', { class: 'mdot' + (me || on ? ' on' : '') }), h('span', { class: 'mname', text: me ? 'Du (' + S.settings.name + ')' : memName(c, m.id) }), h('span', { class: 'mstat muted', text: me ? '' : (on ? 'online' : 'offline') }),
+      !me ? h('button', { type: 'button', class: 'mdirect', onClick: () => directChat(c, m) }, 'Direkt schreiben') : null));
+  });
+  const add = $('#rinfoAdd'); add.textContent = '';
+  const cands = [...S.contacts.values()].filter((x) => !isRoom(x) && isOnline(x.id) && !isMember(c, x.id));
+  cands.forEach((x) => add.append(h('div', { class: 'addrow', data: { id: x.id } }, h('span', { class: 'mname', text: nameOf(x) }), h('button', { type: 'button', class: 'madd', onClick: (e) => { inviteContact(c, x); e.currentTarget.disabled = true; e.currentTarget.textContent = 'Eingeladen'; } }, 'Hinzufügen'))));
+  $('#rinfoAddBox').classList.toggle('hidden', !cands.length || c.members.length >= MAX_ROOM);
+  $('#rinfoInvite').disabled = c.members.length >= MAX_ROOM;
+  openDlg('#rinfoDlg');
+}
+function directChat(room, m) {
+  let k = S.contacts.get(m.id);
+  if (!k) { k = { id: m.id, pub: m.pub, name: m.n, alias: '', color: m.c, verified: false, last: now(), unread: 0, created: now(), preview: '', roomOnly: false }; S.contacts.set(k.id, k); }
+  k.roomOnly = false; if (!k.last) k.last = now(); saveContact(k); closeDlg('#rinfoDlg'); renderList(); select(k.id);
+}
+function inviteContact(room, k) {
+  const L = S.conns.get(k.id); if (!L || !L.open) { toast('Nicht verbunden.', true); return; }
+  S.invited.add(roomId(room) + ':' + k.id); send(L, { t: 'ri', r: roomId(room), name: room.name });
+  toast('Einladung an „' + nameOf(k) + '“ gesendet.');
+}
 async function exportText(c) {
   const arr = await loadMsgs(c.id), lines = arr.filter((m) => !m.deleted).map((m) => {
     const d = new Date(m.ts), stamp = pad2(d.getDate()) + '.' + pad2(d.getMonth() + 1) + '.' + d.getFullYear() + ' ' + fmtTime(m.ts);
-    return '[' + stamp + '] ' + (m.me ? S.settings.name : nameOf(c)) + ': ' + (m.kind === 'text' ? m.text : '[' + (m.kind === 'image' ? 'Bild' : m.kind === 'audio' ? 'Sprachnachricht' : 'Datei') + ': ' + (m.file && m.file.name) + ' (' + fmtSize(m.file ? m.file.size : 0) + ')]');
+    if (m.kind === 'sys') return '[' + stamp + '] * ' + m.text;
+    const who = isRoom(c) ? memName(c, m.from).replace(/^Du$/, S.settings.name) : (m.me ? S.settings.name : nameOf(c));
+    return '[' + stamp + '] ' + who + ': ' + (m.kind === 'text' ? m.text : '[' + (m.kind === 'image' ? 'Bild' : m.kind === 'audio' ? 'Sprachnachricht' : 'Datei') + ': ' + (m.file && m.file.name) + ' (' + fmtSize(m.file ? m.file.size : 0) + ')]');
   });
   const u = URL.createObjectURL(new Blob([lines.join('\n') + '\n'], { type: 'text/plain;charset=utf-8' }));
   const a = h('a', { href: u, download: 'chat-' + safeName(nameOf(c)) + '.txt' }); document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 4000);
 }
 async function deleteConversation(cid) {
+  const c0 = S.contacts.get(cid);
+  if (isRoom(c0)) leaveRoom(c0);
   const arr = await loadMsgs(cid);
   for (const m of arr) { await DB.del('msgs', m.id).catch(() => {}); await DB.del('blobs', m.id).catch(() => {}); S.blobs.delete(m.id); const u = S.urls.get(m.id); if (u) { URL.revokeObjectURL(u); S.urls.delete(m.id); } }
-  S.msgs.delete(cid); const L = S.conns.get(cid); if (L) { send(L, { t: 'bye' }); connClosed(L); }
+  S.msgs.delete(cid);
+  if (!isRoom(c0)) { const L = S.conns.get(cid); if (L) { send(L, { t: 'bye' }); connClosed(L); } }
   S.contacts.delete(cid); await DB.del('contacts', cid).catch(() => {});
   if (S.cur === cid) { S.cur = null; $('#chatBox').classList.add('hidden'); $('#chatEmpty').classList.remove('hidden'); document.body.classList.remove('show-chat'); }
   renderList(); updateTitle();
@@ -1098,11 +1461,15 @@ const EMOJI = '😀 😁 😂 🤣 😊 😍 😘 😎 🤔 😅 😉 🙃 😴 
 function bind() {
   $('#btnNew').onclick = () => openPair('invite');
   $('#btnSet').onclick = openSettings;
+  $('#btnRoom').onclick = () => { $('#roomName').value = ''; openDlg('#roomDlg'); $('#roomName').focus(); };
+  $('#roomCancel').onclick = () => closeDlg('#roomDlg');
+  $('#roomCreate').onclick = async () => { const n = clean($('#roomName').value, 40); if (!n) { $('#roomName').focus(); return; } closeDlg('#roomDlg'); await newRoom(n); toast('Raum angelegt. Lade jetzt Leute über „Einladen“ ein.'); };
+  $('#roomName').onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); $('#roomCreate').click(); } };
   $('#pairClose').onclick = () => closeDlg('#pairDlg');          // der Aufbau läuft im Hintergrund weiter
   $('#tabInvite').onclick = () => { showTab('invite'); if (!P || P.role !== 'host') startInvite(); };
   $('#tabJoin').onclick = () => showTab('join');
   $('#invCopy').onclick = () => copyText($('#invLink').value, $('#invCopy'));
-  $('#invNew').onclick = () => startInvite(P && P.expect);
+  $('#invNew').onclick = () => startInvite(P && P.expect, P && P.invRoom);
   $('#invGo').onclick = invConnect;
   $('#joinGo').onclick = () => joinProcess($('#joinIn').value);
   $('#joinCopy').onclick = () => copyText($('#joinOut').value, $('#joinCopy'));
@@ -1111,7 +1478,7 @@ function bind() {
     $('#invShare').onclick = () => shareText('Chat-Einladung: ' + $('#invLink').value, 'Chat-Einladung');
     $('#joinShare').onclick = () => shareText($('#joinOut').value, 'Antwort-Code');
   }
-  $('#btnReconnect').onclick = () => openPair('invite', S.cur);
+  $('#btnReconnect').onclick = () => { const c = S.contacts.get(S.cur); if (isRoom(c)) openPair('invite', null, null, c.id); else openPair('invite', S.cur); };
   $('#btnBack').onclick = () => { document.body.classList.remove('show-chat'); S.cur = null; renderList(); };
   $('#btnInfo').onclick = openInfo; $('#infoClose').onclick = () => closeDlg('#infoDlg');
   $('#infoAlias').oninput = () => { const c = S.contacts.get(S.cur); if (!c) return; c.alias = clean($('#infoAlias').value, 40); saveContact(c); renderList(); renderHeader(); $('#infoName').textContent = nameOf(c); };
@@ -1120,6 +1487,15 @@ function bind() {
   $('#infoReconnect').onclick = () => { closeDlg('#infoDlg'); openPair('invite', S.cur); };
   let delArmed = 0;
   $('#infoDelete').onclick = () => { if (delArmed > now()) { delArmed = 0; $('#infoDelete').textContent = 'Gespräch löschen'; closeDlg('#infoDlg'); deleteConversation(S.cur); } else { delArmed = now() + 4000; $('#infoDelete').textContent = 'Wirklich löschen?'; setTimeout(() => { if (delArmed <= now()) $('#infoDelete').textContent = 'Gespräch löschen'; }, 4100); } };
+  // Raum
+  $('#rinfoClose').onclick = () => closeDlg('#rinfoDlg');
+  $('#rinfoAlias').oninput = () => { const c = S.contacts.get(S.cur); if (!isRoom(c)) return; c.alias = clean($('#rinfoAlias').value, 40); saveContact(c); renderList(); renderHeader(); $('#rinfoName').textContent = nameOf(c); };
+  $('#rinfoInvite').onclick = () => { const c = S.contacts.get(S.cur); closeDlg('#rinfoDlg'); if (isRoom(c)) openPair('invite', null, null, c.id); };
+  $('#rinfoExport').onclick = () => { const c = S.contacts.get(S.cur); if (c) exportText(c); };
+  let leaveArmed = 0;
+  $('#rinfoLeave').onclick = () => { if (leaveArmed > now()) { leaveArmed = 0; $('#rinfoLeave').textContent = 'Raum verlassen'; closeDlg('#rinfoDlg'); deleteConversation(S.cur); } else { leaveArmed = now() + 4000; $('#rinfoLeave').textContent = 'Wirklich verlassen?'; setTimeout(() => { if (leaveArmed <= now()) $('#rinfoLeave').textContent = 'Raum verlassen'; }, 4100); } };
+  $('#riNo').onclick = () => { S.riQueue = null; closeDlg('#riDlg'); };
+  $('#riYes').onclick = () => { const q = S.riQueue; S.riQueue = null; closeDlg('#riDlg'); if (!q) return; const L = S.conns.get(q.peer); if (!L || !L.open) { toast('Die Verbindung zum Einlader ist weg.', true); return; } S.permits.set(q.r, q.peer); send(L, { t: 'ra', r: q.r }); };
   $('#setClose').onclick = () => closeDlg('#setDlg');
   $('#setName').oninput = () => { S.settings.name = clean($('#setName').value, 30) || S.settings.name; saveSettings(); renderList(); S.conns.forEach((L) => send(L, { t: 'hi', n: S.settings.name, c: S.settings.color })); };
   $('#setColor').onchange = () => { S.settings.color = $('#setColor').value; saveSettings(); S.conns.forEach((L) => send(L, { t: 'hi', n: S.settings.name, c: S.settings.color })); };
@@ -1169,7 +1545,7 @@ function bind() {
     if (e.key !== 'Escape') return;
     if (!$('#lb').classList.contains('hidden')) { $('#lb').classList.add('hidden'); return; }
     if (!$('#msgMenu').classList.contains('hidden') || !$('#attMenu').classList.contains('hidden') || !$('#emojiPanel').classList.contains('hidden')) { closePanels(); return; }
-    for (const d of ['#pairDlg', '#infoDlg', '#setDlg']) if (!$(d).classList.contains('hidden')) { closeDlg(d); return; }
+    for (const d of ['#pairDlg', '#infoDlg', '#rinfoDlg', '#roomDlg', '#setDlg']) if (!$(d).classList.contains('hidden')) { closeDlg(d); return; }
     if (S.reply) { S.reply = null; renderReply(); }
   });
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && S.cur) markRead(S.cur); });
@@ -1185,8 +1561,12 @@ function handleHash() {
 
 /* ================= Test-Zugang (nur lesend und Bedienfunktionen) ================= */
 window.__chat = {
-  state: () => ({ id: S.me.id, name: S.settings.name, cur: S.cur, mem: DB.isMem(), contacts: [...S.contacts.values()].map((c) => ({ id: c.id, name: c.name, alias: c.alias, verified: c.verified, unread: c.unread || 0, online: isOnline(c.id), preview: c.preview })), conns: [...S.conns.keys()], unread: totalUnread(), xfers: S.xfers.size }),
-  msgs: (cid) => (S.msgs.get(cid || S.cur) || []).map((m) => ({ id: m.id, me: m.me, kind: m.kind, text: m.text, state: m.state, tx: m.tx, deleted: !!m.deleted, rx: m.rx || null, rp: m.rp || null, file: m.file ? { name: m.file.name, size: m.file.size, mime: m.file.mime, w: m.file.w, h: m.file.h, hash: m.file.hash } : null })),
+  state: () => ({
+    id: S.me.id, name: S.settings.name, cur: S.cur, mem: DB.isMem(),
+    contacts: [...S.contacts.values()].map((c) => ({ id: c.id, kind: c.kind || 'chat', name: c.name, alias: c.alias, verified: c.verified, unread: c.unread || 0, online: isOnline(c.id), preview: c.preview, roomOnly: !!c.roomOnly, members: isRoom(c) ? c.members.map((m) => ({ id: m.id, n: m.n })) : undefined })),
+    conns: [...S.conns.keys()], unread: totalUnread(), xfers: S.xfers.size, pend: S.pend.size
+  }),
+  msgs: (cid) => (S.msgs.get(cid || S.cur) || []).map((m) => ({ id: m.id, me: m.me, from: m.from, kind: m.kind, text: m.text, state: m.state, tx: m.tx, deleted: !!m.deleted, rx: m.rx || null, rxm: m.rxm || null, rp: m.rp || null, acks: m.acks || null, rds: m.rds || null, hist: !!m.hist, file: m.file ? { name: m.file.name, size: m.file.size, mime: m.file.mime, w: m.file.w, h: m.file.h, hash: m.file.hash } : null })),
   raw: (cid, o) => send(S.conns.get(cid || S.cur), o),
   drop: (cid) => { const L = S.conns.get(cid || S.cur); if (L) connClosed(L); },
   hash: async (id) => { const b = await blobOf(id); return b ? hex(await sha256(await b.arrayBuffer())) : null; },

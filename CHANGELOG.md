@@ -1,5 +1,8 @@
 # Änderungsprotokoll
 
+## 2026-11-24 (Chat-Test: Gruppenräume)
+- **Gruppenräume** bis 8 Personen, ohne Server. Wer neu dazukommt, braucht nur eine Verbindung zu einem Mitglied, die Verbindungen zu allen anderen entstehen von selbst (signierte Verbindungsdaten werden über bestehende Kanäle weitergereicht). Absendernamen, Antworten, Reaktionen mit Zähler, Löschen für alle, Bilder und Dateien an jedes Mitglied, Ausgangsfach pro Mitglied, Verlauf der letzten 30 Textnachrichten für Neue, Mitgliederliste, Direkteinladung verbundener Kontakte, Raum verlassen.
+
 ## 2026-11-24 (Chat-Test: Messenger in einer Datei)
 - **Chat-Test:** eigenständiger Browser-Messenger in einer einzigen Datei, ohne Server (`chat/`). Text, Links, Bilder, Dateien bis 50 MB mit Fortschritt, Sprachnachrichten, Antworten, Reaktionen, Löschen, Suche, Haken, Verlauf auf dem Gerät (IndexedDB), Ausgangsfach für Offline-Nachrichten. Verbindung per Link und Antwort-Code, signiert mit Schlüsselpaar, Sicherheitscode wie bei Signal. Handy hochkant und quer, Tablet, Dunkelmodus. Beide müssen online sein, kein Push, keine Gruppen.
 
