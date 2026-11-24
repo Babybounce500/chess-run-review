@@ -52,6 +52,12 @@ body{font-family:var(--font);background:var(--main-bg);color:var(--text);-webkit
 .nav-item i{font-size:1.15rem;color:var(--text-muted);width:20px;text-align:center;transition:color var(--transition)}
 .nav-item.active{background:var(--active-bg);color:var(--active-text)}
 .nav-item.active i{color:var(--active-text)}
+.nav-item.nav-duel{min-height:44px;background:linear-gradient(135deg,var(--avatar-from,#4285f4),var(--avatar-to,#9b72cb));color:#fff;font-weight:600;margin-bottom:6px;box-shadow:0 2px 8px rgba(66,133,244,.28)}
+.nav-item.nav-duel:hover{background:linear-gradient(135deg,var(--avatar-from,#4285f4),var(--avatar-to,#9b72cb));filter:brightness(1.08)}
+.nav-item.nav-duel i{color:#fff}
+.nav-item.nav-duel .nav-badge{margin-left:auto;font-size:.62rem;font-weight:700;letter-spacing:.03em;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.26);color:#fff}
+.nav-item.nav-duel .nav-badge.live{background:#1fa463}
+.module-dock.duel .module-switcher{display:none}
 .nav-divider{height:1px;background:var(--border);margin:4px 12px;transition:background var(--transition)}
 .convo-section{flex:1;min-height:0;display:flex;flex-direction:column}
 /* Sidebar scrollbar, weil mehr Eintraege: Navigation scrollt, Verlauf behaelt Mindesthoehe */
@@ -509,6 +515,7 @@ html,body,button,input,select,textarea{font-family:var(--neural-font)!important;
       </div>
       <button class="btn-new-chat" onclick="newChat()"><i class="bi bi-plus-lg"></i> Neuer Chat</button>
       <div class="nav-section">
+        <button class="nav-item nav-duel" id="navDuel" type="button" onclick="openOnlineDuel()" title="Gegen einen Freund spielen, direkt von Browser zu Browser"><i class="bi bi-people-fill"></i><span class="chess-nav-label">Online Duell</span><span class="nav-badge" id="navDuelBadge">NEU</span></button>
         <button class="nav-item" onclick="window.location.href='chess-coach.html'"><i class="bi bi-clipboard2-pulse"></i><span class="chess-nav-label">Partie-Coach</span></button>
         <button class="nav-item" onclick="document.getElementById('fileInput').click()"><i class="bi bi-image"></i><span class="chess-nav-label">Screenshot prüfen</span></button>
         <button class="nav-item" onclick="openChessModule('chess-center.html','Chess Center')"><i class="bi bi-bullseye"></i><span class="chess-nav-label">Chess Center</span></button>
@@ -638,7 +645,7 @@ html,body,button,input,select,textarea{font-family:var(--neural-font)!important;
       </div>
       <button onclick="closeChessModule()" title="Modul schließen"><i class="bi bi-x-lg"></i></button>
     </div>
-    <iframe class="module-frame" id="moduleFrame" title="Chess App"></iframe>
+    <iframe class="module-frame" id="moduleFrame" title="Chess App" allow="clipboard-write; clipboard-read; fullscreen; screen-wake-lock"></iframe>
   </div>
 </div>
 
@@ -2116,13 +2123,30 @@ window.openChessImport=function(kind){
 window.openChessModule=function(url,title){
   switchChessModule(url,title);
 };
+const DUEL_URL='duell/index.html?embed=1';
+const isDuelUrl=u=>/(^|\/)duell\/index\.html/.test(u||'');
 window.switchChessModule=function(url,title){
   $('moduleTitle').textContent=title;
-  $('moduleFrame').src=url;
+  const f=$('moduleFrame'),duel=isDuelUrl(url);
+  $('moduleDock').classList.toggle('duel',duel);
+  // Eine laufende Duell-Partie wird beim erneuten Öffnen nicht neu geladen
+  if(!duel||f.dataset.url!==url){f.src=url;f.dataset.url=url}
   $('moduleDock').classList.add('open');
   document.querySelectorAll('.module-switcher button').forEach(b=>b.classList.toggle('active',b.dataset.module===url));
 };
-window.closeChessModule=function(){$('moduleFrame').src='about:blank';$('moduleDock').classList.remove('open')};
+// Schließen blendet das Duell nur aus, damit eine laufende Partie und ihre Verbindung bestehen bleiben
+window.closeChessModule=function(){const f=$('moduleFrame');if(!isDuelUrl(f.dataset.url)){f.src='about:blank';f.dataset.url=''}$('moduleDock').classList.remove('open')};
+window.openOnlineDuel=function(){
+  try{closeSidebar()}catch(e){}
+  openChessModule(DUEL_URL,'Online Duell');
+};
+// Reiter-Abzeichen: „läuft“, solange im (ausgeblendeten) Duell-Fenster eine Partie läuft
+setInterval(()=>{
+  const b=$('navDuelBadge');if(!b)return;
+  let live=false;
+  try{const s=$('moduleFrame').contentWindow.__duell&&$('moduleFrame').contentWindow.__duell.state();live=!!(s&&s.conn==='open'&&!s.over&&isDuelUrl($('moduleFrame').dataset.url))}catch(e){}
+  b.textContent=live?'LÄUFT':'NEU';b.classList.toggle('live',live);
+},2500);
 $('moduleDock').addEventListener('click',e=>{if(e.target.id==='moduleDock')closeChessModule()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeChessModule()});
 

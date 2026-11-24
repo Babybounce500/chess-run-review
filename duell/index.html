@@ -39,19 +39,29 @@ button[hidden],.hidden{display:none!important}
 #game.noside{grid-template-columns:minmax(0,1fr)}
 #game.noside #side{display:none}
 /* Seitenleiste zu: das Brett nutzt die Höhe des Fensters, bis zur Breite der Seite */
-#game.noside #mainCol{width:min(100%, max(320px, calc(100vh - 250px)));margin:0 auto}
-@supports (height:100dvh){#game.noside #mainCol{width:min(100%, max(320px, calc(100dvh - 250px)))}}
+:root{--chrome:250px}
+html.embed{--chrome:140px}
+#game.noside #mainCol{width:min(100%, max(280px, calc(100vh - var(--chrome))));margin:0 auto}
+@supports (height:100dvh){#game.noside #mainCol{width:min(100%, max(280px, calc(100dvh - var(--chrome))))}}
 main:has(#game.noside){max-width:1100px}
-@media (max-width:760px){#game{grid-template-columns:1fr}#game.noside #mainCol{width:100%}}
+@media (max-width:760px){#game{grid-template-columns:1fr}#game.noside #mainCol{width:min(100%, max(280px, calc(100dvh - var(--chrome))))}}
 #bar{margin:8px 0 0;padding:10px 12px}
 #bar #status{margin:0}
-#toggleSide{padding:4px 12px;font-size:.85rem}
+#bar .tools{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+#bar .tools button{padding:4px 12px;font-size:.85rem}
+#bar .tools button[aria-pressed="false"]{opacity:.6}
+#dragGhost{position:fixed;z-index:50;pointer-events:none;display:none}
+#dragGhost img{width:100%;height:100%;filter:drop-shadow(0 4px 6px rgba(0,0,0,.45))}
+.sq.dragsrc .p{opacity:.3}
+/* Eingebettet in Orbitron: keine Kopfzeile, Platz für das Brett */
+html.embed h1,html.embed .sub,html.embed .credit{display:none}
+html.embed main{padding:8px 10px}
 .player{display:flex;justify-content:space-between;align-items:center;padding:6px 10px;border-radius:8px;background:var(--panel);border:1px solid var(--line);margin:6px 0}
 .player .nm{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .clock{font-variant-numeric:tabular-nums;font-size:1.25rem;font-weight:700;min-width:4.2em;text-align:right}
 .clock.run{color:var(--accent)} .clock.low{color:var(--bad)}
 /* Brett und Figuren wie in Orbitron */
-#board{display:grid;grid-template-columns:repeat(8,1fr);aspect-ratio:1/1;width:100%;border-radius:8px;overflow:hidden;user-select:none;touch-action:manipulation;box-shadow:0 1px 4px rgba(0,0,0,.25)}
+#board{display:grid;grid-template-columns:repeat(8,1fr);aspect-ratio:1/1;width:100%;border-radius:8px;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:none;-webkit-tap-highlight-color:transparent;box-shadow:0 1px 4px rgba(0,0,0,.25)}
 .sq{position:relative;display:flex;align-items:center;justify-content:center;container-type:size;cursor:pointer}
 .sq.l{background:#f0d9b5} .sq.d{background:#b58863}
 .sq.last::before{content:"";position:absolute;inset:0;background:rgba(255,215,0,.38)}
@@ -82,6 +92,52 @@ main:has(#game.noside){max-width:1100px}
 #promo button{width:64px;height:64px;padding:0;border-radius:12px;border:2px solid #fff;background:#f0d9b5;display:flex;align-items:center;justify-content:center}
 #promo .p{font-size:44px}
 @media (max-width:600px){#promo button{width:54px;height:54px}}
+
+/* ---------- Handy hochkant ---------- */
+@media (max-width:600px){
+  :root{--chrome:215px}
+  html.embed{--chrome:150px}
+  main{padding:10px 8px}
+  h1{font-size:1.1rem}
+  .sub{font-size:.85rem;margin-bottom:10px}
+  .card{padding:10px;border-radius:10px;margin-bottom:8px}
+  .grid2{grid-template-columns:1fr}
+  #game{gap:8px}
+  .player{padding:4px 8px;margin:4px 0}
+  .player .nm{font-size:.92rem}
+  .clock{font-size:1.1rem;min-width:3.6em}
+  #bar{padding:8px 10px}
+  #moves{max-height:110px;font-size:.9rem}
+  #banner{padding:8px 10px}
+  #pgnBox{font-size:.8rem}
+  .row{gap:6px}
+}
+@media (max-width:380px){
+  #bar .tools button{padding:4px 9px;font-size:.8rem}
+  .player .nm{font-size:.85rem}
+  .clock{font-size:1rem}
+}
+/* Touchgeräte: größere Tippflächen */
+@media (hover:none) and (pointer:coarse){
+  button{min-height:42px}
+  #bar .tools button{min-height:38px}
+  input[type=text],select,textarea{font-size:16px}
+}
+/* ---------- Handy quer (niedrig): Brett links in voller Höhe, alles andere rechts ---------- */
+@media (orientation:landscape) and (max-height:560px){
+  main{padding:6px 10px}
+  h1,.sub,.credit{display:none}
+  #game,#game.noside{grid-template-columns:min(calc(100dvh - 16px),58vw) minmax(0,1fr);grid-auto-rows:min-content;gap:6px 12px;align-items:start}
+  #mainCol,#game.noside #mainCol{display:contents;width:auto}
+  #board{grid-column:1;grid-row:1 / span 6}
+  #pTop{grid-column:2;grid-row:1}
+  #pBot{grid-column:2;grid-row:2}
+  #bar{grid-column:2;grid-row:3;margin:0}
+  #side{grid-column:2;grid-row:4;max-height:calc(100dvh - 200px);overflow:auto}
+  #game.noside #side{display:none}
+  .card{margin-bottom:6px;padding:8px 10px}
+  .player{margin:0}
+}
 code{background:var(--bg);padding:1px 5px;border-radius:4px}
 </style>
 </head>
@@ -128,10 +184,16 @@ code{background:var(--bg);padding:1px 5px;border-radius:4px}
       <div id="bar" class="card">
         <div class="row" style="justify-content:space-between;flex-wrap:nowrap">
           <span id="status"></span>
-          <span class="row" style="gap:6px;flex-wrap:nowrap"><span id="conn" class="chip">–</span><button id="toggleSide" type="button" aria-controls="side" aria-expanded="true" title="Seitenleiste ein- oder ausblenden">Menü</button><button id="btnLeave" type="button" class="danger" title="Verbindung trennen, gespeicherte Partie löschen und von vorn beginnen">Neustart</button></span>
+          <span id="conn" class="chip">–</span>
         </div>
         <div id="banner" class="hidden"></div>
         <div id="drawBox" class="hidden row" style="margin:8px 0 0"><span>Remis angeboten.</span><button id="drawYes" class="primary">Annehmen</button><button id="drawNo">Ablehnen</button></div>
+        <div class="tools">
+          <button id="toggleSide" type="button" aria-controls="side" aria-expanded="true" title="Seitenleiste ein- oder ausblenden">Menü</button>
+          <button id="btnFlip" type="button" title="Brett drehen">Drehen</button>
+          <button id="btnSound" type="button" aria-pressed="true" title="Zugton ein oder aus">Ton</button>
+          <button id="btnLeave" type="button" class="danger" title="Verbindung trennen, gespeicherte Partie löschen und von vorn beginnen">Neustart</button>
+        </div>
       </div>
     </div>
     <div id="side">
@@ -146,7 +208,7 @@ code{background:var(--bg);padding:1px 5px;border-radius:4px}
       <div id="manualHost" class="card hidden">
         <b>Verbindung ohne Server (2 Schritte)</b>
         <label for="manualLink">1. Diesen Link an deinen Gegner schicken</label>
-        <div class="row"><input id="manualLink" type="text" readonly style="flex:1" placeholder="Code wird erzeugt …"><button id="copyManual">Kopieren</button></div>
+        <div class="row"><input id="manualLink" type="text" readonly style="flex:1;min-width:0" placeholder="Code wird erzeugt …"><button id="copyManual">Kopieren</button><button id="shareManual" class="hidden">Teilen</button></div>
         <label for="ansIn">2. Antwort-Code deines Gegners hier einfügen</label>
         <textarea id="ansIn" rows="3" placeholder="Der Gegner bekommt nach dem Beitritt einen Code und schickt ihn dir zurück"></textarea>
         <div class="row" style="margin-top:8px"><button id="ansBtn" class="primary">Verbinden</button><button id="reOffer">Neuen Link erzeugen</button></div>
@@ -158,11 +220,11 @@ code{background:var(--bg);padding:1px 5px;border-radius:4px}
         <p id="ansHint" class="note" style="margin:6px 0"></p>
         <div id="ansBox"><label for="ansOut" style="margin-top:0">Diesen Antwort-Code an den Host zurückschicken</label>
         <textarea id="ansOut" rows="3" readonly></textarea>
-        <div class="row" style="margin-top:8px"><button id="copyAns">Code kopieren</button></div></div>
+        <div class="row" style="margin-top:8px"><button id="copyAns">Code kopieren</button><button id="shareAns" class="hidden">Teilen</button></div></div>
       </div>
       <div id="inviteCard" class="card hidden">
         <label for="inviteIn" style="margin-top:0">Einladungslink für deinen Gegner</label>
-        <div class="row"><input id="inviteIn" type="text" readonly style="flex:1"><button id="copyLink">Kopieren</button></div>
+        <div class="row"><input id="inviteIn" type="text" readonly style="flex:1;min-width:0"><button id="copyLink">Kopieren</button><button id="shareInvite" class="hidden">Teilen</button></div>
         <p class="note" style="margin-bottom:0">Der Link gilt für genau eine Person. Lass diese Seite offen, bis der Gegner da ist.</p>
       </div>
       <div class="card"><b>Züge</b><div id="moves"></div></div>
@@ -176,6 +238,7 @@ code{background:var(--bg);padding:1px 5px;border-radius:4px}
   <p class="credit">Figuren: Colin M. L. Burnett (Wikimedia Commons), wie in Orbitron.</p>
 </main>
 
+<div id="dragGhost" aria-hidden="true"></div>
 <div id="promo" class="hidden"><div class="box" id="promoBox"></div></div>
 
 <script src="vendor/chess.js"></script>
@@ -186,6 +249,15 @@ code{background:var(--bg);padding:1px 5px;border-radius:4px}
 var PIECE = { k: '♚', q: '♛', r: '♜', b: '♝', n: '♞', p: '♟︎' };
 var NAME_DE = { k: 'König', q: 'Dame', r: 'Turm', b: 'Läufer', n: 'Springer', p: 'Bauer' };
 var qs = new URLSearchParams(location.search);
+var EMBED = qs.get('embed') === '1';                       // eingebettet in Orbitron (ohne Kopfzeile)
+if (EMBED) document.documentElement.classList.add('embed');
+// Parameter, die bei Weiterleitungen erhalten bleiben (ice nur für Tests); Einladungslinks tragen kein embed
+function keepQ(joiner, withEmbed) {
+  var p = [];
+  if (qs.get('ice')) p.push('ice=' + encodeURIComponent(qs.get('ice')));
+  if (withEmbed && EMBED) p.push('embed=1');
+  return p.length ? joiner + p.join('&') : '';
+}
 var ICE = qs.get('ice') === 'none' ? [] : [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }];
 var UCI_RE = /^[a-h][1-8][a-h][1-8][qrbn]?$/;
 
@@ -214,8 +286,37 @@ var S = {
   drawMine: false, drawOpp: false, rematchMine: false, rematchOpp: false,
   resignArmed: 0,
   illegalRecv: 0, lastRx: 0, joined: false, manual: false,
-  side: true, prevConn: undefined, prevOver: false, oppLeft: false, noRejoin: false
+  side: true, prevConn: undefined, prevOver: false, oppLeft: false, noRejoin: false,
+  flipUser: false, sound: lsGet('duell_sound') !== '0', soundCount: 0, drag: null
 };
+function isFlipped() { return (S.color === 'b') !== S.flipUser; }   // Schwarz sieht das Brett gedreht, der Knopf „Drehen“ kehrt es um
+
+/* ---------- Zugton (kurzer Klick, abschaltbar) ---------- */
+var audio = null;
+function tickSound(capture) {
+  if (!S.sound) return;
+  S.soundCount++;
+  try {
+    audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+    if (audio.state === 'suspended') audio.resume();
+    var o = audio.createOscillator(), g = audio.createGain(), t = audio.currentTime;
+    o.type = 'triangle'; o.frequency.value = capture ? 210 : 330;
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.18, t + 0.005); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.09);
+    o.connect(g); g.connect(audio.destination); o.start(t); o.stop(t + 0.1);
+  } catch (e) { /* ohne Ton weiter */ }
+}
+
+/* ---------- Bildschirm wach halten, solange die Partie läuft (Handy) ---------- */
+var wl = null, wlBusy = false;
+function wake(on) {
+  try {
+    if (on && !wl && !wlBusy && navigator.wakeLock && document.visibilityState === 'visible') {
+      wlBusy = true;
+      navigator.wakeLock.request('screen').then(function (l) { wl = l; wlBusy = false; l.addEventListener('release', function () { wl = null; }); }, function () { wlBusy = false; });
+    } else if (!on && wl) { var x = wl; wl = null; x.release().catch(function () { /* ok */ }); }
+  } catch (e) { wlBusy = false; }
+}
+document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') render(); });
 
 /* ---------- Uhr ---------- */
 function clocksOn() { return S.baseMs > 0 && S.moves.length >= 2 && !S.over; }
@@ -302,6 +403,7 @@ function commitMove(u, mover, remFromSender) {
   }
   S.moves.push(u);
   S.last = [m.from, m.to];
+  tickSound(!!m.captured);
   S.drawMine = S.drawOpp = false; S.sel = null; S.targets = [];
   S.turnStart = (S.baseMs > 0 && S.moves.length >= 2) ? now() : null;
   return m;
@@ -335,6 +437,8 @@ function onMsg(raw) {
   if (!d || typeof d.t !== 'string') return;
   S.lastRx = now();
   if (S.conn !== 'open' && dc && dc.readyState === 'open') { S.conn = 'open'; render(); }
+  // Der andere kennt uns noch nicht (unser „hallo“ ging verloren): erneut vorstellen, bis seins ankommt
+  if (!S.oppName && d.t !== 'hello') sendMsg({ t: 'hello', name: S.name, color: S.color });
   switch (d.t) {
     case 'ping': return;
     case 'hello':
@@ -447,15 +551,21 @@ function makePeer() {
 
 function setupDC(ch) {
   dc = ch;
-  ch.onopen = function () {
-    if (dc !== ch) return;
+  var announced = false;
+  var opened = function () {
+    // Ein per ondatachannel erhaltener Kanal kann schon offen sein, bevor dieser Handler gesetzt ist:
+    // deshalb wird beim Einrichten selbst geprüft und höchstens einmal begrüßt
+    if (dc !== ch || announced) return;
+    announced = true;
     S.conn = 'open'; S.lastRx = now(); S.oppLeft = false; S.noRejoin = false;
     sendMsg({ t: 'hello', name: S.name, color: S.color });
     sendSync();
     render();
   };
+  ch.onopen = opened;
   ch.onclose = function () { if (dc === ch) { S.conn = 'lost'; render(); } };
   ch.onmessage = function (e) { if (dc === ch) onMsg(e.data); };
+  if (ch.readyState === 'open') opened();
 }
 
 function onSignal(m) {
@@ -552,9 +662,11 @@ function autoSide() {
 function render() {
   if (!S.id || !S.joined) return;
   autoSide();
+  wake(S.conn === 'open' && !S.over);
+  $('btnSound').setAttribute('aria-pressed', String(S.sound));
   $('game').classList.toggle('noside', !S.side);
   $('toggleSide').setAttribute('aria-expanded', String(S.side));
-  var flip = S.color === 'b';
+  var flip = isFlipped();
   var b = $('board'); b.textContent = '';
   var kingSq = null;
   if (S.game.in_check()) {
@@ -587,8 +699,10 @@ function render() {
   }
 
   var me = S.color, ot = opp(S.color);
-  $('nmBot').textContent = (S.name || 'Du') + ' (' + (me === 'w' ? 'Weiß' : 'Schwarz') + ')';
-  $('nmTop').textContent = (S.oppName || 'Gegner') + ' (' + (ot === 'w' ? 'Weiß' : 'Schwarz') + ')';
+  var botC = flip ? 'b' : 'w', topC = opp(botC);        // gedrehtes Brett: Schwarz unten
+  var nameOf = function (c) { return (c === me ? (S.name || 'Du') : (S.oppName || 'Gegner')) + ' (' + (c === 'w' ? 'Weiß' : 'Schwarz') + ')'; };
+  $('nmBot').textContent = nameOf(botC);
+  $('nmTop').textContent = nameOf(topC);
 
   var cs = $('conn'); cs.textContent = CONN_TXT[S.conn] || S.conn; cs.className = 'chip ' + S.conn;
   var st;
@@ -643,11 +757,12 @@ function render() {
 function tick() {
   if (!S.id || !S.joined) return;
   var me = S.color, ot = opp(me);
+  var bot = isFlipped() ? 'b' : 'w', top = opp(bot);             // unten steht die Seite, die unten auf dem Brett ist
   var cb = $('ckBot'), ct = $('ckTop');
-  cb.textContent = fmt(remaining(me)); ct.textContent = fmt(remaining(ot));
+  cb.textContent = fmt(remaining(bot)); ct.textContent = fmt(remaining(top));
   var turn = S.game.turn(), on = clocksOn();
-  cb.className = 'clock' + (on && turn === me ? ' run' : '') + (S.baseMs > 0 && remaining(me) < 10000 && on ? ' low' : '');
-  ct.className = 'clock' + (on && turn === ot ? ' run' : '');
+  var cls = function (c) { return 'clock' + (on && turn === c ? ' run' : '') + (on && S.baseMs > 0 && remaining(c) < 10000 ? ' low' : ''); };
+  cb.className = cls(bot); ct.className = cls(top);
   if (on) {
     if (turn === me && rawRem(me) <= 0) {                      // ich bin abgelaufen
       sendMsg({ t: 'timeout' });
@@ -711,10 +826,70 @@ $('board').addEventListener('click', function (e) {
   if (t && t.getAttribute) { var sq = t.getAttribute('data-sq'); if (sq) onSquare(sq); }
 });
 $('toggleSide').onclick = function () { S.side = !S.side; render(); };
+$('btnFlip').onclick = function () { S.flipUser = !S.flipUser; render(); };
+$('btnSound').onclick = function () { S.sound = !S.sound; lsSet('duell_sound', S.sound ? '1' : '0'); if (S.sound) tickSound(false); render(); };
+
+/* ---------- Teilen (Handy: Share-Dialog), nur sichtbar, wenn der Browser es kann ---------- */
+function shareIt(btn, what) {
+  var data = what === 'link' ? { title: 'Schach-Duell', text: 'Komm in meine Schachpartie:', url: $(btn).dataset.src ? $($(btn).dataset.src).value : '' }
+                             : { title: 'Schach-Duell', text: $($(btn).dataset.src).value };
+  try { navigator.share(data).catch(function () { /* abgebrochen */ }); } catch (e) { /* ok */ }
+}
+if (typeof navigator.share === 'function') {
+  [['shareManual', 'manualLink', 'link'], ['shareInvite', 'inviteIn', 'link'], ['shareAns', 'ansOut', 'code']].forEach(function (x) {
+    var b = $(x[0]); b.dataset.src = x[1]; b.classList.remove('hidden'); b.onclick = function () { shareIt(x[0], x[2]); };
+  });
+}
+
+/* ---------- Figuren ziehen (Maus und Finger), zusätzlich zum Antippen ---------- */
+var board = $('board');
+board.addEventListener('pointerdown', function (e) {
+  if (e.button > 0 || S.over || !dcOpen() || S.game.turn() !== S.color) return;
+  var t = e.target; while (t && t !== board && !(t.getAttribute && t.getAttribute('data-sq'))) t = t.parentNode;
+  var sq = t && t.getAttribute && t.getAttribute('data-sq');
+  if (!sq) return;
+  var p = S.game.get(sq);
+  if (!p || p.color !== S.color) return;
+  S.drag = { from: sq, x: e.clientX, y: e.clientY, active: false, id: e.pointerId };
+});
+window.addEventListener('pointermove', function (e) {
+  var d = S.drag; if (!d || e.pointerId !== d.id) return;
+  if (!d.active) {
+    if (Math.abs(e.clientX - d.x) + Math.abs(e.clientY - d.y) < 8) return;
+    d.active = true;
+    S.sel = d.from; S.targets = S.game.moves({ square: d.from, verbose: true }).map(function (m) { return m.to; });
+    render();
+    var src = board.querySelector('[data-sq="' + d.from + '"]'); if (src) src.classList.add('dragsrc');
+    var r = src ? src.getBoundingClientRect() : { width: 56 };
+    var g = $('dragGhost'); g.style.width = g.style.height = Math.round(r.width * 1.15) + 'px'; g.textContent = '';
+    var im = document.createElement('img'); var pp = S.game.get(d.from);
+    im.src = 'img/' + pp.color + pp.type.toUpperCase() + '.png'; im.alt = ''; g.appendChild(im); g.style.display = 'block';
+  }
+  var gh = $('dragGhost'), w = parseFloat(gh.style.width) || 56;
+  gh.style.left = (e.clientX - w / 2) + 'px'; gh.style.top = (e.clientY - w / 2) + 'px';
+  e.preventDefault();
+});
+function endDrag(e, cancel) {
+  var d = S.drag; if (!d || (e && e.pointerId !== d.id)) return;
+  S.drag = null;
+  var gh = $('dragGhost'); gh.style.display = 'none'; gh.textContent = '';
+  if (!d.active) return;                                   // nur angetippt: das übernimmt der Klick
+  var src = board.querySelector('.dragsrc'); if (src) src.classList.remove('dragsrc');
+  if (cancel || !e) { render(); return; }
+  var under = document.elementFromPoint(e.clientX, e.clientY);
+  var sq = null; while (under && under !== document.body) { if (under.getAttribute && under.getAttribute('data-sq')) { sq = under.getAttribute('data-sq'); break; } under = under.parentNode; }
+  if (sq && sq !== d.from && S.targets.indexOf(sq) >= 0) {
+    var cands = S.game.moves({ square: d.from, verbose: true }).filter(function (m) { return m.to === sq; });
+    if (cands.length && cands[0].promotion) { askPromo(d.from, sq); return; }
+    myMove(d.from, sq);
+  } else { render(); }
+}
+window.addEventListener('pointerup', function (e) { endDrag(e, false); });
+window.addEventListener('pointercancel', function (e) { endDrag(e, true); });
 
 // Sicherer Neustart: Gegner informieren, Verbindung schließen, diese Partie aus dem Speicher löschen, zurück zur Lobby
 var leaveArmed = 0;
-function lobbyUrl() { return location.pathname + (qs.get('ice') ? '?ice=' + encodeURIComponent(qs.get('ice')) : ''); }
+function lobbyUrl() { return location.pathname + keepQ('?', true); }
 function doLeave() {
   var id = S.id, role = S.role;
   sendMsg({ t: 'leave' });
@@ -770,7 +945,7 @@ function applyMeta(tc) {
 }
 function inviteLink() {
   var u = location.origin + location.pathname + '?r=' + S.id;
-  if (qs.get('ice')) u += '&ice=' + encodeURIComponent(qs.get('ice'));
+  u += keepQ('&', false);
   return u;
 }
 function enterGame() {
@@ -809,7 +984,7 @@ function gathered(p, ms) {
   });
 }
 function manualBase() {
-  return location.origin + location.pathname + (qs.get('ice') ? '?ice=' + encodeURIComponent(qs.get('ice')) : '');
+  return location.origin + location.pathname + keepQ('?', false);
 }
 function manualOffer() {
   closePeer();
@@ -841,7 +1016,7 @@ function manualHostStart(id, resume) {
     lsSet('duell_mh_' + id, JSON.stringify(meta));
   }
   applyMeta(meta.tc); S.color = meta.color === 'b' ? 'b' : 'w';
-  try { history.replaceState(null, '', location.pathname + (qs.get('ice') ? '?ice=' + encodeURIComponent(qs.get('ice')) : '') + '#h=' + id); } catch (e) { /* ok */ }
+  try { history.replaceState(null, '', location.pathname + keepQ('?', true) + '#h=' + id); } catch (e) { /* ok */ }
   enterGame();
   manualOffer();
 }
@@ -900,7 +1075,7 @@ function boot() {
       for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (k && k.indexOf('duell_') === 0 && k !== 'duell_name') del.push(k); }
       del.forEach(function (k) { localStorage.removeItem(k); });
     } catch (e) { /* ok */ }
-    location.replace(location.pathname);
+    location.replace(location.pathname + keepQ('?', true));
     return;
   }
   detectApi().then(function (hasApi) {
@@ -957,7 +1132,7 @@ $('createBtn').onclick = function () {
   api('POST', 'api/room', { tc: $('tcSel').value, color: col === 'r' ? undefined : col }).then(function (j) {
     if (!j.id) { $('lobbyErr').textContent = 'Konnte keinen Raum anlegen: ' + (j.error || 'Fehler'); return; }
     lsSet('duell_h_' + j.id, j.hostToken);
-    var u = location.pathname + '?r=' + j.id + (qs.get('ice') ? '&ice=' + encodeURIComponent(qs.get('ice')) : '');
+    var u = location.pathname + '?r=' + j.id + keepQ('&', true);
     location.href = u;
   }).catch(function () { $('lobbyErr').textContent = 'Der Server ist nicht erreichbar.'; });
 };
@@ -970,7 +1145,8 @@ window.__duell = {
       over: S.over, result: S.result, reason: S.reason, conn: S.conn, tc: S.tc,
       name: S.name, oppName: S.oppName, illegalRecv: S.illegalRecv,
       clock: { w: Math.round(remaining('w')), b: Math.round(remaining('b')) },
-      pgn: S.moves.length ? makePgn() : '', drawOpp: S.drawOpp, drawMine: S.drawMine, manual: S.manual, side: S.side
+      pgn: S.moves.length ? makePgn() : '', drawOpp: S.drawOpp, drawMine: S.drawMine, manual: S.manual, side: S.side,
+      flipped: isFlipped(), sound: S.sound, soundCount: S.soundCount, embed: EMBED
     };
   },
   move: function (u) { return myMove(u.slice(0, 2), u.slice(2, 4), u.length > 4 ? u[4] : undefined); },

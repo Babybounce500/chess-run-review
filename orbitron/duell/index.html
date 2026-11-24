@@ -1,0 +1,1166 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Duell-Test</title>
+<link rel="icon" href="data:,">
+<style>
+:root{
+  --bg:#f4f1ea; --panel:#fffdf8; --ink:#1d1b16; --muted:#6b665a; --line:#d9d3c4;
+  --accent:#2f6f4e; --accent-ink:#fff; --warn:#a4491f; --bad:#a32424;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#16150f; --panel:#201f17; --ink:#ece8da; --muted:#a39e8d; --line:#3a382c;
+    --accent:#58a97e; --accent-ink:#0d1a12; --warn:#e08a5b; --bad:#ec7a7a;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:980px;margin:0 auto;padding:16px}
+h1{font-size:1.25rem;margin:0 0 4px}
+.sub{color:var(--muted);margin:0 0 14px;font-size:.92rem}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+label{display:block;font-size:.85rem;color:var(--muted);margin:8px 0 3px}
+input,select,button,textarea{font:inherit;color:inherit}
+input[type=text],select,textarea{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+button{padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--panel);cursor:pointer}
+button:hover{border-color:var(--accent)}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+button.danger{border-color:var(--bad);color:var(--bad)}
+button[hidden],.hidden{display:none!important}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.note{font-size:.85rem;color:var(--muted)}
+.warn{border-left:4px solid var(--warn);padding-left:10px;font-size:.88rem}
+#game{display:grid;grid-template-columns:minmax(0,560px) minmax(240px,1fr);gap:16px;align-items:start}
+#game.noside{grid-template-columns:minmax(0,1fr)}
+#game.noside #side{display:none}
+/* Seitenleiste zu: das Brett nutzt die Höhe des Fensters, bis zur Breite der Seite */
+:root{--chrome:250px}
+html.embed{--chrome:140px}
+#game.noside #mainCol{width:min(100%, max(280px, calc(100vh - var(--chrome))));margin:0 auto}
+@supports (height:100dvh){#game.noside #mainCol{width:min(100%, max(280px, calc(100dvh - var(--chrome))))}}
+main:has(#game.noside){max-width:1100px}
+@media (max-width:760px){#game{grid-template-columns:1fr}#game.noside #mainCol{width:min(100%, max(280px, calc(100dvh - var(--chrome))))}}
+#bar{margin:8px 0 0;padding:10px 12px}
+#bar #status{margin:0}
+#bar .tools{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+#bar .tools button{padding:4px 12px;font-size:.85rem}
+#bar .tools button[aria-pressed="false"]{opacity:.6}
+#dragGhost{position:fixed;z-index:50;pointer-events:none;display:none}
+#dragGhost img{width:100%;height:100%;filter:drop-shadow(0 4px 6px rgba(0,0,0,.45))}
+.sq.dragsrc .p{opacity:.3}
+/* Eingebettet in Orbitron: keine Kopfzeile, Platz für das Brett */
+html.embed h1,html.embed .sub,html.embed .credit{display:none}
+html.embed main{padding:8px 10px}
+.player{display:flex;justify-content:space-between;align-items:center;padding:6px 10px;border-radius:8px;background:var(--panel);border:1px solid var(--line);margin:6px 0}
+.player .nm{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.clock{font-variant-numeric:tabular-nums;font-size:1.25rem;font-weight:700;min-width:4.2em;text-align:right}
+.clock.run{color:var(--accent)} .clock.low{color:var(--bad)}
+/* Brett und Figuren wie in Orbitron */
+#board{display:grid;grid-template-columns:repeat(8,1fr);aspect-ratio:1/1;width:100%;border-radius:8px;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:none;-webkit-tap-highlight-color:transparent;box-shadow:0 1px 4px rgba(0,0,0,.25)}
+.sq{position:relative;display:flex;align-items:center;justify-content:center;container-type:size;cursor:pointer}
+.sq.l{background:#f0d9b5} .sq.d{background:#b58863}
+.sq.last::before{content:"";position:absolute;inset:0;background:rgba(255,215,0,.38)}
+.sq.sel::before{content:"";position:absolute;inset:0;background:rgba(20,130,255,.45)}
+.sq.chk::before{content:"";position:absolute;inset:0;background:radial-gradient(circle,rgba(255,0,0,.75),rgba(255,0,0,0) 72%)}
+.sq.tgt::after{content:"";position:absolute;width:30%;height:30%;border-radius:50%;background:rgba(20,20,20,.28);z-index:3;pointer-events:none}
+.sq.tgt.cap::after{width:84%;height:84%;background:transparent;border:5px solid rgba(20,20,20,.28)}
+.sq .co{position:absolute;font-size:9px;line-height:1;opacity:.6;color:#000;pointer-events:none}
+.sq .co.f{right:2px;bottom:2px} .sq .co.r{left:2px;top:2px}
+.p{position:relative;z-index:2;font-size:78cqmin;line-height:1;display:block;text-align:center;font-family:"Segoe UI Symbol","Noto Sans Symbols 2","Apple Symbols",sans-serif}
+.p.img{width:92%;height:92%;font-size:0;display:flex;align-items:center;justify-content:center}
+.p.img img{width:100%;height:100%;pointer-events:none;-webkit-user-drag:none;filter:drop-shadow(0 1.5px 1.2px rgba(0,0,0,.38))}
+.p.w{color:#fff;-webkit-text-stroke:1.3px #222;text-shadow:0 1px 2px rgba(0,0,0,.35)}
+.p.b{color:#161616;-webkit-text-stroke:.6px #000}
+.credit{margin:14px 0 0;font-size:.75rem;color:var(--muted)}
+@media (max-width:600px){.sq .co{font-size:8px}}
+@media (hover:none) and (pointer:coarse){.sq.tgt::after{width:34%;height:34%}}
+#status{font-weight:600;margin:8px 0 2px}
+#banner{padding:10px 12px;border-radius:8px;background:var(--accent);color:var(--accent-ink);font-weight:700;margin:8px 0}
+#banner.loss{background:var(--bad);color:#fff} #banner.draw{background:var(--muted);color:var(--bg)}
+.chip{display:inline-block;padding:2px 10px;border-radius:99px;font-size:.8rem;border:1px solid var(--line)}
+.chip.open{border-color:var(--accent);color:var(--accent)} .chip.lost,.chip.failed{border-color:var(--bad);color:var(--bad)}
+#moves{max-height:240px;overflow:auto;font-variant-numeric:tabular-nums;font-size:.95rem}
+#moves span.n{color:var(--muted);margin-right:3px}
+#moves span.m{margin-right:10px}
+#promo{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:9}
+#promo .box{display:flex;gap:8px}
+#promo button{width:64px;height:64px;padding:0;border-radius:12px;border:2px solid #fff;background:#f0d9b5;display:flex;align-items:center;justify-content:center}
+#promo .p{font-size:44px}
+@media (max-width:600px){#promo button{width:54px;height:54px}}
+
+/* ---------- Handy hochkant ---------- */
+@media (max-width:600px){
+  :root{--chrome:215px}
+  html.embed{--chrome:150px}
+  main{padding:10px 8px}
+  h1{font-size:1.1rem}
+  .sub{font-size:.85rem;margin-bottom:10px}
+  .card{padding:10px;border-radius:10px;margin-bottom:8px}
+  .grid2{grid-template-columns:1fr}
+  #game{gap:8px}
+  .player{padding:4px 8px;margin:4px 0}
+  .player .nm{font-size:.92rem}
+  .clock{font-size:1.1rem;min-width:3.6em}
+  #bar{padding:8px 10px}
+  #moves{max-height:110px;font-size:.9rem}
+  #banner{padding:8px 10px}
+  #pgnBox{font-size:.8rem}
+  .row{gap:6px}
+}
+@media (max-width:380px){
+  #bar .tools button{padding:4px 9px;font-size:.8rem}
+  .player .nm{font-size:.85rem}
+  .clock{font-size:1rem}
+}
+/* Touchgeräte: größere Tippflächen */
+@media (hover:none) and (pointer:coarse){
+  button{min-height:42px}
+  #bar .tools button{min-height:38px}
+  input[type=text],select,textarea{font-size:16px}
+}
+/* ---------- Handy quer (niedrig): Brett links in voller Höhe, alles andere rechts ---------- */
+@media (orientation:landscape) and (max-height:560px){
+  main{padding:6px 10px}
+  h1,.sub,.credit{display:none}
+  #game,#game.noside{grid-template-columns:min(calc(100dvh - 16px),58vw) minmax(0,1fr);grid-auto-rows:min-content;gap:6px 12px;align-items:start}
+  #mainCol,#game.noside #mainCol{display:contents;width:auto}
+  #board{grid-column:1;grid-row:1 / span 6}
+  #pTop{grid-column:2;grid-row:1}
+  #pBot{grid-column:2;grid-row:2}
+  #bar{grid-column:2;grid-row:3;margin:0}
+  #side{grid-column:2;grid-row:4;max-height:calc(100dvh - 200px);overflow:auto}
+  #game.noside #side{display:none}
+  .card{margin-bottom:6px;padding:8px 10px}
+  .player{margin:0}
+}
+code{background:var(--bg);padding:1px 5px;border-radius:4px}
+</style>
+</head>
+<body>
+<main>
+  <h1>Duell-Test</h1>
+  <p class="sub">Freundespartie direkt von Browser zu Browser. Niemand dazwischen sieht deine Züge.</p>
+
+  <!-- Lobby -->
+  <section id="lobby" class="card hidden">
+    <div class="grid2">
+      <div><label for="nameIn">Dein Spitzname</label><input id="nameIn" type="text" maxlength="20" autocomplete="off" placeholder="z. B. Dom"></div>
+      <div><label for="tcSel">Bedenkzeit</label>
+        <select id="tcSel">
+          <option value="1+0">Bullet 1+0</option><option value="2+1">Bullet 2+1</option>
+          <option value="3+0" selected>Blitz 3+0</option><option value="3+2">Blitz 3+2</option>
+          <option value="5+0">Blitz 5+0</option><option value="10+0">Schnell 10+0</option>
+          <option value="15+10">Schnell 15+10</option><option value="none">ohne Uhr</option>
+        </select></div>
+    </div>
+    <label for="colSel">Deine Farbe</label>
+    <select id="colSel"><option value="r">zufällig</option><option value="w">Weiß</option><option value="b">Schwarz</option></select>
+    <div class="row" style="margin-top:12px"><button id="createBtn" class="primary">Partie erstellen</button></div>
+    <p id="modeNote" class="note hidden">Hier gibt es keinen Vermittlungs-Server. Du und dein Gegner tauscht deshalb einmal zwei Codes per Chat aus (Link hin, Antwort zurück). Danach läuft alles direkt zwischen euch.</p>
+    <p id="lobbyErr" class="note" style="color:var(--bad)"></p>
+    <p class="note warn">Kein Betrugsschutz und keine Wertung: Spiele nur mit Leuten, denen du vertraust. Auf dieser Seite läuft keine Schach-Engine und es gibt keine Analyse während der Partie.</p>
+  </section>
+
+  <!-- Beitreten -->
+  <section id="joinPanel" class="card hidden">
+    <b>Du wurdest zu einer Partie eingeladen.</b>
+    <label for="nameJoin">Dein Spitzname</label><input id="nameJoin" type="text" maxlength="20" autocomplete="off" placeholder="z. B. Alex">
+    <div class="row" style="margin-top:12px"><button id="joinBtn" class="primary">Beitreten</button></div>
+  </section>
+
+  <p id="fatal" class="card hidden" style="color:var(--bad)"></p>
+
+  <!-- Spiel -->
+  <section id="game" class="hidden">
+    <div id="mainCol">
+      <div class="player" id="pTop"><span class="nm" id="nmTop"></span><span class="clock" id="ckTop">--</span></div>
+      <div id="board" role="grid" aria-label="Schachbrett"></div>
+      <div class="player" id="pBot"><span class="nm" id="nmBot"></span><span class="clock" id="ckBot">--</span></div>
+      <div id="bar" class="card">
+        <div class="row" style="justify-content:space-between;flex-wrap:nowrap">
+          <span id="status"></span>
+          <span id="conn" class="chip">–</span>
+        </div>
+        <div id="banner" class="hidden"></div>
+        <div id="drawBox" class="hidden row" style="margin:8px 0 0"><span>Remis angeboten.</span><button id="drawYes" class="primary">Annehmen</button><button id="drawNo">Ablehnen</button></div>
+        <div class="tools">
+          <button id="toggleSide" type="button" aria-controls="side" aria-expanded="true" title="Seitenleiste ein- oder ausblenden">Menü</button>
+          <button id="btnFlip" type="button" title="Brett drehen">Drehen</button>
+          <button id="btnSound" type="button" aria-pressed="true" title="Zugton ein oder aus">Ton</button>
+          <button id="btnLeave" type="button" class="danger" title="Verbindung trennen, gespeicherte Partie löschen und von vorn beginnen">Neustart</button>
+        </div>
+      </div>
+    </div>
+    <div id="side">
+      <div class="card">
+        <div class="row">
+          <button id="btnAbort" hidden>Abbrechen</button>
+          <button id="btnDraw" hidden>Remis anbieten</button>
+          <button id="btnResign" class="danger" hidden>Aufgeben</button>
+          <button id="btnRematch" hidden>Revanche</button>
+        </div>
+      </div>
+      <div id="manualHost" class="card hidden">
+        <b>Verbindung ohne Server (2 Schritte)</b>
+        <label for="manualLink">1. Diesen Link an deinen Gegner schicken</label>
+        <div class="row"><input id="manualLink" type="text" readonly style="flex:1;min-width:0" placeholder="Code wird erzeugt …"><button id="copyManual">Kopieren</button><button id="shareManual" class="hidden">Teilen</button></div>
+        <label for="ansIn">2. Antwort-Code deines Gegners hier einfügen</label>
+        <textarea id="ansIn" rows="3" placeholder="Der Gegner bekommt nach dem Beitritt einen Code und schickt ihn dir zurück"></textarea>
+        <div class="row" style="margin-top:8px"><button id="ansBtn" class="primary">Verbinden</button><button id="reOffer">Neuen Link erzeugen</button></div>
+        <p id="manualErr" class="note" style="color:var(--bad);margin:6px 0 0"></p>
+        <p class="note" style="margin:6px 0 0">Der Link ist nur für diese eine Verbindung. Lass diese Seite offen, bis ihr verbunden seid.</p>
+      </div>
+      <div id="manualGuest" class="card hidden">
+        <b>Verbindung ohne Server</b>
+        <p id="ansHint" class="note" style="margin:6px 0"></p>
+        <div id="ansBox"><label for="ansOut" style="margin-top:0">Diesen Antwort-Code an den Host zurückschicken</label>
+        <textarea id="ansOut" rows="3" readonly></textarea>
+        <div class="row" style="margin-top:8px"><button id="copyAns">Code kopieren</button><button id="shareAns" class="hidden">Teilen</button></div></div>
+      </div>
+      <div id="inviteCard" class="card hidden">
+        <label for="inviteIn" style="margin-top:0">Einladungslink für deinen Gegner</label>
+        <div class="row"><input id="inviteIn" type="text" readonly style="flex:1;min-width:0"><button id="copyLink">Kopieren</button><button id="shareInvite" class="hidden">Teilen</button></div>
+        <p class="note" style="margin-bottom:0">Der Link gilt für genau eine Person. Lass diese Seite offen, bis der Gegner da ist.</p>
+      </div>
+      <div class="card"><b>Züge</b><div id="moves"></div></div>
+      <div id="pgnCard" class="card hidden">
+        <b>PGN</b>
+        <textarea id="pgnBox" rows="4" readonly></textarea>
+        <div class="row" style="margin-top:6px"><button id="copyPgn">PGN kopieren</button><button id="dlPgn">PGN speichern</button></div>
+      </div>
+    </div>
+  </section>
+  <p class="credit">Figuren: Colin M. L. Burnett (Wikimedia Commons), wie in Orbitron.</p>
+</main>
+
+<div id="dragGhost" aria-hidden="true"></div>
+<div id="promo" class="hidden"><div class="box" id="promoBox"></div></div>
+
+<script src="vendor/chess.js"></script>
+<script>
+(function () {
+'use strict';
+
+var PIECE = { k: '♚', q: '♛', r: '♜', b: '♝', n: '♞', p: '♟︎' };
+var NAME_DE = { k: 'König', q: 'Dame', r: 'Turm', b: 'Läufer', n: 'Springer', p: 'Bauer' };
+var qs = new URLSearchParams(location.search);
+var EMBED = qs.get('embed') === '1';                       // eingebettet in Orbitron (ohne Kopfzeile)
+if (EMBED) document.documentElement.classList.add('embed');
+// Parameter, die bei Weiterleitungen erhalten bleiben (ice nur für Tests); Einladungslinks tragen kein embed
+function keepQ(joiner, withEmbed) {
+  var p = [];
+  if (qs.get('ice')) p.push('ice=' + encodeURIComponent(qs.get('ice')));
+  if (withEmbed && EMBED) p.push('embed=1');
+  return p.length ? joiner + p.join('&') : '';
+}
+var ICE = qs.get('ice') === 'none' ? [] : [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }];
+var UCI_RE = /^[a-h][1-8][a-h][1-8][qrbn]?$/;
+
+function $(id) { return document.getElementById(id); }
+function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* ohne Speicher weiter */ } }
+function now() { return Date.now(); }
+function opp(c) { return c === 'w' ? 'b' : 'w'; }
+function clean(s, n) { return String(s == null ? '' : s).replace(/[\u0000-\u001f<>]/g, '').trim().slice(0, n || 20); }
+
+function parseTc(tc) {
+  if (!tc || tc === 'none') return { base: 0, inc: 0 };
+  var p = String(tc).split('+');
+  return { base: Math.round(parseFloat(p[0]) * 60000), inc: Math.round((parseFloat(p[1]) || 0) * 1000) };
+}
+
+var S = {
+  id: null, role: null, token: null,
+  color: 'w', tc: 'none', baseMs: 0, incMs: 0,
+  name: '', oppName: '',
+  game: new Chess(), moves: [],
+  clock: { w: 0, b: 0 }, turnStart: null,
+  over: false, result: null, reason: '',
+  conn: 'wait',
+  sel: null, targets: [], last: null,
+  drawMine: false, drawOpp: false, rematchMine: false, rematchOpp: false,
+  resignArmed: 0,
+  illegalRecv: 0, lastRx: 0, joined: false, manual: false,
+  side: true, prevConn: undefined, prevOver: false, oppLeft: false, noRejoin: false,
+  flipUser: false, sound: lsGet('duell_sound') !== '0', soundCount: 0, drag: null
+};
+function isFlipped() { return (S.color === 'b') !== S.flipUser; }   // Schwarz sieht das Brett gedreht, der Knopf „Drehen“ kehrt es um
+
+/* ---------- Zugton (kurzer Klick, abschaltbar) ---------- */
+var audio = null;
+function tickSound(capture) {
+  if (!S.sound) return;
+  S.soundCount++;
+  try {
+    audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+    if (audio.state === 'suspended') audio.resume();
+    var o = audio.createOscillator(), g = audio.createGain(), t = audio.currentTime;
+    o.type = 'triangle'; o.frequency.value = capture ? 210 : 330;
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.18, t + 0.005); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.09);
+    o.connect(g); g.connect(audio.destination); o.start(t); o.stop(t + 0.1);
+  } catch (e) { /* ohne Ton weiter */ }
+}
+
+/* ---------- Bildschirm wach halten, solange die Partie läuft (Handy) ---------- */
+var wl = null, wlBusy = false;
+function wake(on) {
+  try {
+    if (on && !wl && !wlBusy && navigator.wakeLock && document.visibilityState === 'visible') {
+      wlBusy = true;
+      navigator.wakeLock.request('screen').then(function (l) { wl = l; wlBusy = false; l.addEventListener('release', function () { wl = null; }); }, function () { wlBusy = false; });
+    } else if (!on && wl) { var x = wl; wl = null; x.release().catch(function () { /* ok */ }); }
+  } catch (e) { wlBusy = false; }
+}
+document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') render(); });
+
+/* ---------- Uhr ---------- */
+function clocksOn() { return S.baseMs > 0 && S.moves.length >= 2 && !S.over; }
+function rawRem(side) {
+  var c = S.clock[side];
+  if (clocksOn() && S.turnStart != null && S.game.turn() === side) c -= (now() - S.turnStart);
+  return c;
+}
+function remaining(side) { return Math.max(0, rawRem(side)); }
+function fmt(ms) {
+  if (S.baseMs <= 0) return '–';
+  var s = ms / 1000;
+  if (s < 10) return '0:0' + s.toFixed(1);
+  var m = Math.floor(s / 60), r = Math.floor(s % 60);
+  return m + ':' + (r < 10 ? '0' : '') + r;
+}
+
+/* ---------- Speichern ---------- */
+// Pro Rolle getrennt: zwei Fenster im selben Browser teilen sich den Speicher und dürfen sich nicht überschreiben
+function gkey() { return 'duell_game_' + S.id + '_' + (S.role || 'x'); }
+function wipeRoom(id, role) {   // löscht nur die Daten der eigenen Rolle (das andere Fenster im selben Browser bleibt unberührt)
+  var keys = ['duell_game_' + id + '_' + role, 'duell_game_' + id];
+  if (role === 'host') keys.push('duell_h_' + id, 'duell_mh_' + id); else keys.push('duell_g_' + id);
+  keys.forEach(function (k) { try { localStorage.removeItem(k); } catch (e) { /* ok */ } });
+}
+function save() {
+  if (!S.id) return;
+  lsSet(gkey(), JSON.stringify({
+    color: S.color, name: S.name, oppName: S.oppName, moves: S.moves, clock: S.clock,
+    turnStart: S.turnStart, over: S.over, result: S.result, reason: S.reason
+  }));
+}
+function restore() {
+  var raw = lsGet(gkey());
+  if (!raw) return;
+  try {
+    var d = JSON.parse(raw);
+    if (!Array.isArray(d.moves) || d.moves.some(function (u) { return !UCI_RE.test(u); })) return;
+    var g = new Chess();
+    for (var i = 0; i < d.moves.length; i++) { if (!applyOn(g, d.moves[i])) return; }
+    S.game = g; S.moves = d.moves;
+    if (d.color === 'w' || d.color === 'b') S.color = d.color;
+    if (d.clock && isFinite(d.clock.w) && isFinite(d.clock.b)) S.clock = { w: +d.clock.w, b: +d.clock.b };
+    S.turnStart = isFinite(d.turnStart) ? +d.turnStart : null;
+    S.oppName = clean(d.oppName);
+    S.over = !!d.over; S.result = d.result || null; S.reason = clean(d.reason, 40);
+    var last = g.history({ verbose: true }).pop();
+    S.last = last ? [last.from, last.to] : null;
+  } catch (e) { /* kaputter Speicher: neu anfangen */ }
+}
+
+function applyOn(g, u) {
+  return g.move({ from: u.slice(0, 2), to: u.slice(2, 4), promotion: u.length > 4 ? u[4] : undefined });
+}
+
+/* ---------- Ergebnis ---------- */
+function setResult(res, reason) {
+  if (S.over) return;
+  S.over = true; S.result = res; S.reason = reason;
+  S.drawMine = S.drawOpp = false; S.sel = null; S.targets = [];
+  save(); render();
+}
+function checkEnd(mover) {
+  var g = S.game;
+  if (g.in_checkmate()) { setResult(mover === 'w' ? '1-0' : '0-1', 'Matt'); return true; }
+  if (g.in_stalemate()) { setResult('1/2-1/2', 'Patt'); return true; }
+  if (g.in_threefold_repetition()) { setResult('1/2-1/2', 'Stellungswiederholung'); return true; }
+  if (g.insufficient_material()) { setResult('1/2-1/2', 'zu wenig Material'); return true; }
+  if (g.in_draw()) { setResult('1/2-1/2', '50-Züge-Regel'); return true; }
+  return false;
+}
+
+/* ---------- Zug anwenden (eigener oder fremder) ---------- */
+function commitMove(u, mover, remFromSender) {
+  var n = S.moves.length;
+  var wasOn = clocksOn();
+  var prior = wasOn ? rawRem(mover) : 0;  // vor dem Zug messen, danach wechselt der Zugrecht-Besitzer
+  var m = applyOn(S.game, u);
+  if (!m) return null;
+  if (wasOn) {                            // Uhr des Ziehenden lief
+    var cur = Math.max(0, prior) + (n >= 2 ? S.incMs : 0);
+    if (remFromSender != null) cur = Math.min(Math.max(0, remFromSender), Math.max(0, prior) + S.incMs + 1000);
+    S.clock[mover] = cur;
+  }
+  S.moves.push(u);
+  S.last = [m.from, m.to];
+  tickSound(!!m.captured);
+  S.drawMine = S.drawOpp = false; S.sel = null; S.targets = [];
+  S.turnStart = (S.baseMs > 0 && S.moves.length >= 2) ? now() : null;
+  return m;
+}
+
+function dcOpen() { return !!(dc && dc.readyState === 'open'); }
+
+function myMove(from, to, promo) {
+  if (S.over || !dcOpen() || S.game.turn() !== S.color) return false;
+  var u = from + to + (promo || '');
+  var n = S.moves.length;
+  var m = commitMove(u, S.color, null);
+  if (!m) return false;
+  sendMsg({ t: 'move', u: u, n: n, rem: S.baseMs > 0 ? Math.round(S.clock[S.color]) : 0 });
+  save();
+  if (!checkEnd(S.color)) render();
+  return true;
+}
+
+/* ---------- Nachrichten über den Datenkanal ---------- */
+var pc = null, dc = null, es = null, sid = null, pendingIce = [], hb = null, joinAt = 0;
+
+function sendMsg(o) {
+  try { if (dc && dc.readyState === 'open') { dc.send(JSON.stringify(o)); return true; } } catch (e) { /* weiter */ }
+  return false;
+}
+
+function onMsg(raw) {
+  var d;
+  try { d = JSON.parse(raw); } catch (e) { return; }
+  if (!d || typeof d.t !== 'string') return;
+  S.lastRx = now();
+  if (S.conn !== 'open' && dc && dc.readyState === 'open') { S.conn = 'open'; render(); }
+  // Der andere kennt uns noch nicht (unser „hallo“ ging verloren): erneut vorstellen, bis seins ankommt
+  if (!S.oppName && d.t !== 'hello') sendMsg({ t: 'hello', name: S.name, color: S.color });
+  switch (d.t) {
+    case 'ping': return;
+    case 'hello':
+      S.oppName = clean(d.name) || 'Gegner';
+      // Beide dürfen nie dieselbe Farbe haben: der Gast gibt nach, der Host bestätigt seine Farbe erneut
+      if ((d.color === 'w' || d.color === 'b') && d.color === S.color) {
+        if (S.role === 'guest') S.color = opp(d.color);
+        else sendMsg({ t: 'hello', name: S.name, color: S.color });
+      }
+      save(); render(); return;
+    case 'leave':
+      S.oppLeft = true; S.noRejoin = true;
+      closePeer(); S.conn = 'lost'; render(); return;
+    case 'sync': return onSync(d);
+    case 'move': return onMove(d);
+    case 'resign':
+      if (!S.over) setResult(S.color === 'w' ? '1-0' : '0-1', 'Aufgabe');
+      return;
+    case 'timeout':
+      if (!S.over && S.baseMs > 0) setResult(S.color === 'w' ? '1-0' : '0-1', 'Zeit');
+      return;
+    case 'abort':
+      if (!S.over && S.moves.length < 2) setResult('*', 'abgebrochen');
+      return;
+    case 'draw':
+      if (!S.over && S.moves.length >= 2) { S.drawOpp = true; render(); }
+      return;
+    case 'draw-yes':
+      if (!S.over && S.drawMine) setResult('1/2-1/2', 'Einigung');
+      return;
+    case 'draw-no':
+      S.drawMine = false; render(); return;
+    case 'rematch':
+      if (S.over) { S.rematchOpp = true; if (S.rematchMine) newGame(); else render(); }
+      return;
+  }
+}
+
+function onMove(d) {
+  var bad = function () { S.illegalRecv++; };
+  if (S.over || typeof d.u !== 'string' || !UCI_RE.test(d.u)) return bad();
+  if (d.n !== S.moves.length) return bad();                 // falsche Reihenfolge / doppelt
+  var mover = opp(S.color);
+  if (S.game.turn() !== mover) return bad();                // der Gegner ist nicht am Zug
+  var rem = (typeof d.rem === 'number' && isFinite(d.rem)) ? d.rem : null;
+  var m = commitMove(d.u, mover, rem);
+  if (!m) return bad();                                     // illegal
+  save();
+  if (!checkEnd(mover)) render();
+}
+
+function onSync(d) {
+  if (!Array.isArray(d.moves) || d.moves.length > 600) return;
+  if (d.moves.some(function (u) { return typeof u !== 'string' || !UCI_RE.test(u); })) return;
+  var longer = d.moves.length > S.moves.length;
+  var sameButOver = d.moves.length === S.moves.length && d.over && !S.over;
+  if (!longer && !sameButOver) return;
+  var g = new Chess();
+  for (var i = 0; i < d.moves.length; i++) { if (!applyOn(g, d.moves[i])) return; }
+  S.game = g; S.moves = d.moves.slice();
+  if (d.clock && isFinite(d.clock.w) && isFinite(d.clock.b)) S.clock = { w: Math.max(0, +d.clock.w), b: Math.max(0, +d.clock.b) };
+  S.turnStart = (S.baseMs > 0 && S.moves.length >= 2) ? now() : null;
+  var last = g.history({ verbose: true }).pop();
+  S.last = last ? [last.from, last.to] : null;
+  S.sel = null; S.targets = [];
+  if (d.over && ['1-0', '0-1', '1/2-1/2', '*'].indexOf(d.result) >= 0) { S.over = false; setResult(d.result, clean(d.reason, 40)); return; }
+  save(); render();
+}
+
+function sendSync() {
+  sendMsg({ t: 'sync', moves: S.moves, clock: { w: remaining('w'), b: remaining('b') }, over: S.over, result: S.result, reason: S.reason });
+}
+
+function newGame() {
+  S.color = opp(S.color);
+  S.game = new Chess(); S.moves = []; S.last = null; S.sel = null; S.targets = [];
+  S.clock = { w: S.baseMs, b: S.baseMs }; S.turnStart = null;
+  S.over = false; S.result = null; S.reason = '';
+  S.drawMine = S.drawOpp = S.rematchMine = S.rematchOpp = false;
+  S.side = false; S.prevOver = false;                  // neue Partie: Brett wieder groß
+  save(); render();
+}
+
+/* ---------- WebRTC ---------- */
+function postSig(msg) {
+  if (S.manual) return Promise.resolve();
+  return fetch('api/room/' + S.id + '/send?role=' + S.role + '&token=' + S.token, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(msg)
+  }).catch(function () { /* Netz weg: Wiederholung über Join-Timer */ });
+}
+
+function closePeer() {
+  var oldDc = dc, oldPc = pc;
+  dc = null; pc = null; pendingIce = [];
+  try { if (oldDc) oldDc.close(); } catch (e) { /* ok */ }
+  try { if (oldPc) oldPc.close(); } catch (e) { /* ok */ }
+}
+
+function makePeer() {
+  var p = new RTCPeerConnection({ iceServers: ICE });
+  var mySid = sid;
+  p.onicecandidate = function (e) { if (e.candidate && sid === mySid) postSig({ type: 'ice', sid: mySid, cand: e.candidate }); };
+  p.onconnectionstatechange = function () {
+    if (p !== pc) return;
+    if (p.connectionState === 'failed') { S.conn = 'failed'; render(); }
+    else if (p.connectionState === 'disconnected' || p.connectionState === 'closed') { if (S.conn === 'open') { S.conn = 'lost'; render(); } }
+  };
+  return p;
+}
+
+function setupDC(ch) {
+  dc = ch;
+  var announced = false;
+  var opened = function () {
+    // Ein per ondatachannel erhaltener Kanal kann schon offen sein, bevor dieser Handler gesetzt ist:
+    // deshalb wird beim Einrichten selbst geprüft und höchstens einmal begrüßt
+    if (dc !== ch || announced) return;
+    announced = true;
+    S.conn = 'open'; S.lastRx = now(); S.oppLeft = false; S.noRejoin = false;
+    sendMsg({ t: 'hello', name: S.name, color: S.color });
+    sendSync();
+    render();
+  };
+  ch.onopen = opened;
+  ch.onclose = function () { if (dc === ch) { S.conn = 'lost'; render(); } };
+  ch.onmessage = function (e) { if (dc === ch) onMsg(e.data); };
+  if (ch.readyState === 'open') opened();
+}
+
+function onSignal(m) {
+  if (!m || typeof m.type !== 'string') return;
+  if (S.role === 'host') {
+    if (m.type === 'join') {
+      closePeer();
+      sid = clean(m.sid, 40);
+      S.conn = 'connecting'; render();
+      pc = makePeer();
+      setupDC(pc.createDataChannel('duell'));
+      var p = pc;
+      p.createOffer().then(function (o) { return p.setLocalDescription(o); })
+        .then(function () { postSig({ type: 'offer', sid: sid, sdp: p.localDescription }); })
+        .catch(function () { S.conn = 'failed'; render(); });
+    } else if (m.type === 'answer' && m.sid === sid && pc) {
+      pc.setRemoteDescription(m.sdp).then(flushIce).catch(function () { S.conn = 'failed'; render(); });
+    } else if (m.type === 'ice' && m.sid === sid) {
+      addIce(m.cand);
+    }
+  } else {
+    if (m.type === 'offer' && m.sid === sid) {
+      var gp = pc = makePeer();
+      gp.ondatachannel = function (e) { if (pc === gp) setupDC(e.channel); };
+      gp.setRemoteDescription(m.sdp).then(function () { return gp.createAnswer(); })
+        .then(function (a) { return gp.setLocalDescription(a); })
+        .then(function () { flushIce(); postSig({ type: 'answer', sid: sid, sdp: gp.localDescription }); })
+        .catch(function () { S.conn = 'failed'; render(); });
+    } else if (m.type === 'ice' && m.sid === sid) {
+      addIce(m.cand);
+    }
+  }
+}
+function addIce(c) {
+  if (!c) return;
+  if (pc && pc.remoteDescription) pc.addIceCandidate(c).catch(function () { /* veralteter Kandidat */ });
+  else pendingIce.push(c);
+}
+function flushIce() {
+  var q = pendingIce; pendingIce = [];
+  q.forEach(function (c) { if (pc) pc.addIceCandidate(c).catch(function () { /* ok */ }); });
+}
+
+function openEvents() {
+  if (es) es.close();
+  es = new EventSource('api/room/' + S.id + '/events?role=' + S.role + '&token=' + S.token);
+  es.onmessage = function (e) { try { onSignal(JSON.parse(e.data)); } catch (x) { /* ignorieren */ } };
+}
+
+function guestJoin() {
+  if (S.role !== 'guest' || S.conn === 'open') return;
+  closePeer();
+  sid = Math.random().toString(36).slice(2, 12);
+  joinAt = now();
+  S.conn = 'connecting'; render();
+  postSig({ type: 'join', sid: sid });
+}
+
+function startHeartbeat() {
+  if (hb) clearInterval(hb);
+  hb = setInterval(function () {
+    sendMsg({ t: 'ping' });
+    if (S.conn === 'open' && S.lastRx && now() - S.lastRx > 15000) { S.conn = 'lost'; render(); }
+    // Gast: nach 9 s ohne Verbindung den Beitritt neu anstoßen (Host baut dann ein frisches Angebot)
+    if (S.role === 'guest' && !S.manual && !S.noRejoin && S.conn !== 'open' && S.joined && now() - joinAt > 9000) guestJoin();
+  }, 2000);
+}
+
+/* ---------- Anzeige ---------- */
+var CONN_TXT = { wait: 'wartet auf Gegner', connecting: 'verbinde …', open: 'verbunden', lost: 'unterbrochen', failed: 'Verbindung fehlgeschlagen' };
+
+function sqName(f, r) { return 'abcdefgh'[f] + (r + 1); }
+
+// Figurenbild (Satz wie in Orbitron, liegt im Ordner img/); fällt das Bild aus, springt das Unicode-Zeichen ein
+function pieceEl(color, type) {
+  var s = document.createElement('span');
+  s.className = 'p img ' + color;
+  var im = document.createElement('img');
+  im.alt = PIECE[type]; im.draggable = false;
+  im.src = 'img/' + color + type.toUpperCase() + '.png';
+  im.onerror = function () { s.classList.remove('img'); s.textContent = PIECE[type]; };
+  s.appendChild(im);
+  return s;
+}
+
+// Seitenleiste: nach der Verbindung zu (großes Brett), bei Verbindungsverlust und Partieende wieder auf
+function autoSide() {
+  if (S.conn === 'open' && S.prevConn !== 'open') S.side = false;
+  else if (S.conn !== 'open' && S.prevConn === 'open') S.side = true;
+  if (S.over && !S.prevOver) S.side = true;
+  S.prevConn = S.conn; S.prevOver = S.over;
+}
+
+function render() {
+  if (!S.id || !S.joined) return;
+  autoSide();
+  wake(S.conn === 'open' && !S.over);
+  $('btnSound').setAttribute('aria-pressed', String(S.sound));
+  $('game').classList.toggle('noside', !S.side);
+  $('toggleSide').setAttribute('aria-expanded', String(S.side));
+  var flip = isFlipped();
+  var b = $('board'); b.textContent = '';
+  var kingSq = null;
+  if (S.game.in_check()) {
+    var turn = S.game.turn();
+    for (var f0 = 0; f0 < 8; f0++) for (var r0 = 0; r0 < 8; r0++) {
+      var pp = S.game.get(sqName(f0, r0));
+      if (pp && pp.type === 'k' && pp.color === turn) kingSq = sqName(f0, r0);
+    }
+  }
+  for (var i = 0; i < 64; i++) {
+    var row = i >> 3, col = i & 7;
+    var file = flip ? 7 - col : col, rank = flip ? row : 7 - row;
+    var sq = sqName(file, rank);
+    var d = document.createElement('div');
+    d.className = 'sq ' + (((file + rank) % 2) ? 'l' : 'd');
+    d.setAttribute('data-sq', sq);
+    d.setAttribute('role', 'gridcell');
+    var pc0 = S.game.get(sq);
+    if (S.last && (S.last[0] === sq || S.last[1] === sq)) d.className += ' last';
+    if (S.sel === sq) d.className += ' sel';
+    if (kingSq === sq) d.className += ' chk';
+    if (S.targets.indexOf(sq) >= 0) d.className += ' tgt' + (pc0 ? ' cap' : '');
+    if (pc0) {
+      d.appendChild(pieceEl(pc0.color, pc0.type));
+      d.setAttribute('aria-label', sq + ' ' + (pc0.color === 'w' ? 'weißer ' : 'schwarzer ') + NAME_DE[pc0.type]);
+    } else d.setAttribute('aria-label', sq);
+    if (col === 0) { var rl = document.createElement('span'); rl.className = 'co r'; rl.textContent = String(rank + 1); d.appendChild(rl); }
+    if (row === 7) { var fl = document.createElement('span'); fl.className = 'co f'; fl.textContent = 'abcdefgh'[file]; d.appendChild(fl); }
+    b.appendChild(d);
+  }
+
+  var me = S.color, ot = opp(S.color);
+  var botC = flip ? 'b' : 'w', topC = opp(botC);        // gedrehtes Brett: Schwarz unten
+  var nameOf = function (c) { return (c === me ? (S.name || 'Du') : (S.oppName || 'Gegner')) + ' (' + (c === 'w' ? 'Weiß' : 'Schwarz') + ')'; };
+  $('nmBot').textContent = nameOf(botC);
+  $('nmTop').textContent = nameOf(topC);
+
+  var cs = $('conn'); cs.textContent = CONN_TXT[S.conn] || S.conn; cs.className = 'chip ' + S.conn;
+  var st;
+  if (S.over) st = 'Partie beendet';
+  else if (S.oppLeft && S.conn !== 'open') st = 'Dein Gegner hat die Verbindung beendet';
+  else if (S.conn !== 'open') st = S.moves.length ? 'Warte auf Verbindung …' : 'Warte auf den Gegner …';
+  else if (S.game.turn() === me) st = 'Du bist am Zug';
+  else st = (S.oppName || 'Gegner') + ' ist am Zug';
+  $('status').textContent = st;
+
+  var bn = $('banner');
+  if (S.over) {
+    var txt, cls = '';
+    if (S.result === '*') txt = 'Partie abgebrochen';
+    else if (S.result === '1/2-1/2') { txt = 'Remis (' + S.reason + ')'; cls = 'draw'; }
+    else { var win = S.result === '1-0' ? 'w' : 'b'; var won = win === me; txt = (won ? 'Du hast gewonnen' : 'Du hast verloren') + ' (' + S.reason + ')'; cls = won ? '' : 'loss'; }
+    bn.textContent = txt; bn.className = cls; bn.classList.remove('hidden');
+  } else bn.classList.add('hidden');
+
+  var n = S.moves.length;
+  $('btnAbort').hidden = S.over || n >= 2 || S.conn !== 'open';
+  $('btnDraw').hidden = S.over || n < 2 || S.drawMine || S.conn !== 'open';
+  $('btnResign').hidden = S.over || n < 2;
+  $('btnResign').textContent = S.resignArmed > now() ? 'Wirklich aufgeben?' : 'Aufgeben';
+  $('btnRematch').hidden = !S.over || S.conn !== 'open';
+  $('btnRematch').textContent = S.rematchOpp ? 'Revanche annehmen' : (S.rematchMine ? 'Revanche angefragt …' : 'Revanche');
+  $('drawBox').classList.toggle('hidden', !(S.drawOpp && !S.over));
+  $('inviteCard').classList.toggle('hidden', !(S.role === 'host' && !S.manual && S.conn !== 'open' && n === 0));
+  $('manualHost').classList.toggle('hidden', !(S.manual && S.role === 'host' && S.conn !== 'open'));
+  $('manualGuest').classList.toggle('hidden', !(S.manual && S.role === 'guest' && S.conn !== 'open'));
+  if (S.manual && S.role === 'guest') {
+    var haveAns = !!$('ansOut').value;
+    $('ansBox').classList.toggle('hidden', !haveAns);
+    $('ansHint').textContent = haveAns
+      ? 'Schicke den Code unten an den Host. Sobald er ihn eingefügt hat, seid ihr verbunden.'
+      : (S.conn === 'lost' || S.conn === 'failed' ? 'Die Verbindung ist weg. Bitte den Host um einen neuen Link und öffne ihn.' : 'Code wird erzeugt …');
+  }
+
+  var hist = S.game.history(), mv = $('moves'); mv.textContent = '';
+  for (var k = 0; k < hist.length; k++) {
+    if (k % 2 === 0) { var no = document.createElement('span'); no.className = 'n'; no.textContent = (k / 2 + 1) + '.'; mv.appendChild(no); }
+    var ms = document.createElement('span'); ms.className = 'm'; ms.textContent = hist[k]; mv.appendChild(ms);
+  }
+  mv.scrollTop = mv.scrollHeight;
+
+  var showPgn = n > 0;
+  $('pgnCard').classList.toggle('hidden', !showPgn);
+  if (showPgn) $('pgnBox').value = makePgn();
+  tick();
+}
+
+function tick() {
+  if (!S.id || !S.joined) return;
+  var me = S.color, ot = opp(me);
+  var bot = isFlipped() ? 'b' : 'w', top = opp(bot);             // unten steht die Seite, die unten auf dem Brett ist
+  var cb = $('ckBot'), ct = $('ckTop');
+  cb.textContent = fmt(remaining(bot)); ct.textContent = fmt(remaining(top));
+  var turn = S.game.turn(), on = clocksOn();
+  var cls = function (c) { return 'clock' + (on && turn === c ? ' run' : '') + (on && S.baseMs > 0 && remaining(c) < 10000 ? ' low' : ''); };
+  cb.className = cls(bot); ct.className = cls(top);
+  if (on) {
+    if (turn === me && rawRem(me) <= 0) {                      // ich bin abgelaufen
+      sendMsg({ t: 'timeout' });
+      setResult(me === 'w' ? '0-1' : '1-0', 'Zeit');
+    } else if (turn === ot && rawRem(ot) < -2500) {            // Gegner abgelaufen, 2,5 s Kulanz fürs Netz
+      setResult(me === 'w' ? '1-0' : '0-1', 'Zeit');
+    }
+  }
+}
+setInterval(tick, 100);
+
+/* ---------- PGN ---------- */
+function makePgn() {
+  var white = S.color === 'w' ? S.name : S.oppName, black = S.color === 'b' ? S.name : S.oppName;
+  var d = new Date(), pad = function (x) { return (x < 10 ? '0' : '') + x; };
+  var tc = S.baseMs > 0 ? (Math.round(S.baseMs / 1000) + (S.incMs ? '+' + Math.round(S.incMs / 1000) : '')) : '-';
+  var res = S.over && S.result ? S.result : '*';
+  var h = [
+    ['Event', 'Freundespartie (Duell-Test)'], ['Site', 'Duell-Test'],
+    ['Date', d.getFullYear() + '.' + pad(d.getMonth() + 1) + '.' + pad(d.getDate())],
+    ['White', white || '?'], ['Black', black || '?'], ['Result', res], ['TimeControl', tc]
+  ];
+  if (S.over && S.reason) h.push(['Termination', S.reason]);
+  var out = h.map(function (x) { return '[' + x[0] + ' "' + String(x[1]).replace(/"/g, "'") + '"]'; }).join('\n') + '\n\n';
+  var hist = S.game.history(), t = [];
+  for (var i = 0; i < hist.length; i++) t.push((i % 2 === 0 ? (i / 2 + 1) + '. ' : '') + hist[i]);
+  return out + t.join(' ') + (t.length ? ' ' : '') + res + '\n';
+}
+
+/* ---------- Bedienung ---------- */
+function onSquare(sq) {
+  if (S.over || !dcOpen()) return;
+  if (S.game.turn() !== S.color) return;
+  if (S.sel && S.targets.indexOf(sq) >= 0) {
+    var from = S.sel;
+    var cands = S.game.moves({ square: from, verbose: true }).filter(function (m) { return m.to === sq; });
+    if (cands.length && cands[0].promotion) { askPromo(from, sq); return; }
+    myMove(from, sq);
+    return;
+  }
+  var p = S.game.get(sq);
+  if (p && p.color === S.color) {
+    S.sel = sq;
+    S.targets = S.game.moves({ square: sq, verbose: true }).map(function (m) { return m.to; });
+  } else { S.sel = null; S.targets = []; }
+  render();
+}
+function askPromo(from, to) {
+  var box = $('promoBox'); box.textContent = '';
+  ['q', 'r', 'b', 'n'].forEach(function (k) {
+    var bt = document.createElement('button');
+    bt.appendChild(pieceEl(S.color, k)); bt.setAttribute('data-promo', k); bt.setAttribute('aria-label', NAME_DE[k]);
+    bt.onclick = function () { $('promo').classList.add('hidden'); myMove(from, to, k); };
+    box.appendChild(bt);
+  });
+  $('promo').classList.remove('hidden');
+}
+
+$('board').addEventListener('click', function (e) {
+  var t = e.target; while (t && t !== this && !t.getAttribute('data-sq')) t = t.parentNode;
+  if (t && t.getAttribute) { var sq = t.getAttribute('data-sq'); if (sq) onSquare(sq); }
+});
+$('toggleSide').onclick = function () { S.side = !S.side; render(); };
+$('btnFlip').onclick = function () { S.flipUser = !S.flipUser; render(); };
+$('btnSound').onclick = function () { S.sound = !S.sound; lsSet('duell_sound', S.sound ? '1' : '0'); if (S.sound) tickSound(false); render(); };
+
+/* ---------- Teilen (Handy: Share-Dialog), nur sichtbar, wenn der Browser es kann ---------- */
+function shareIt(btn, what) {
+  var data = what === 'link' ? { title: 'Schach-Duell', text: 'Komm in meine Schachpartie:', url: $(btn).dataset.src ? $($(btn).dataset.src).value : '' }
+                             : { title: 'Schach-Duell', text: $($(btn).dataset.src).value };
+  try { navigator.share(data).catch(function () { /* abgebrochen */ }); } catch (e) { /* ok */ }
+}
+if (typeof navigator.share === 'function') {
+  [['shareManual', 'manualLink', 'link'], ['shareInvite', 'inviteIn', 'link'], ['shareAns', 'ansOut', 'code']].forEach(function (x) {
+    var b = $(x[0]); b.dataset.src = x[1]; b.classList.remove('hidden'); b.onclick = function () { shareIt(x[0], x[2]); };
+  });
+}
+
+/* ---------- Figuren ziehen (Maus und Finger), zusätzlich zum Antippen ---------- */
+var board = $('board');
+board.addEventListener('pointerdown', function (e) {
+  if (e.button > 0 || S.over || !dcOpen() || S.game.turn() !== S.color) return;
+  var t = e.target; while (t && t !== board && !(t.getAttribute && t.getAttribute('data-sq'))) t = t.parentNode;
+  var sq = t && t.getAttribute && t.getAttribute('data-sq');
+  if (!sq) return;
+  var p = S.game.get(sq);
+  if (!p || p.color !== S.color) return;
+  S.drag = { from: sq, x: e.clientX, y: e.clientY, active: false, id: e.pointerId };
+});
+window.addEventListener('pointermove', function (e) {
+  var d = S.drag; if (!d || e.pointerId !== d.id) return;
+  if (!d.active) {
+    if (Math.abs(e.clientX - d.x) + Math.abs(e.clientY - d.y) < 8) return;
+    d.active = true;
+    S.sel = d.from; S.targets = S.game.moves({ square: d.from, verbose: true }).map(function (m) { return m.to; });
+    render();
+    var src = board.querySelector('[data-sq="' + d.from + '"]'); if (src) src.classList.add('dragsrc');
+    var r = src ? src.getBoundingClientRect() : { width: 56 };
+    var g = $('dragGhost'); g.style.width = g.style.height = Math.round(r.width * 1.15) + 'px'; g.textContent = '';
+    var im = document.createElement('img'); var pp = S.game.get(d.from);
+    im.src = 'img/' + pp.color + pp.type.toUpperCase() + '.png'; im.alt = ''; g.appendChild(im); g.style.display = 'block';
+  }
+  var gh = $('dragGhost'), w = parseFloat(gh.style.width) || 56;
+  gh.style.left = (e.clientX - w / 2) + 'px'; gh.style.top = (e.clientY - w / 2) + 'px';
+  e.preventDefault();
+});
+function endDrag(e, cancel) {
+  var d = S.drag; if (!d || (e && e.pointerId !== d.id)) return;
+  S.drag = null;
+  var gh = $('dragGhost'); gh.style.display = 'none'; gh.textContent = '';
+  if (!d.active) return;                                   // nur angetippt: das übernimmt der Klick
+  var src = board.querySelector('.dragsrc'); if (src) src.classList.remove('dragsrc');
+  if (cancel || !e) { render(); return; }
+  var under = document.elementFromPoint(e.clientX, e.clientY);
+  var sq = null; while (under && under !== document.body) { if (under.getAttribute && under.getAttribute('data-sq')) { sq = under.getAttribute('data-sq'); break; } under = under.parentNode; }
+  if (sq && sq !== d.from && S.targets.indexOf(sq) >= 0) {
+    var cands = S.game.moves({ square: d.from, verbose: true }).filter(function (m) { return m.to === sq; });
+    if (cands.length && cands[0].promotion) { askPromo(d.from, sq); return; }
+    myMove(d.from, sq);
+  } else { render(); }
+}
+window.addEventListener('pointerup', function (e) { endDrag(e, false); });
+window.addEventListener('pointercancel', function (e) { endDrag(e, true); });
+
+// Sicherer Neustart: Gegner informieren, Verbindung schließen, diese Partie aus dem Speicher löschen, zurück zur Lobby
+var leaveArmed = 0;
+function lobbyUrl() { return location.pathname + keepQ('?', true); }
+function doLeave() {
+  var id = S.id, role = S.role;
+  sendMsg({ t: 'leave' });
+  try { if (es) es.close(); } catch (e) { /* ok */ }
+  if (hb) clearInterval(hb);
+  setTimeout(function () { closePeer(); wipeRoom(id, role); location.replace(lobbyUrl()); }, 200);
+}
+$('btnLeave').onclick = function () {
+  var b = $('btnLeave');
+  if (leaveArmed > now()) { b.disabled = true; doLeave(); return; }
+  leaveArmed = now() + 4000; b.textContent = 'Wirklich?';
+  setTimeout(function () { if (leaveArmed <= now() && !b.disabled) b.textContent = 'Neustart'; }, 4100);
+};
+$('btnAbort').onclick =function () { if (sendMsg({ t: 'abort' })) setResult('*', 'abgebrochen'); };
+$('btnDraw').onclick = function () { if (sendMsg({ t: 'draw' })) { S.drawMine = true; render(); } };
+$('drawYes').onclick = function () { if (sendMsg({ t: 'draw-yes' })) setResult('1/2-1/2', 'Einigung'); };
+$('drawNo').onclick = function () { sendMsg({ t: 'draw-no' }); S.drawOpp = false; render(); };
+$('btnResign').onclick = function () {
+  if (S.resignArmed > now()) { sendMsg({ t: 'resign' }); S.resignArmed = 0; setResult(S.color === 'w' ? '0-1' : '1-0', 'Aufgabe'); }
+  else { S.resignArmed = now() + 4000; render(); setTimeout(render, 4100); }
+};
+$('btnRematch').onclick = function () {
+  if (!S.over || S.rematchMine) return;
+  S.rematchMine = true;
+  if (!sendMsg({ t: 'rematch' })) { S.rematchMine = false; return; }
+  if (S.rematchOpp) newGame(); else render();
+};
+function copy(text, btn) {
+  var done = function () { var o = btn.textContent; btn.textContent = 'Kopiert'; setTimeout(function () { btn.textContent = o; }, 1500); };
+  try { navigator.clipboard.writeText(text).then(done, function () { /* Feld bleibt markierbar */ }); } catch (e) { /* ok */ }
+}
+$('copyLink').onclick = function () { copy($('inviteIn').value, $('copyLink')); };
+$('copyPgn').onclick = function () { copy(makePgn(), $('copyPgn')); };
+$('dlPgn').onclick = function () {
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([makePgn()], { type: 'application/x-chess-pgn' }));
+  a.download = 'duell-' + S.id + '.pgn'; document.body.appendChild(a); a.click(); a.remove();
+};
+
+/* ---------- Start ---------- */
+function fatal(msg) {
+  ['lobby', 'joinPanel', 'game'].forEach(function (x) { $(x).classList.add('hidden'); });
+  var f = $('fatal'); f.textContent = msg; f.classList.remove('hidden');
+}
+function api(method, url, body) {
+  return fetch(url, { method: method, headers: { 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined })
+    .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { j._status = r.status; return j; }); });
+}
+function applyMeta(tc) {
+  S.tc = tc || 'none';
+  var t = parseTc(S.tc); S.baseMs = t.base; S.incMs = t.inc;
+  S.clock = { w: S.baseMs, b: S.baseMs };
+}
+function inviteLink() {
+  var u = location.origin + location.pathname + '?r=' + S.id;
+  u += keepQ('&', false);
+  return u;
+}
+function enterGame() {
+  S.joined = true;
+  $('lobby').classList.add('hidden'); $('joinPanel').classList.add('hidden'); $('game').classList.remove('hidden');
+  if (!S.manual) $('inviteIn').value = inviteLink();
+  restore();
+  S.name = S.name || 'Spieler';
+  if (!S.manual) openEvents();
+  startHeartbeat();
+  if (S.role === 'guest') { if (S.manual) S.conn = 'connecting'; else guestJoin(); } else { S.conn = 'wait'; }
+  render();
+}
+
+/* ---------- Variante ohne Server: Codes per Chat tauschen ---------- */
+var MANUAL = false;
+
+function enc(o) {
+  return btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+function dec(s) {
+  try {
+    var t = String(s).replace(/\s+/g, '').replace(/-/g, '+').replace(/_/g, '/');
+    while (t.length % 4) t += '=';
+    var o = JSON.parse(decodeURIComponent(escape(atob(t))));
+    return (o && o.v === 1 && typeof o.sdp === 'string' && o.sdp.length < 20000) ? o : null;
+  } catch (e) { return null; }
+}
+function gathered(p, ms) {
+  return new Promise(function (res) {
+    if (p.iceGatheringState === 'complete') return res();
+    var t = setTimeout(done, ms || 5000);
+    function done() { clearTimeout(t); p.removeEventListener('icegatheringstatechange', chk); res(); }
+    function chk() { if (p.iceGatheringState === 'complete') done(); }
+    p.addEventListener('icegatheringstatechange', chk);
+  });
+}
+function manualBase() {
+  return location.origin + location.pathname + keepQ('?', false);
+}
+function manualOffer() {
+  closePeer();
+  sid = 'm';
+  S.conn = 'wait'; $('manualLink').value = ''; $('manualErr').textContent = ''; $('ansIn').value = '';
+  pc = makePeer();
+  setupDC(pc.createDataChannel('duell'));
+  var p = pc;
+  p.createOffer().then(function (o) { return p.setLocalDescription(o); })
+    .then(function () { return gathered(p); })
+    .then(function () {
+      if (pc !== p) return;
+      var code = enc({ v: 1, id: S.id, tc: S.tc, color: S.color, name: S.name, sdp: p.localDescription.sdp });
+      $('manualLink').value = manualBase() + '#m=' + code;
+      render();
+    })
+    .catch(function () { $('manualErr').textContent = 'Konnte keinen Code erzeugen. Seite neu laden.'; });
+}
+function manualHostStart(id, resume) {
+  MANUAL = true; S.manual = true; S.role = 'host'; S.id = id;
+  S.name = clean(lsGet('duell_name')) || 'Spieler';
+  var meta = { tc: 'none', color: 'w' };
+  if (resume) {
+    try { meta = JSON.parse(lsGet('duell_mh_' + id)) || meta; } catch (e) { /* Vorgabe */ }
+    if (meta.name) S.name = clean(meta.name) || S.name;     // eigener Name, auch wenn ein zweites Fenster den Namen im Speicher überschrieben hat
+  } else {
+    var col = $('colSel').value; if (col === 'r') col = Math.random() < 0.5 ? 'w' : 'b';
+    meta = { tc: $('tcSel').value, color: col, name: S.name };
+    lsSet('duell_mh_' + id, JSON.stringify(meta));
+  }
+  applyMeta(meta.tc); S.color = meta.color === 'b' ? 'b' : 'w';
+  try { history.replaceState(null, '', location.pathname + keepQ('?', true) + '#h=' + id); } catch (e) { /* ok */ }
+  enterGame();
+  manualOffer();
+}
+function manualGuestStart(offer) {
+  MANUAL = true; S.manual = true; S.role = 'guest'; S.id = clean(offer.id, 8).toLowerCase() || 'm00000';
+  applyMeta(offer.tc); S.color = offer.color === 'b' ? 'w' : 'b';
+  S.oppName = clean(offer.name);
+  $('ansOut').value = '';
+  enterGame();
+  var p = pc = makePeer();
+  p.ondatachannel = function (e) { if (pc === p) setupDC(e.channel); };
+  p.setRemoteDescription({ type: 'offer', sdp: offer.sdp })
+    .then(function () { return p.createAnswer(); })
+    .then(function (a) { return p.setLocalDescription(a); })
+    .then(function () { return gathered(p); })
+    .then(function () { $('ansOut').value = enc({ v: 1, name: S.name, sdp: p.localDescription.sdp }); render(); })
+    .catch(function () { $('ansHint').textContent = 'Der Link ist ungültig oder abgelaufen. Bitte den Host um einen neuen Link.'; });
+}
+$('ansBtn').onclick = function () {
+  var a = dec($('ansIn').value.trim());
+  if (!a) { $('manualErr').textContent = 'Das ist kein gültiger Antwort-Code.'; return; }
+  $('manualErr').textContent = '';
+  S.conn = 'connecting'; render();
+  if (!pc) return;
+  pc.setRemoteDescription({ type: 'answer', sdp: a.sdp }).catch(function () {
+    S.conn = 'wait'; $('manualErr').textContent = 'Der Code passt nicht zu diesem Link. Neuen Link erzeugen und neu versuchen.'; render();
+  });
+};
+$('reOffer').onclick = manualOffer;
+$('copyManual').onclick = function () { copy($('manualLink').value, $('copyManual')); };
+$('copyAns').onclick = function () { copy($('ansOut').value, $('copyAns')); };
+
+function startHost(meta) {
+  S.role = 'host'; S.token = lsGet('duell_h_' + S.id);
+  applyMeta(meta.tc); S.color = meta.color === 'b' ? 'b' : 'w';
+  S.name = clean(lsGet('duell_name')) || 'Spieler';
+  enterGame();
+}
+function startGuest(meta, tk) {
+  S.role = 'guest'; S.token = tk; lsSet('duell_g_' + S.id, tk);
+  applyMeta(meta.tc); S.color = meta.color === 'b' ? 'w' : 'b';
+  enterGame();
+}
+
+// Gibt es unter api/ einen echten Vermittlungs-Server (antwortet mit JSON)? Sonst Variante ohne Server.
+function detectApi() {
+  if (/\.github\.io$/.test(location.hostname)) return Promise.resolve(false);   // GitHub Pages: sicher ohne Server (spart die 404-Anfrage)
+  return fetch('api/room/aaaaaa').then(function (r) { return (r.headers.get('content-type') || '').indexOf('json') >= 0; }).catch(function () { return false; });
+}
+
+function boot() {
+  // Notausgang: ?reset=1 löscht alle gespeicherten Partien und Zugangsdaten dieser Seite und startet frisch
+  if (qs.get('reset')) {
+    try {
+      var del = [];
+      for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (k && k.indexOf('duell_') === 0 && k !== 'duell_name') del.push(k); }
+      del.forEach(function (k) { localStorage.removeItem(k); });
+    } catch (e) { /* ok */ }
+    location.replace(location.pathname + keepQ('?', true));
+    return;
+  }
+  detectApi().then(function (hasApi) {
+    MANUAL = !hasApi;
+    var hm = (location.hash || '').match(/^#m=([A-Za-z0-9_-]+)/), hh = (location.hash || '').match(/^#h=([a-z0-9]+)$/);
+    if (hm) {                                                    // Beitritt ohne Server
+      var offer = dec(hm[1]);
+      if (!offer) return fatal('Der Link ist ungültig oder unvollständig. Bitte den Host um einen neuen Link.');
+      $('nameJoin').value = clean(lsGet('duell_name'));
+      $('joinPanel').classList.remove('hidden');
+      $('joinBtn').onclick = function () {
+        S.name = clean($('nameJoin').value) || 'Spieler'; lsSet('duell_name', S.name);
+        manualGuestStart(offer);
+      };
+      return;
+    }
+    if (hh && lsGet('duell_mh_' + hh[1])) return manualHostStart(hh[1], true);
+    bootRoom();
+  });
+}
+
+function bootRoom() {
+  S.id = clean(qs.get('r'), 6).toLowerCase();
+  if (!S.id) {
+    $('lobby').classList.remove('hidden');
+    $('nameIn').value = clean(lsGet('duell_name'));
+    $('modeNote').classList.toggle('hidden', !MANUAL);
+    return;
+  }
+  if (MANUAL) return fatal('Dieser Link braucht einen Vermittlungs-Server, den es hier nicht gibt. Bitte einen Link mit #m=… verwenden.');
+  if (!/^[a-z0-9]{6}$/.test(S.id)) return fatal('Der Link ist ungültig.');
+  var hostTok = lsGet('duell_h_' + S.id), guestTok = lsGet('duell_g_' + S.id);
+  api('GET', 'api/room/' + S.id).then(function (meta) {
+    if (meta._status === 404) return fatal('Dieser Raum existiert nicht (mehr). Räume laufen nach einigen Stunden ohne Aktivität ab.');
+    if (hostTok) return startHost(meta);
+    $('nameJoin').value = clean(lsGet('duell_name'));
+    var join = function () {
+      S.name = clean($('nameJoin').value) || 'Spieler'; lsSet('duell_name', S.name);
+      api('POST', 'api/room/' + S.id + '/join', { guestToken: guestTok || undefined }).then(function (j) {
+        if (j._status === 403) return fatal('In dieser Partie sitzt schon ein Gegner. Der Raum ist voll.');
+        if (!j.guestToken) return fatal('Beitritt hat nicht geklappt.');
+        startGuest(j, j.guestToken);
+      });
+    };
+    if (guestTok) { S.name = clean(lsGet('duell_name')) || 'Spieler'; join(); }
+    else { $('joinPanel').classList.remove('hidden'); $('joinBtn').onclick = join; }
+  }).catch(function () { fatal('Der Server ist nicht erreichbar.'); });
+}
+
+$('createBtn').onclick = function () {
+  var nm = clean($('nameIn').value) || 'Spieler'; lsSet('duell_name', nm);
+  var col = $('colSel').value;
+  if (MANUAL) { manualHostStart('m' + Math.random().toString(36).slice(2, 7), false); return; }
+  api('POST', 'api/room', { tc: $('tcSel').value, color: col === 'r' ? undefined : col }).then(function (j) {
+    if (!j.id) { $('lobbyErr').textContent = 'Konnte keinen Raum anlegen: ' + (j.error || 'Fehler'); return; }
+    lsSet('duell_h_' + j.id, j.hostToken);
+    var u = location.pathname + '?r=' + j.id + keepQ('&', true);
+    location.href = u;
+  }).catch(function () { $('lobbyErr').textContent = 'Der Server ist nicht erreichbar.'; });
+};
+
+/* Test-Zugang: gibt nur Lesezugriff und die eigenen Bedienfunktionen frei, keine Engine. */
+window.__duell = {
+  state: function () {
+    return {
+      role: S.role, color: S.color, fen: S.game.fen(), plies: S.moves.length, moves: S.moves.slice(),
+      over: S.over, result: S.result, reason: S.reason, conn: S.conn, tc: S.tc,
+      name: S.name, oppName: S.oppName, illegalRecv: S.illegalRecv,
+      clock: { w: Math.round(remaining('w')), b: Math.round(remaining('b')) },
+      pgn: S.moves.length ? makePgn() : '', drawOpp: S.drawOpp, drawMine: S.drawMine, manual: S.manual, side: S.side,
+      flipped: isFlipped(), sound: S.sound, soundCount: S.soundCount, embed: EMBED
+    };
+  },
+  move: function (u) { return myMove(u.slice(0, 2), u.slice(2, 4), u.length > 4 ? u[4] : undefined); },
+  raw: function (o) { return sendMsg(o); },
+  forceColor: function (c) { S.color = c; render(); },                       // nur für Tests
+  hello: function () { return sendMsg({ t: 'hello', name: S.name, color: S.color }); },
+  dropConnection: function () { closePeer(); S.conn = 'lost'; render(); }
+};
+
+// Neuer Einladungslink im selben Tab (nur der Teil nach # ändert sich): Seite neu aufbauen
+window.addEventListener('hashchange', function () { location.reload(); });
+
+boot();
+})();
+</script>
+</body>
+</html>

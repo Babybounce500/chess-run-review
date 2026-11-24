@@ -316,6 +316,7 @@
     if (/^\/partien\b|^meine partien\b|^\/chesscom\b/.test(s)) return { run: () => openChessCom() };
     if (/^\/er[oö]+ffnung\b|^\/eroeffnung\b|^er[oö]ffnungs-?trainer\b/.test(s)) return { run: () => openBlunderTrainer({ phase: 'o' }) };
     if (/^[/]endspiel(-?fehler)?\b|^endspiel-?(trainer|fehler)\b/.test(s)) return { run: () => openBlunderTrainer({ set: 'endgame' }) };
+    if (/^\/duell?\b|^online[- ]?duell?\b/.test(s)) return { run: () => { if (window.openOnlineDuel) window.openOnlineDuel(); } };
     if (/^\/training\b|^training\b$/.test(s)) return { run: openMenu };
     return null;
   }
