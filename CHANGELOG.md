@@ -1,5 +1,9 @@
 # Änderungsprotokoll
 
+## 2026-11-24 (Orbitron-Marke für Duell und Chat)
+- **Einheitliches Aussehen:** Duell und Chat tragen jetzt das Orbitron-Design (Farben, Schrift, Kapselknöpfe, Wortmarke mit Springer). Die drei Themes Hell, Dunkel und Neural stammen aus der App, die Wahl wird geteilt (gleicher Speicherschlüssel) und wechselt live mit. Die Schrift ist eingebettet, es gibt keine Anfrage an Schrift-Server. Eine Quelle (`brand/`), eingespielt mit `scripts/sync-brand.mjs`, geprüft von `tests/brand-test.js`.
+
+
 ## 2026-11-24 (Orbitron: Chat & Anrufe)
 - **Reiter „Chat & Anrufe“** direkt unter „Online Duell“ in der Orbitron-Sidebar. Eigener Rahmen: Verbindung, Anruf und Duell laufen beim Schließen und Wechseln weiter. Abzeichen zeigt „n online“, „💬 n“ bei ungelesenen Nachrichten und „📞 Anruf“. Ein eingehender Anruf öffnet das Fenster von selbst. Direktlink `#/chat`, Befehl `/chat`.
 
