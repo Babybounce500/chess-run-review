@@ -1,5 +1,8 @@
 # Änderungsprotokoll
 
+## 2026-11-24 (Online Duell: Chat)
+- **Chat im Duell:** Textnachrichten direkt zwischen den beiden Browsern (kein Server liest mit), Schnellantworten, Stumm-Schalter, Zähler für Ungelesenes, Verlauf nur im eigenen Browser. Der Orbitron-Reiter zeigt „💬 n“, solange das Duell-Fenster ausgeblendet ist. Nachrichten werden nur als Text angezeigt, auf 300 Zeichen gekürzt und auf 8 pro 10 Sekunden begrenzt.
+
 ## 2026-11-24 (Orbitron: Online Duell)
 - **Online Duell:** neuer Reiter ganz oben in der Sidebar. Freundespartien direkt von Browser zu Browser (WebRTC), Bedenkzeit 1+0 bis 15+10, Aufgeben, Remis, Revanche, PGN-Export. Ohne Server: Link und Antwort-Code per Chat austauschen. Direktlink `#/duell`, Chat-Befehl `/duell`. Die Partie läuft weiter, wenn das Fenster geschlossen wird.
 - Brett und Figuren wie in Orbitron, Figuren ziehen per Maus und Finger, Brett drehen, Zugton, Teilen-Knopf, Bildschirm bleibt wach. Einklappbare Seitenleiste, Neustart-Knopf, Notausgang `duell/?reset=1`.

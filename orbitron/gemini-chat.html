@@ -2143,9 +2143,14 @@ window.openOnlineDuel=function(){
 // Reiter-Abzeichen: „läuft“, solange im (ausgeblendeten) Duell-Fenster eine Partie läuft
 setInterval(()=>{
   const b=$('navDuelBadge');if(!b)return;
-  let live=false;
-  try{const s=$('moduleFrame').contentWindow.__duell&&$('moduleFrame').contentWindow.__duell.state();live=!!(s&&s.conn==='open'&&!s.over&&isDuelUrl($('moduleFrame').dataset.url))}catch(e){}
-  b.textContent=live?'LÄUFT':'NEU';b.classList.toggle('live',live);
+  let live=false,unread=0;
+  try{
+    const w=$('moduleFrame').contentWindow,s=w.__duell&&w.__duell.state();
+    if(s&&isDuelUrl($('moduleFrame').dataset.url)){live=s.conn==='open'&&!s.over;unread=s.unread||0}
+  }catch(e){}
+  // Ungelesene Chat-Nachrichten zeigt der Reiter an, solange das Duell-Fenster ausgeblendet ist
+  if(unread>0&&!$('moduleDock').classList.contains('open')){b.textContent='💬 '+unread;b.classList.add('live')}
+  else{b.textContent=live?'LÄUFT':'NEU';b.classList.toggle('live',live)}
 },2500);
 $('moduleDock').addEventListener('click',e=>{if(e.target.id==='moduleDock')closeChessModule()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeChessModule()});
