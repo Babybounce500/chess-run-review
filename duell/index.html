@@ -128,7 +128,7 @@ code{background:var(--bg);padding:1px 5px;border-radius:4px}
       <div id="bar" class="card">
         <div class="row" style="justify-content:space-between;flex-wrap:nowrap">
           <span id="status"></span>
-          <span class="row" style="gap:6px;flex-wrap:nowrap"><span id="conn" class="chip">–</span><button id="toggleSide" type="button" aria-controls="side" aria-expanded="true" title="Seitenleiste ein- oder ausblenden">Menü</button></span>
+          <span class="row" style="gap:6px;flex-wrap:nowrap"><span id="conn" class="chip">–</span><button id="toggleSide" type="button" aria-controls="side" aria-expanded="true" title="Seitenleiste ein- oder ausblenden">Menü</button><button id="btnLeave" type="button" class="danger" title="Verbindung trennen, gespeicherte Partie löschen und von vorn beginnen">Neustart</button></span>
         </div>
         <div id="banner" class="hidden"></div>
         <div id="drawBox" class="hidden row" style="margin:8px 0 0"><span>Remis angeboten.</span><button id="drawYes" class="primary">Annehmen</button><button id="drawNo">Ablehnen</button></div>
@@ -214,7 +214,7 @@ var S = {
   drawMine: false, drawOpp: false, rematchMine: false, rematchOpp: false,
   resignArmed: 0,
   illegalRecv: 0, lastRx: 0, joined: false, manual: false,
-  side: true, prevConn: undefined, prevOver: false
+  side: true, prevConn: undefined, prevOver: false, oppLeft: false, noRejoin: false
 };
 
 /* ---------- Uhr ---------- */
@@ -234,15 +234,22 @@ function fmt(ms) {
 }
 
 /* ---------- Speichern ---------- */
+// Pro Rolle getrennt: zwei Fenster im selben Browser teilen sich den Speicher und dürfen sich nicht überschreiben
+function gkey() { return 'duell_game_' + S.id + '_' + (S.role || 'x'); }
+function wipeRoom(id, role) {   // löscht nur die Daten der eigenen Rolle (das andere Fenster im selben Browser bleibt unberührt)
+  var keys = ['duell_game_' + id + '_' + role, 'duell_game_' + id];
+  if (role === 'host') keys.push('duell_h_' + id, 'duell_mh_' + id); else keys.push('duell_g_' + id);
+  keys.forEach(function (k) { try { localStorage.removeItem(k); } catch (e) { /* ok */ } });
+}
 function save() {
   if (!S.id) return;
-  lsSet('duell_game_' + S.id, JSON.stringify({
+  lsSet(gkey(), JSON.stringify({
     color: S.color, name: S.name, oppName: S.oppName, moves: S.moves, clock: S.clock,
     turnStart: S.turnStart, over: S.over, result: S.result, reason: S.reason
   }));
 }
 function restore() {
-  var raw = lsGet('duell_game_' + S.id);
+  var raw = lsGet(gkey());
   if (!raw) return;
   try {
     var d = JSON.parse(raw);
@@ -300,8 +307,10 @@ function commitMove(u, mover, remFromSender) {
   return m;
 }
 
+function dcOpen() { return !!(dc && dc.readyState === 'open'); }
+
 function myMove(from, to, promo) {
-  if (S.over || S.conn !== 'open' || S.game.turn() !== S.color) return false;
+  if (S.over || !dcOpen() || S.game.turn() !== S.color) return false;
   var u = from + to + (promo || '');
   var n = S.moves.length;
   var m = commitMove(u, S.color, null);
@@ -329,7 +338,16 @@ function onMsg(raw) {
   switch (d.t) {
     case 'ping': return;
     case 'hello':
-      S.oppName = clean(d.name) || 'Gegner'; save(); render(); return;
+      S.oppName = clean(d.name) || 'Gegner';
+      // Beide dürfen nie dieselbe Farbe haben: der Gast gibt nach, der Host bestätigt seine Farbe erneut
+      if ((d.color === 'w' || d.color === 'b') && d.color === S.color) {
+        if (S.role === 'guest') S.color = opp(d.color);
+        else sendMsg({ t: 'hello', name: S.name, color: S.color });
+      }
+      save(); render(); return;
+    case 'leave':
+      S.oppLeft = true; S.noRejoin = true;
+      closePeer(); S.conn = 'lost'; render(); return;
     case 'sync': return onSync(d);
     case 'move': return onMove(d);
     case 'resign':
@@ -431,8 +449,8 @@ function setupDC(ch) {
   dc = ch;
   ch.onopen = function () {
     if (dc !== ch) return;
-    S.conn = 'open'; S.lastRx = now();
-    sendMsg({ t: 'hello', name: S.name });
+    S.conn = 'open'; S.lastRx = now(); S.oppLeft = false; S.noRejoin = false;
+    sendMsg({ t: 'hello', name: S.name, color: S.color });
     sendSync();
     render();
   };
@@ -500,9 +518,9 @@ function startHeartbeat() {
   if (hb) clearInterval(hb);
   hb = setInterval(function () {
     sendMsg({ t: 'ping' });
-    if (S.conn === 'open' && S.lastRx && now() - S.lastRx > 7000) { S.conn = 'lost'; render(); }
+    if (S.conn === 'open' && S.lastRx && now() - S.lastRx > 15000) { S.conn = 'lost'; render(); }
     // Gast: nach 9 s ohne Verbindung den Beitritt neu anstoßen (Host baut dann ein frisches Angebot)
-    if (S.role === 'guest' && !S.manual && S.conn !== 'open' && S.joined && now() - joinAt > 9000) guestJoin();
+    if (S.role === 'guest' && !S.manual && !S.noRejoin && S.conn !== 'open' && S.joined && now() - joinAt > 9000) guestJoin();
   }, 2000);
 }
 
@@ -575,6 +593,7 @@ function render() {
   var cs = $('conn'); cs.textContent = CONN_TXT[S.conn] || S.conn; cs.className = 'chip ' + S.conn;
   var st;
   if (S.over) st = 'Partie beendet';
+  else if (S.oppLeft && S.conn !== 'open') st = 'Dein Gegner hat die Verbindung beendet';
   else if (S.conn !== 'open') st = S.moves.length ? 'Warte auf Verbindung …' : 'Warte auf den Gegner …';
   else if (S.game.turn() === me) st = 'Du bist am Zug';
   else st = (S.oppName || 'Gegner') + ' ist am Zug';
@@ -660,7 +679,7 @@ function makePgn() {
 
 /* ---------- Bedienung ---------- */
 function onSquare(sq) {
-  if (S.over || S.conn !== 'open') return;
+  if (S.over || !dcOpen()) return;
   if (S.game.turn() !== S.color) return;
   if (S.sel && S.targets.indexOf(sq) >= 0) {
     var from = S.sel;
@@ -692,6 +711,23 @@ $('board').addEventListener('click', function (e) {
   if (t && t.getAttribute) { var sq = t.getAttribute('data-sq'); if (sq) onSquare(sq); }
 });
 $('toggleSide').onclick = function () { S.side = !S.side; render(); };
+
+// Sicherer Neustart: Gegner informieren, Verbindung schließen, diese Partie aus dem Speicher löschen, zurück zur Lobby
+var leaveArmed = 0;
+function lobbyUrl() { return location.pathname + (qs.get('ice') ? '?ice=' + encodeURIComponent(qs.get('ice')) : ''); }
+function doLeave() {
+  var id = S.id, role = S.role;
+  sendMsg({ t: 'leave' });
+  try { if (es) es.close(); } catch (e) { /* ok */ }
+  if (hb) clearInterval(hb);
+  setTimeout(function () { closePeer(); wipeRoom(id, role); location.replace(lobbyUrl()); }, 200);
+}
+$('btnLeave').onclick = function () {
+  var b = $('btnLeave');
+  if (leaveArmed > now()) { b.disabled = true; doLeave(); return; }
+  leaveArmed = now() + 4000; b.textContent = 'Wirklich?';
+  setTimeout(function () { if (leaveArmed <= now() && !b.disabled) b.textContent = 'Neustart'; }, 4100);
+};
 $('btnAbort').onclick =function () { if (sendMsg({ t: 'abort' })) setResult('*', 'abgebrochen'); };
 $('btnDraw').onclick = function () { if (sendMsg({ t: 'draw' })) { S.drawMine = true; render(); } };
 $('drawYes').onclick = function () { if (sendMsg({ t: 'draw-yes' })) setResult('1/2-1/2', 'Einigung'); };
@@ -796,10 +832,12 @@ function manualHostStart(id, resume) {
   MANUAL = true; S.manual = true; S.role = 'host'; S.id = id;
   S.name = clean(lsGet('duell_name')) || 'Spieler';
   var meta = { tc: 'none', color: 'w' };
-  if (resume) { try { meta = JSON.parse(lsGet('duell_mh_' + id)) || meta; } catch (e) { /* Vorgabe */ } }
-  else {
+  if (resume) {
+    try { meta = JSON.parse(lsGet('duell_mh_' + id)) || meta; } catch (e) { /* Vorgabe */ }
+    if (meta.name) S.name = clean(meta.name) || S.name;     // eigener Name, auch wenn ein zweites Fenster den Namen im Speicher überschrieben hat
+  } else {
     var col = $('colSel').value; if (col === 'r') col = Math.random() < 0.5 ? 'w' : 'b';
-    meta = { tc: $('tcSel').value, color: col };
+    meta = { tc: $('tcSel').value, color: col, name: S.name };
     lsSet('duell_mh_' + id, JSON.stringify(meta));
   }
   applyMeta(meta.tc); S.color = meta.color === 'b' ? 'b' : 'w';
@@ -855,6 +893,16 @@ function detectApi() {
 }
 
 function boot() {
+  // Notausgang: ?reset=1 löscht alle gespeicherten Partien und Zugangsdaten dieser Seite und startet frisch
+  if (qs.get('reset')) {
+    try {
+      var del = [];
+      for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (k && k.indexOf('duell_') === 0 && k !== 'duell_name') del.push(k); }
+      del.forEach(function (k) { localStorage.removeItem(k); });
+    } catch (e) { /* ok */ }
+    location.replace(location.pathname);
+    return;
+  }
   detectApi().then(function (hasApi) {
     MANUAL = !hasApi;
     var hm = (location.hash || '').match(/^#m=([A-Za-z0-9_-]+)/), hh = (location.hash || '').match(/^#h=([a-z0-9]+)$/);
@@ -927,6 +975,8 @@ window.__duell = {
   },
   move: function (u) { return myMove(u.slice(0, 2), u.slice(2, 4), u.length > 4 ? u[4] : undefined); },
   raw: function (o) { return sendMsg(o); },
+  forceColor: function (c) { S.color = c; render(); },                       // nur für Tests
+  hello: function () { return sendMsg({ t: 'hello', name: S.name, color: S.color }); },
   dropConnection: function () { closePeer(); S.conn = 'lost'; render(); }
 };
 
