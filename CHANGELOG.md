@@ -1,5 +1,11 @@
 # Änderungsprotokoll
 
+## 2026-11-24 (Chat-Test: Quick Wins)
+- **Bildschirm bleibt im Anruf an**, Warnung beim Schließen während Anruf oder Übertragung, Verbindungsbalken (Ping, Paketverlust) an jeder Kachel, Geräte wählen (Mikrofon, Kamera, Lautsprecher).
+- **Speicherschutz** mit Hinweisleiste und **verschlüsseltes Backup** (Passwort, AES-GCM) inklusive Schlüssel, Einspielen in ein frisches Profil.
+- **QR-Code** für Einladung und Antwort (eigener Encoder). **Installierbar** als App (Manifest, Symbole, Service Worker, startet auch offline).
+
+
 ## 2026-11-24 (Chat-Test: Anrufe)
 - **Audio-, Video- und Bildschirmanrufe** im Chat-Test, einzeln und in Räumen, ohne Server und ohne neuen Code-Austausch (die Absprache läuft über den bestehenden Datenkanal). Klingeln, Annehmen, Besetzt, Verpasst; Kachelraster mit Sprecher-Hervorhebung; Mikrofon stumm, Kamera an/aus und wechseln, Bildschirm teilen (nur Rechner), Datensparen, Vollbild, Minimieren. Bildqualität sinkt automatisch mit der Zahl der Teilnehmer (720p bei 2 bis 180p bei 8). Handy hochkant und quer, Tablet, 320 px.
 
