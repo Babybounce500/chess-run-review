@@ -1,5 +1,8 @@
 # Änderungsprotokoll
 
+## 2026-11-24 (Chat-Test: Messenger in einer Datei)
+- **Chat-Test:** eigenständiger Browser-Messenger in einer einzigen Datei, ohne Server (`chat/`). Text, Links, Bilder, Dateien bis 50 MB mit Fortschritt, Sprachnachrichten, Antworten, Reaktionen, Löschen, Suche, Haken, Verlauf auf dem Gerät (IndexedDB), Ausgangsfach für Offline-Nachrichten. Verbindung per Link und Antwort-Code, signiert mit Schlüsselpaar, Sicherheitscode wie bei Signal. Handy hochkant und quer, Tablet, Dunkelmodus. Beide müssen online sein, kein Push, keine Gruppen.
+
 ## 2026-11-24 (Online Duell: Chat)
 - **Chat im Duell:** Textnachrichten direkt zwischen den beiden Browsern (kein Server liest mit), Schnellantworten, Stumm-Schalter, Zähler für Ungelesenes, Verlauf nur im eigenen Browser. Der Orbitron-Reiter zeigt „💬 n“, solange das Duell-Fenster ausgeblendet ist. Nachrichten werden nur als Text angezeigt, auf 300 Zeichen gekürzt und auf 8 pro 10 Sekunden begrenzt.
 
