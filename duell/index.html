@@ -4,17 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Duell-Test</title>
+<link rel="icon" href="data:,">
 <style>
 :root{
   --bg:#f4f1ea; --panel:#fffdf8; --ink:#1d1b16; --muted:#6b665a; --line:#d9d3c4;
   --accent:#2f6f4e; --accent-ink:#fff; --warn:#a4491f; --bad:#a32424;
-  --sq-l:#eeeed2; --sq-d:#769656; --sel:#f6f669; --last:rgba(255,235,59,.45); --chk:#e8503a;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --bg:#16150f; --panel:#201f17; --ink:#ece8da; --muted:#a39e8d; --line:#3a382c;
     --accent:#58a97e; --accent-ink:#0d1a12; --warn:#e08a5b; --bad:#ec7a7a;
-    --sq-l:#c9c8a8; --sq-d:#5b7b43; --sel:#c9c93f; --last:rgba(220,200,40,.40);
   }
 }
 *{box-sizing:border-box}
@@ -36,24 +35,40 @@ button[hidden],.hidden{display:none!important}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .note{font-size:.85rem;color:var(--muted)}
 .warn{border-left:4px solid var(--warn);padding-left:10px;font-size:.88rem}
-#game{display:grid;grid-template-columns:minmax(0,520px) minmax(220px,1fr);gap:16px;align-items:start}
-@media (max-width:760px){#game{grid-template-columns:1fr}}
+#game{display:grid;grid-template-columns:minmax(0,560px) minmax(240px,1fr);gap:16px;align-items:start}
+#game.noside{grid-template-columns:minmax(0,1fr)}
+#game.noside #side{display:none}
+/* Seitenleiste zu: das Brett nutzt die Höhe des Fensters, bis zur Breite der Seite */
+#game.noside #mainCol{width:min(100%, max(320px, calc(100vh - 250px)));margin:0 auto}
+@supports (height:100dvh){#game.noside #mainCol{width:min(100%, max(320px, calc(100dvh - 250px)))}}
+main:has(#game.noside){max-width:1100px}
+@media (max-width:760px){#game{grid-template-columns:1fr}#game.noside #mainCol{width:100%}}
+#bar{margin:8px 0 0;padding:10px 12px}
+#bar #status{margin:0}
+#toggleSide{padding:4px 12px;font-size:.85rem}
 .player{display:flex;justify-content:space-between;align-items:center;padding:6px 10px;border-radius:8px;background:var(--panel);border:1px solid var(--line);margin:6px 0}
 .player .nm{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .clock{font-variant-numeric:tabular-nums;font-size:1.25rem;font-weight:700;min-width:4.2em;text-align:right}
 .clock.run{color:var(--accent)} .clock.low{color:var(--bad)}
-#board{display:grid;grid-template-columns:repeat(8,1fr);aspect-ratio:1/1;width:100%;border:2px solid var(--line);border-radius:6px;overflow:hidden;user-select:none;touch-action:manipulation}
-.sq{position:relative;display:flex;align-items:center;justify-content:center;font-size:min(8.6vw,46px);line-height:1;cursor:pointer}
-.sq.l{background:var(--sq-l)} .sq.d{background:var(--sq-d)}
-.sq.last::before{content:"";position:absolute;inset:0;background:var(--last)}
-.sq.sel{background:var(--sel)!important}
-.sq.chk{box-shadow:inset 0 0 0 4px var(--chk)}
-.sq.tgt::after{content:"";position:absolute;width:26%;height:26%;border-radius:50%;background:rgba(0,0,0,.28)}
-.sq.tgt.cap::after{width:88%;height:88%;background:none;border:5px solid rgba(0,0,0,.28)}
-.sq .co{position:absolute;left:2px;bottom:0;font-size:.62rem;color:var(--muted);opacity:.8}
-.pw{color:#fff;text-shadow:0 0 2px #000,0 0 2px #000,0 0 3px #000,0 1px 1px #000}
-.pb{color:#161616;text-shadow:0 0 2px #fff,0 0 1px #fff}
-.p{position:relative;z-index:1}
+/* Brett und Figuren wie in Orbitron */
+#board{display:grid;grid-template-columns:repeat(8,1fr);aspect-ratio:1/1;width:100%;border-radius:8px;overflow:hidden;user-select:none;touch-action:manipulation;box-shadow:0 1px 4px rgba(0,0,0,.25)}
+.sq{position:relative;display:flex;align-items:center;justify-content:center;container-type:size;cursor:pointer}
+.sq.l{background:#f0d9b5} .sq.d{background:#b58863}
+.sq.last::before{content:"";position:absolute;inset:0;background:rgba(255,215,0,.38)}
+.sq.sel::before{content:"";position:absolute;inset:0;background:rgba(20,130,255,.45)}
+.sq.chk::before{content:"";position:absolute;inset:0;background:radial-gradient(circle,rgba(255,0,0,.75),rgba(255,0,0,0) 72%)}
+.sq.tgt::after{content:"";position:absolute;width:30%;height:30%;border-radius:50%;background:rgba(20,20,20,.28);z-index:3;pointer-events:none}
+.sq.tgt.cap::after{width:84%;height:84%;background:transparent;border:5px solid rgba(20,20,20,.28)}
+.sq .co{position:absolute;font-size:9px;line-height:1;opacity:.6;color:#000;pointer-events:none}
+.sq .co.f{right:2px;bottom:2px} .sq .co.r{left:2px;top:2px}
+.p{position:relative;z-index:2;font-size:78cqmin;line-height:1;display:block;text-align:center;font-family:"Segoe UI Symbol","Noto Sans Symbols 2","Apple Symbols",sans-serif}
+.p.img{width:92%;height:92%;font-size:0;display:flex;align-items:center;justify-content:center}
+.p.img img{width:100%;height:100%;pointer-events:none;-webkit-user-drag:none;filter:drop-shadow(0 1.5px 1.2px rgba(0,0,0,.38))}
+.p.w{color:#fff;-webkit-text-stroke:1.3px #222;text-shadow:0 1px 2px rgba(0,0,0,.35)}
+.p.b{color:#161616;-webkit-text-stroke:.6px #000}
+.credit{margin:14px 0 0;font-size:.75rem;color:var(--muted)}
+@media (max-width:600px){.sq .co{font-size:8px}}
+@media (hover:none) and (pointer:coarse){.sq.tgt::after{width:34%;height:34%}}
 #status{font-weight:600;margin:8px 0 2px}
 #banner{padding:10px 12px;border-radius:8px;background:var(--accent);color:var(--accent-ink);font-weight:700;margin:8px 0}
 #banner.loss{background:var(--bad);color:#fff} #banner.draw{background:var(--muted);color:var(--bg)}
@@ -62,16 +77,18 @@ button[hidden],.hidden{display:none!important}
 #moves{max-height:240px;overflow:auto;font-variant-numeric:tabular-nums;font-size:.95rem}
 #moves span.n{color:var(--muted);margin-right:3px}
 #moves span.m{margin-right:10px}
-#promo{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:9}
-#promo .box{background:var(--panel);padding:14px;border-radius:12px;display:flex;gap:10px}
-#promo button{font-size:2.2rem;padding:6px 14px}
+#promo{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:9}
+#promo .box{display:flex;gap:8px}
+#promo button{width:64px;height:64px;padding:0;border-radius:12px;border:2px solid #fff;background:#f0d9b5;display:flex;align-items:center;justify-content:center}
+#promo .p{font-size:44px}
+@media (max-width:600px){#promo button{width:54px;height:54px}}
 code{background:var(--bg);padding:1px 5px;border-radius:4px}
 </style>
 </head>
 <body>
 <main>
   <h1>Duell-Test</h1>
-  <p class="sub">Freundespartie, direkt von Browser zu Browser (WebRTC). Der Server vermittelt nur die Verbindung und sieht keine Züge.</p>
+  <p class="sub">Freundespartie direkt von Browser zu Browser. Niemand dazwischen sieht deine Züge.</p>
 
   <!-- Lobby -->
   <section id="lobby" class="card hidden">
@@ -104,17 +121,22 @@ code{background:var(--bg);padding:1px 5px;border-radius:4px}
 
   <!-- Spiel -->
   <section id="game" class="hidden">
-    <div>
+    <div id="mainCol">
       <div class="player" id="pTop"><span class="nm" id="nmTop"></span><span class="clock" id="ckTop">--</span></div>
       <div id="board" role="grid" aria-label="Schachbrett"></div>
       <div class="player" id="pBot"><span class="nm" id="nmBot"></span><span class="clock" id="ckBot">--</span></div>
-    </div>
-    <div>
-      <div class="card">
-        <div class="row" style="justify-content:space-between"><span id="status"></span><span id="conn" class="chip">–</span></div>
+      <div id="bar" class="card">
+        <div class="row" style="justify-content:space-between;flex-wrap:nowrap">
+          <span id="status"></span>
+          <span class="row" style="gap:6px;flex-wrap:nowrap"><span id="conn" class="chip">–</span><button id="toggleSide" type="button" aria-controls="side" aria-expanded="true" title="Seitenleiste ein- oder ausblenden">Menü</button></span>
+        </div>
         <div id="banner" class="hidden"></div>
-        <div id="drawBox" class="hidden row" style="margin:8px 0"><span>Remis angeboten.</span><button id="drawYes" class="primary">Annehmen</button><button id="drawNo">Ablehnen</button></div>
-        <div class="row" style="margin-top:8px">
+        <div id="drawBox" class="hidden row" style="margin:8px 0 0"><span>Remis angeboten.</span><button id="drawYes" class="primary">Annehmen</button><button id="drawNo">Ablehnen</button></div>
+      </div>
+    </div>
+    <div id="side">
+      <div class="card">
+        <div class="row">
           <button id="btnAbort" hidden>Abbrechen</button>
           <button id="btnDraw" hidden>Remis anbieten</button>
           <button id="btnResign" class="danger" hidden>Aufgeben</button>
@@ -151,6 +173,7 @@ code{background:var(--bg);padding:1px 5px;border-radius:4px}
       </div>
     </div>
   </section>
+  <p class="credit">Figuren: Colin M. L. Burnett (Wikimedia Commons), wie in Orbitron.</p>
 </main>
 
 <div id="promo" class="hidden"><div class="box" id="promoBox"></div></div>
@@ -190,7 +213,8 @@ var S = {
   sel: null, targets: [], last: null,
   drawMine: false, drawOpp: false, rematchMine: false, rematchOpp: false,
   resignArmed: 0,
-  illegalRecv: 0, lastRx: 0, joined: false, manual: false
+  illegalRecv: 0, lastRx: 0, joined: false, manual: false,
+  side: true, prevConn: undefined, prevOver: false
 };
 
 /* ---------- Uhr ---------- */
@@ -372,6 +396,7 @@ function newGame() {
   S.clock = { w: S.baseMs, b: S.baseMs }; S.turnStart = null;
   S.over = false; S.result = null; S.reason = '';
   S.drawMine = S.drawOpp = S.rematchMine = S.rematchOpp = false;
+  S.side = false; S.prevOver = false;                  // neue Partie: Brett wieder groß
   save(); render();
 }
 
@@ -486,8 +511,31 @@ var CONN_TXT = { wait: 'wartet auf Gegner', connecting: 'verbinde …', open: 'v
 
 function sqName(f, r) { return 'abcdefgh'[f] + (r + 1); }
 
+// Figurenbild (Satz wie in Orbitron, liegt im Ordner img/); fällt das Bild aus, springt das Unicode-Zeichen ein
+function pieceEl(color, type) {
+  var s = document.createElement('span');
+  s.className = 'p img ' + color;
+  var im = document.createElement('img');
+  im.alt = PIECE[type]; im.draggable = false;
+  im.src = 'img/' + color + type.toUpperCase() + '.png';
+  im.onerror = function () { s.classList.remove('img'); s.textContent = PIECE[type]; };
+  s.appendChild(im);
+  return s;
+}
+
+// Seitenleiste: nach der Verbindung zu (großes Brett), bei Verbindungsverlust und Partieende wieder auf
+function autoSide() {
+  if (S.conn === 'open' && S.prevConn !== 'open') S.side = false;
+  else if (S.conn !== 'open' && S.prevConn === 'open') S.side = true;
+  if (S.over && !S.prevOver) S.side = true;
+  S.prevConn = S.conn; S.prevOver = S.over;
+}
+
 function render() {
   if (!S.id || !S.joined) return;
+  autoSide();
+  $('game').classList.toggle('noside', !S.side);
+  $('toggleSide').setAttribute('aria-expanded', String(S.side));
   var flip = S.color === 'b';
   var b = $('board'); b.textContent = '';
   var kingSq = null;
@@ -512,14 +560,11 @@ function render() {
     if (kingSq === sq) d.className += ' chk';
     if (S.targets.indexOf(sq) >= 0) d.className += ' tgt' + (pc0 ? ' cap' : '');
     if (pc0) {
-      var s = document.createElement('span');
-      s.className = 'p ' + (pc0.color === 'w' ? 'pw' : 'pb');
-      s.textContent = PIECE[pc0.type];
-      d.appendChild(s);
+      d.appendChild(pieceEl(pc0.color, pc0.type));
       d.setAttribute('aria-label', sq + ' ' + (pc0.color === 'w' ? 'weißer ' : 'schwarzer ') + NAME_DE[pc0.type]);
     } else d.setAttribute('aria-label', sq);
-    if (col === 0) { var rl = document.createElement('span'); rl.className = 'co'; rl.textContent = String(rank + 1); rl.style.top = '1px'; rl.style.bottom = 'auto'; d.appendChild(rl); }
-    if (row === 7) { var fl = document.createElement('span'); fl.className = 'co'; fl.textContent = 'abcdefgh'[file]; fl.style.left = 'auto'; fl.style.right = '2px'; d.appendChild(fl); }
+    if (col === 0) { var rl = document.createElement('span'); rl.className = 'co r'; rl.textContent = String(rank + 1); d.appendChild(rl); }
+    if (row === 7) { var fl = document.createElement('span'); fl.className = 'co f'; fl.textContent = 'abcdefgh'[file]; d.appendChild(fl); }
     b.appendChild(d);
   }
 
@@ -635,8 +680,7 @@ function askPromo(from, to) {
   var box = $('promoBox'); box.textContent = '';
   ['q', 'r', 'b', 'n'].forEach(function (k) {
     var bt = document.createElement('button');
-    bt.textContent = PIECE[k]; bt.setAttribute('data-promo', k); bt.setAttribute('aria-label', NAME_DE[k]);
-    bt.className = S.color === 'w' ? 'pw' : 'pb';
+    bt.appendChild(pieceEl(S.color, k)); bt.setAttribute('data-promo', k); bt.setAttribute('aria-label', NAME_DE[k]);
     bt.onclick = function () { $('promo').classList.add('hidden'); myMove(from, to, k); };
     box.appendChild(bt);
   });
@@ -647,7 +691,8 @@ $('board').addEventListener('click', function (e) {
   var t = e.target; while (t && t !== this && !t.getAttribute('data-sq')) t = t.parentNode;
   if (t && t.getAttribute) { var sq = t.getAttribute('data-sq'); if (sq) onSquare(sq); }
 });
-$('btnAbort').onclick = function () { if (sendMsg({ t: 'abort' })) setResult('*', 'abgebrochen'); };
+$('toggleSide').onclick = function () { S.side = !S.side; render(); };
+$('btnAbort').onclick =function () { if (sendMsg({ t: 'abort' })) setResult('*', 'abgebrochen'); };
 $('btnDraw').onclick = function () { if (sendMsg({ t: 'draw' })) { S.drawMine = true; render(); } };
 $('drawYes').onclick = function () { if (sendMsg({ t: 'draw-yes' })) setResult('1/2-1/2', 'Einigung'); };
 $('drawNo').onclick = function () { sendMsg({ t: 'draw-no' }); S.drawOpp = false; render(); };
@@ -805,6 +850,7 @@ function startGuest(meta, tk) {
 
 // Gibt es unter api/ einen echten Vermittlungs-Server (antwortet mit JSON)? Sonst Variante ohne Server.
 function detectApi() {
+  if (/\.github\.io$/.test(location.hostname)) return Promise.resolve(false);   // GitHub Pages: sicher ohne Server (spart die 404-Anfrage)
   return fetch('api/room/aaaaaa').then(function (r) { return (r.headers.get('content-type') || '').indexOf('json') >= 0; }).catch(function () { return false; });
 }
 
@@ -876,7 +922,7 @@ window.__duell = {
       over: S.over, result: S.result, reason: S.reason, conn: S.conn, tc: S.tc,
       name: S.name, oppName: S.oppName, illegalRecv: S.illegalRecv,
       clock: { w: Math.round(remaining('w')), b: Math.round(remaining('b')) },
-      pgn: S.moves.length ? makePgn() : '', drawOpp: S.drawOpp, drawMine: S.drawMine, manual: S.manual
+      pgn: S.moves.length ? makePgn() : '', drawOpp: S.drawOpp, drawMine: S.drawMine, manual: S.manual, side: S.side
     };
   },
   move: function (u) { return myMove(u.slice(0, 2), u.slice(2, 4), u.length > 4 ? u[4] : undefined); },
