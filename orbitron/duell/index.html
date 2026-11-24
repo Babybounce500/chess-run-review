@@ -44,6 +44,7 @@ html.embed{--chrome:140px}
 #game.noside #mainCol{width:min(100%, max(280px, calc(100vh - var(--chrome))));margin:0 auto}
 @supports (height:100dvh){#game.noside #mainCol{width:min(100%, max(280px, calc(100dvh - var(--chrome))))}}
 main:has(#game.noside){max-width:1100px}
+@media (max-width:760px){#game.waiting #side{order:-1}}
 @media (max-width:760px){#game{grid-template-columns:1fr}#game.noside #mainCol{width:min(100%, max(280px, calc(100dvh - var(--chrome))))}}
 #bar{margin:8px 0 0;padding:10px 12px}
 #bar #status{margin:0}
@@ -197,7 +198,7 @@ code{background:var(--bg);padding:1px 5px;border-radius:4px}
       </div>
     </div>
     <div id="side">
-      <div class="card">
+      <div class="card" id="actCard">
         <div class="row">
           <button id="btnAbort" hidden>Abbrechen</button>
           <button id="btnDraw" hidden>Remis anbieten</button>
@@ -227,7 +228,7 @@ code{background:var(--bg);padding:1px 5px;border-radius:4px}
         <div class="row"><input id="inviteIn" type="text" readonly style="flex:1;min-width:0"><button id="copyLink">Kopieren</button><button id="shareInvite" class="hidden">Teilen</button></div>
         <p class="note" style="margin-bottom:0">Der Link gilt für genau eine Person. Lass diese Seite offen, bis der Gegner da ist.</p>
       </div>
-      <div class="card"><b>Züge</b><div id="moves"></div></div>
+      <div class="card" id="movesCard"><b>Züge</b><div id="moves"></div></div>
       <div id="pgnCard" class="card hidden">
         <b>PGN</b>
         <textarea id="pgnBox" rows="4" readonly></textarea>
@@ -437,12 +438,13 @@ function onMsg(raw) {
   if (!d || typeof d.t !== 'string') return;
   S.lastRx = now();
   if (S.conn !== 'open' && dc && dc.readyState === 'open') { S.conn = 'open'; render(); }
-  // Der andere kennt uns noch nicht (unser „hallo“ ging verloren): erneut vorstellen, bis seins ankommt
-  if (!S.oppName && d.t !== 'hello') sendMsg({ t: 'hello', name: S.name, color: S.color });
+  // Wir kennen den anderen noch nicht (sein „hallo“ ging verloren): ihn bitten, sich zu melden, bis es ankommt
+  if (!S.oppName && d.t !== 'hello') sendMsg({ t: 'hello', name: S.name, color: S.color, ask: true });
   switch (d.t) {
     case 'ping': return;
     case 'hello':
       S.oppName = clean(d.name) || 'Gegner';
+      if (d.ask) { sendMsg({ t: 'hello', name: S.name, color: S.color }); if (S.moves.length) sendSync(); }   // auf Nachfrage vorstellen und Stand mitschicken
       // Beide dürfen nie dieselbe Farbe haben: der Gast gibt nach, der Host bestätigt seine Farbe erneut
       if ((d.color === 'w' || d.color === 'b') && d.color === S.color) {
         if (S.role === 'guest') S.color = opp(d.color);
@@ -730,6 +732,10 @@ function render() {
   $('btnRematch').hidden = !S.over || S.conn !== 'open';
   $('btnRematch').textContent = S.rematchOpp ? 'Revanche annehmen' : (S.rematchMine ? 'Revanche angefragt …' : 'Revanche');
   $('drawBox').classList.toggle('hidden', !(S.drawOpp && !S.over));
+  // Leere Karten ausblenden; vor der Verbindung steht auf schmalen Bildschirmen die Einladung über dem Brett
+  $('actCard').classList.toggle('hidden', ['btnAbort', 'btnDraw', 'btnResign', 'btnRematch'].every(function (id) { return $(id).hidden; }));
+  $('movesCard').classList.toggle('hidden', n === 0);
+  $('game').classList.toggle('waiting', S.conn !== 'open' && n === 0);
   $('inviteCard').classList.toggle('hidden', !(S.role === 'host' && !S.manual && S.conn !== 'open' && n === 0));
   $('manualHost').classList.toggle('hidden', !(S.manual && S.role === 'host' && S.conn !== 'open'));
   $('manualGuest').classList.toggle('hidden', !(S.manual && S.role === 'guest' && S.conn !== 'open'));
