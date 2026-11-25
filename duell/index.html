@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orbitron · Online Duell</title>
 <meta name="theme-color" content="#1a73e8">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
 <!--ORBITRON-BRAND-JS:START--><script>
 /* Orbitron Marke: Theme (hell, dunkel, neural). Gleicher Speicherschlüssel wie die Orbitron-App, darum folgen Duell und Chat
    deren Wahl, auch live (storage-Ereignis) und eingebettet (Orbitron-Seite als Elternfenster). */
@@ -304,6 +306,7 @@ html.embed .ob-top{display:none}
     <div class="row" style="margin-top:12px"><button id="createBtn" class="primary">Partie erstellen</button></div>
     <p id="modeNote" class="note hidden">Hier gibt es keinen Vermittlungs-Server. Du und dein Gegner tauscht deshalb einmal zwei Codes per Chat aus (Link hin, Antwort zurück). Danach läuft alles direkt zwischen euch.</p>
     <p id="lobbyErr" class="note" style="color:var(--bad)"></p>
+    <p id="offlineNote" class="note hidden"></p>
     <p class="note warn">Kein Betrugsschutz und keine Wertung: Spiele nur mit Leuten, denen du vertraust. Auf dieser Seite läuft keine Schach-Engine und es gibt keine Analyse während der Partie.</p>
   </section>
 
@@ -1501,6 +1504,26 @@ window.__duell = {
 // Neuer Einladungslink im selben Tab (nur der Teil nach # ändert sich): Seite neu aufbauen
 window.addEventListener('hashchange', function () { location.reload(); });
 
+/* ---------- Offline-Speicher (eigenständige Seite; innerhalb von Orbitron übernimmt dessen Speicher) ---------- */
+function offlineStatus() {
+  var n = $('offlineNote'), sw = navigator.serviceWorker;
+  if (!sw) return;
+  sw.ready.then(function (reg) {
+    if (!reg.active) return;
+    var ch = new MessageChannel();
+    ch.port1.onmessage = function (e) {
+      var d = e.data, ready = d.cached >= d.total;
+      n.classList.remove('hidden');
+      n.textContent = ready ? '✓ Offline bereit: Die Seite startet auch ohne Netz. Zum Spielen müsst ihr euch trotzdem verbinden können.' : 'Offline-Speicher: ' + d.cached + ' von ' + d.total + ' Dateien.';
+      if (!ready) setTimeout(offlineStatus, 5000);
+    };
+    reg.active.postMessage('offline-status', [ch.port2]);
+  });
+}
+if (window.isSecureContext && 'serviceWorker' in navigator && location.protocol !== 'file:' && !qs.has('nosw')) {
+  if (!/\/orbitron\//.test(location.pathname)) fetch('sw.js', { method: 'HEAD', cache: 'no-store' }).then(function (r) { if (r.ok) return navigator.serviceWorker.register('sw.js'); }).catch(function () { /* ohne Speicher weiter */ });
+  offlineStatus();
+}
 applyLook();
 boot();
 })();

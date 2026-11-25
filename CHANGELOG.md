@@ -1,5 +1,12 @@
 # Änderungsprotokoll
 
+## 2026-11-25 (Offline-Fähigkeit repariert)
+- Die drei Apps räumen nur noch ihre **eigenen** Speicher auf (vorher löschten Chat und Orbitron sich gegenseitig).
+- Bibliotheken (chess.js, Stockfish, Symbole, Schriften, weitere) werden **mitgeliefert** statt von fremden Servern geladen (`orbitron/vendor/`, Lizenzen in `vendor/LICENSES.md`).
+- Vollständige Speicherliste beim Bauen erzeugt, nie eine Seite als Ersatz für Skripte oder Bilder, klare Offline-Seite.
+- Duell hat Manifest und eigenen Offline-Speicher; Anzeige „Offline bereit“; Offline-Test `tests/offline-test.js`.
+
+
 ## 2026-11-25 (Duell: neue Figuren und Holzbrett zum Testen)
 - Unter „Aussehen“ zusätzlich die Figuren **Orbitron Flat** und das Brett **Holz** mit Texturen. Der bisherige Satz bleibt Standard. Felder und Notation zeichnet weiter der Code.
 

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Schach - Mensch vs Stockfish</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="vendor/chart.umd.js"></script>
     <style>
         * {
             margin: 0;
@@ -1067,7 +1067,7 @@
 
                 try {
                     // Try to load Stockfish using Blob URL method
-                    const stockfishUrl = 'https://cdn.jsdelivr.net/npm/stockfish.js@10/stockfish.js';
+                    const stockfishUrl = 'vendor/stockfish.js';
 
                     const response = await fetch(stockfishUrl);
                     if (!response.ok) throw new Error('Failed to fetch Stockfish');

@@ -253,7 +253,7 @@
 
     async initStockfish() {
       if (this.worker) return;
-      const response = await fetch('https://cdn.jsdelivr.net/npm/stockfish.js@10/stockfish.js');
+      const response = await fetch('vendor/stockfish.js');
       if (!response.ok) throw new Error('Stockfish konnte nicht geladen werden.');
       const source = await response.text();
       this.worker = new Worker(URL.createObjectURL(new Blob([source], { type: 'application/javascript' })));

@@ -6,10 +6,10 @@
 <link rel="icon" href="../orbitron-icon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../orbitron-light.css">
 <title>Meisterpartien-Bibliothek · Orbitron Chess</title>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
-<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script src="../vendor/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="../vendor/chessboardjs/chessboard-1.0.0.min.css">
+<script src="../vendor/chessboardjs/chessboard-1.0.0.min.js"></script>
+<script src="../vendor/chess.min.js"></script>
 <style>
   :root{--bg-main:#181715;--bg-panel:#262421;--bg-panel2:#1a1917;--accent:#81b64c;--text:#bab8b5;--text-bright:#fff;--line:#3d3a36}
   *{box-sizing:border-box;margin:0;padding:0}
@@ -108,7 +108,7 @@
   $('totalCount').textContent = games.length + ' Partien';
 
   let selected = null, step = 0, fens = ['start'], sanShown = [], flipped = false;
-  const board = Chessboard('board', { position: 'start', draggable: false, pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png' });
+  const board = Chessboard('board', { position: 'start', draggable: false, pieceTheme: '../vendor/chessboardjs/img/{piece}.png' });
 
   function renderList() {
     const q = $('searchInput').value.trim().toLowerCase();

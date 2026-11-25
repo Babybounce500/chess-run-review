@@ -7,7 +7,7 @@
   const K = window.OrbitronGameCore, C = window.Chess;
   if (!K || !C) { console.warn('Orbitron Game: Core oder chess.js fehlt'); return; }
 
-  const SF_URL = 'https://cdn.jsdelivr.net/npm/stockfish.js@10/stockfish.js';
+  const SF_URL = 'vendor/stockfish.js';
   const GLYPH = { k: '♚', q: '♛', r: '♜', b: '♝', n: '♞', p: '♟' };
   const SAVE_KEY = 'orbitron_game_v1';
   const STATS_KEY = 'orbitron_mate_stats_v1';
@@ -116,7 +116,7 @@
     rows.forEach((row, r) => { let f = 0; for (const ch of row) { if (/\d/.test(ch)) f += +ch; else { map[FILES[f] + (8 - r)] = { type: ch.toLowerCase(), color: ch === ch.toUpperCase() ? 'w' : 'b' }; f++; } } });
     return map;
   }
-  const PIECE_URL = 'https://chessboardjs.com/img/chesspieces/wikipedia/{p}.png';
+  const PIECE_URL = 'vendor/chessboardjs/img/{p}.png';
   // Bildsatz wie in den uebrigen Seiten. Faellt das Bild aus (offline), springt das Unicode-Zeichen ein.
   function pieceSpan(p, extra) {
     const code = p.color + p.type.toUpperCase(); const glyph = GLYPH[p.type] + '︎';

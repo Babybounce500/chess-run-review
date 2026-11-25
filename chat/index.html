@@ -543,6 +543,7 @@ html.embed .ob-hide-embed{display:none!important}
     <div class="switch"><input id="setStun" type="checkbox"><label for="setStun" style="margin:0;color:var(--ink)">STUN-Server von Google nutzen (nötig für Verbindungen über das Internet)</label></div>
     <p class="note" id="setStore"></p>
     <p class="note" id="setPersist"></p>
+    <p class="note" id="setOffline"></p>
     <p class="note" id="setId"></p>
     <div class="row" style="margin-top:8px"><button id="setBackup" type="button">Backup erstellen</button><button id="setRestore" type="button">Backup einspielen</button><button id="setInstall" type="button" class="hidden">App installieren</button></div>
     <p class="note" id="setInstallNote"></p>
@@ -2123,6 +2124,7 @@ async function openSettings() {
   $('#setPersist').textContent = S.persist === true ? 'Speicherschutz: aktiv, der Browser löscht den Verlauf nicht von selbst.' : S.persist === false ? 'Speicherschutz: nicht aktiv. Der Browser darf den Verlauf bei Platzmangel löschen, mach darum ab und zu ein Backup.' : 'Speicherschutz: in diesem Browser nicht prüfbar.';
   const ios = /iPhone|iPad|iPod/.test(navigator.userAgent) && !navigator.standalone;
   $('#setInstallNote').textContent = ios ? 'Als App: Teilen-Symbol tippen, dann „Zum Home-Bildschirm“.' : '';
+  offlineStatus($('#setOffline'));
   $('#setWipe').textContent = 'Alle Daten löschen'; openDlg('#setDlg');
 }
 let wipeArmed = 0;
@@ -2491,6 +2493,14 @@ async function bkRun() {
 }
 
 /* ================= Als App installieren (PWA) ================= */
+function offlineStatus(el) {
+  el.textContent = '';
+  const sw = navigator.serviceWorker && navigator.serviceWorker.controller;
+  if (!sw) { el.textContent = 'Offline-Speicher: noch nicht aktiv (Seite einmal neu laden).'; return; }
+  const ch = new MessageChannel();
+  ch.port1.onmessage = (e) => { const d = e.data; el.textContent = d.cached >= d.total ? '✓ Offline bereit: Die App startet auch ohne Netz. Nachrichten gehen erst, wenn ihr wieder verbunden seid.' : 'Offline-Speicher: ' + d.cached + ' von ' + d.total + ' Dateien.'; };
+  sw.postMessage('offline-status', [ch.port2]);
+}
 function initPwa() {
   window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); S.installEv = e; $('#setInstall').classList.remove('hidden'); });
   window.addEventListener('appinstalled', () => { S.installEv = null; $('#setInstall').classList.add('hidden'); toast('App installiert.'); });
