@@ -125,6 +125,15 @@ html.embed main{padding:8px 10px}
 .p{position:relative;z-index:2;font-size:78cqmin;line-height:1;display:block;text-align:center;font-family:"Segoe UI Symbol","Noto Sans Symbols 2","Apple Symbols",sans-serif}
 .p.img{width:92%;height:92%;font-size:0;display:flex;align-items:center;justify-content:center}
 .p.img img{width:100%;height:100%;pointer-events:none;-webkit-user-drag:none;filter:drop-shadow(0 1.5px 1.2px rgba(0,0,0,.38))}
+/* Satz „Orbitron Flat“: die Bilder bringen ihren Rand und Abstand schon mit, darum das ganze Feld nutzen */
+html[data-pieces="flat"] .p.img{width:100%;height:100%}
+/* Brett „Holz“: Texturen je Feld, mit wechselndem Ausschnitt, damit sich das Muster nicht sichtbar wiederholt. Felder und Notation zeichnet der Code. */
+html[data-board="holz"] #board .sq.l{background-image:url(img/board/holz-hell.jpg);background-size:220% 220%}
+html[data-board="holz"] #board .sq.d{background-image:url(img/board/holz-dunkel.jpg);background-size:220% 220%}
+html[data-board="holz"] #board .sq:nth-child(3n){background-position:55% 20%}
+html[data-board="holz"] #board .sq:nth-child(3n+1){background-position:10% 75%}
+html[data-board="holz"] #board .sq:nth-child(5n+2){background-position:90% 55%}
+html[data-board="holz"] #board .sq:nth-child(7n+3){background-position:35% 95%}
 .p.w{color:#fff;-webkit-text-stroke:1.3px #222;text-shadow:0 1px 2px rgba(0,0,0,.35)}
 .p.b{color:#161616;-webkit-text-stroke:.6px #000}
 .credit{margin:14px 0 0;font-size:.75rem;color:var(--muted)}
@@ -397,9 +406,9 @@ html.embed .ob-top{display:none}
 <div id="lookPanel" class="card hidden" role="dialog" aria-label="Aussehen">
   <b>Aussehen</b>
   <label for="lookBoard">Brett</label>
-  <select id="lookBoard"><option value="auto">Automatisch (nach Design)</option><option value="klassisch">Klassisch</option><option value="blau">Blau</option><option value="gruen">Grün</option><option value="dunkel">Dunkel</option><option value="neural">Neural</option></select>
+  <select id="lookBoard"><option value="auto">Automatisch (nach Design)</option><option value="klassisch">Klassisch</option><option value="blau">Blau</option><option value="gruen">Grün</option><option value="dunkel">Dunkel</option><option value="neural">Neural</option><option value="holz">Holz (Textur, neu)</option></select>
   <label for="lookPieces">Figuren</label>
-  <select id="lookPieces"><option value="bild">Orbitron (Bilder)</option><option value="symbol">Symbole (Schrift)</option></select>
+  <select id="lookPieces"><option value="bild">Orbitron (Bilder)</option><option value="flat">Orbitron Flat (neu)</option><option value="symbol">Symbole (Schrift)</option></select>
   <div class="row"><button id="lookClose" class="primary" type="button">Fertig</button></div>
 </div>
 <div id="dragGhost" aria-hidden="true"></div>
@@ -808,13 +817,15 @@ var CONN_TXT = { wait: 'wartet auf Gegner', connecting: 'verbinde …', open: 'v
 function sqName(f, r) { return 'abcdefgh'[f] + (r + 1); }
 
 // Figurenbild (Satz wie in Orbitron, liegt im Ordner img/); fällt das Bild aus, springt das Unicode-Zeichen ein
+// Bildpfad je nach gewähltem Satz
+function pieceSrc(color, type) { return 'img/' + (document.documentElement.getAttribute('data-pieces') === 'flat' ? 'flat/' : '') + color + type.toUpperCase() + '.png'; }
 function pieceEl(color, type) {
   var s = document.createElement('span');
   if (document.documentElement.getAttribute('data-pieces') === 'symbol') { s.className = 'p ' + color; s.textContent = PIECE[type]; return s; }
   s.className = 'p img ' + color;
   var im = document.createElement('img');
   im.alt = PIECE[type]; im.draggable = false;
-  im.src = 'img/' + color + type.toUpperCase() + '.png';
+  im.src = pieceSrc(color, type);
   im.onerror = function () { s.classList.remove('img'); s.textContent = PIECE[type]; };
   s.appendChild(im);
   return s;
@@ -1032,11 +1043,11 @@ function histLine() {
 }
 
 /* ---------- Aussehen: Brettfarben passend zu den Orbitron-Themes, Figurensatz ---------- */
-var BOARDS = { klassisch: ['#f0d9b5', '#b58863'], blau: ['#dee3e6', '#8ca2ad'], gruen: ['#eeeed2', '#769656'], dunkel: ['#b0b8c2', '#5b6672'], neural: ['#7d68b8', '#2d1b69'] };
+var BOARDS = { klassisch: ['#f0d9b5', '#b58863'], blau: ['#dee3e6', '#8ca2ad'], gruen: ['#eeeed2', '#769656'], dunkel: ['#b0b8c2', '#5b6672'], neural: ['#7d68b8', '#2d1b69'], holz: ['#f6d69f', '#7e5231'] };
 var AUTO_BOARD = { light: 'klassisch', dark: 'dunkel', neural: 'neural' };
 function look() {
   var d = { board: 'auto', pieces: 'bild' };
-  try { var o = JSON.parse(lsGet(LOOK_KEY) || '{}'); if (o.board === 'auto' || BOARDS[o.board]) d.board = o.board; if (o.pieces === 'symbol') d.pieces = 'symbol'; } catch (e) { /* Standard */ }
+  try { var o = JSON.parse(lsGet(LOOK_KEY) || '{}'); if (o.board === 'auto' || BOARDS[o.board]) d.board = o.board; if (o.pieces === 'symbol' || o.pieces === 'flat') d.pieces = o.pieces; } catch (e) { /* Standard */ }
   return d;
 }
 function applyLook() {
@@ -1190,7 +1201,7 @@ window.addEventListener('pointermove', function (e) {
     var g = $('dragGhost'); g.style.width = g.style.height = Math.round(r.width * 1.15) + 'px'; g.textContent = '';
     var pp = S.game.get(d.from);
     if (document.documentElement.getAttribute('data-pieces') === 'symbol') { g.appendChild(pieceEl(pp.color, pp.type)); g.style.fontSize = Math.round(r.width * 0.9) + 'px'; }
-    else { var im = document.createElement('img'); im.src = 'img/' + pp.color + pp.type.toUpperCase() + '.png'; im.alt = ''; g.appendChild(im); }
+    else { var im = document.createElement('img'); im.src = pieceSrc(pp.color, pp.type); im.alt = ''; g.appendChild(im); }
     g.style.display = 'block';
   }
   var gh = $('dragGhost'), w = parseFloat(gh.style.width) || 56;

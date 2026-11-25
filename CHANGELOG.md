@@ -1,5 +1,9 @@
 # Änderungsprotokoll
 
+## 2026-11-25 (Duell: neue Figuren und Holzbrett zum Testen)
+- Unter „Aussehen“ zusätzlich die Figuren **Orbitron Flat** und das Brett **Holz** mit Texturen. Der bisherige Satz bleibt Standard. Felder und Notation zeichnet weiter der Code.
+
+
 ## 2026-11-25 (Duell: Archiv, Bilanz, Analyse, Aussehen; Chat: Weiterleiten, Sprachtempo)
 - **Duell:** Beendete Partien werden lokal archiviert. Bilanz pro Freund in der Lobby und im Spiel. „In Orbitron analysieren“ nach der Partie (neuer Chat mit der PGN). Brettfarben passend zu den Orbitron-Themes und Figurensatz wählbar.
 - **Chat:** Nachrichten, Bilder und Dateien weiterleiten (auch an mehrere Gespräche und Räume). Sprachnachrichten mit 1×, 1,5×, 2× oder 0,75× abspielen.
