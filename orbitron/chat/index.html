@@ -765,7 +765,7 @@ function beep(freq) {
   } catch (e) { /* ohne Ton */ }
 }
 function totalUnread() { let n = 0; S.contacts.forEach((c) => n += c.unread || 0); return n; }
-function updateTitle() { const n = totalUnread(); document.title = (n ? '(' + n + ') ' : '') + 'Chat-Test'; }
+function updateTitle() { const n = totalUnread(); document.title = (n ? '(' + n + ') ' : '') + 'Orbitron · Chat & Anrufe'; }
 function notifyIncoming(c, m) {
   if (shown() && document.hasFocus() && S.cur === c.id) return;
   beep(660);

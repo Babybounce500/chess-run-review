@@ -1,5 +1,11 @@
 # Änderungsprotokoll
 
+## 2026-11-26 (PWA-Feinschliff)
+- App-Symbole als PNG (192, 512, maskable), Schnellzugriffe auf Duell, Chat und Training, deutsche Beschreibung.
+- Stockfish und die anderen mitgelieferten Bibliotheken kommen sofort aus dem Speicher, auch bei schwachem Netz.
+- Chat zeigt den richtigen Fenstertitel, Duell-PGN trägt den neuen Namen.
+
+
 ## 2026-11-25 (Offline-Fähigkeit repariert)
 - Die drei Apps räumen nur noch ihre **eigenen** Speicher auf (vorher löschten Chat und Orbitron sich gegenseitig).
 - Bibliotheken (chess.js, Stockfish, Symbole, Schriften, weitere) werden **mitgeliefert** statt von fremden Servern geladen (`orbitron/vendor/`, Lizenzen in `vendor/LICENSES.md`).

@@ -971,7 +971,7 @@ function makePgn() {
   var tc = S.baseMs > 0 ? (Math.round(S.baseMs / 1000) + (S.incMs ? '+' + Math.round(S.incMs / 1000) : '')) : '-';
   var res = S.over && S.result ? S.result : '*';
   var h = [
-    ['Event', 'Freundespartie (Duell-Test)'], ['Site', 'Duell-Test'],
+    ['Event', 'Freundespartie (Orbitron Duell)'], ['Site', 'Orbitron Online Duell'],
     ['Date', d.getFullYear() + '.' + pad(d.getMonth() + 1) + '.' + pad(d.getDate())],
     ['White', white || '?'], ['Black', black || '?'], ['Result', res], ['TimeControl', tc]
   ];
