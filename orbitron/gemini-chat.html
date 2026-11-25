@@ -2161,6 +2161,13 @@ window.openOnlineChat=function(){
   try{closeSidebar()}catch(e){}
   openChessModule(CHAT_URL,'Chat & Anrufe');
 };
+// Fertige Duell-Partie prüfen: wie eingefügte PGN (neuer Chat, lokale Analyse). Kommt aus dem Duell-Fenster oder über #/analyse-duell.
+window.analyzeDuelPgn=function(pgn){
+  if(typeof pgn!=='string'||pgn.length>40000||!/1\.\s*\S/.test(pgn))return false;
+  try{closeChessModule()}catch(e){}
+  newChat();promptInput.value=pgn;sendMessage();
+  return true;
+};
 window.openOnlineDuel=function(){
   try{closeSidebar()}catch(e){}
   openChessModule(DUEL_URL,'Online Duell');

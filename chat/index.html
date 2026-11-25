@@ -155,6 +155,16 @@ audio{max-width:100%;width:250px;height:38px}
 #msgMenu button:hover{background:var(--hover)}
 #msgMenu .rxrow{display:flex;gap:2px;padding:2px 4px 6px;border-bottom:1px solid var(--line);margin-bottom:4px}
 #msgMenu .rxrow button{width:auto;font-size:1.3rem;padding:2px 6px}
+.fwd{font-size:.72rem;color:var(--muted);font-style:italic;margin-bottom:2px}
+.spd{min-width:44px;padding:1px 8px!important;font-size:.72rem!important;margin-left:6px}
+#fwList{max-height:46vh;overflow:auto;margin:6px 0}
+#fwList .fwrow{display:flex;gap:10px;align-items:center;padding:8px 6px;margin:0;border-radius:10px;cursor:pointer;font-size:1rem;color:var(--ink)}
+#fwList .fwrow:hover{background:var(--hover)}
+#fwList .fwrow input{width:20px;height:20px;flex:none}
+#fwList .fwrow .av{width:36px;height:36px;font-size:.95rem}
+#fwList .fwrow .cname{flex:1;min-width:0}
+#fwList .fwrow .fwst{flex:none;max-width:40%;font-size:.7rem;color:var(--muted);white-space:normal}
+@media (max-width:380px){.chead{gap:4px;padding-left:6px;padding-right:6px}.chead .callbtn{padding-left:6px;padding-right:6px}}
 
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:50;padding:12px}
 .modal .box{background:var(--panel);border-radius:14px;box-shadow:var(--shadow);width:min(520px,100%);max-height:calc(100dvh - 24px);overflow:auto;padding:16px}
@@ -320,7 +330,7 @@ html[data-theme] button:hover{background:var(--ob-hover);border-color:var(--ob-a
 html[data-theme] button.primary{background:var(--ob-accent);color:var(--ob-accent-ink);border-color:var(--ob-accent)}
 html[data-theme] button.primary:hover{filter:brightness(1.08)}
 html[data-theme] button.danger{background:transparent}
-html[data-theme] button.ghost{background:transparent}
+html[data-theme] button.ghost{background:transparent;border:none}
 html[data-theme] button.ghost:hover{background:var(--ob-hover)}
 html[data-theme] input[type=text],html[data-theme] input[type=password],html[data-theme] textarea,html[data-theme] select{background:var(--ob-input);border:1px solid transparent;border-radius:var(--ob-radius-sm);color:var(--ob-text);font-family:var(--ob-body)}
 html[data-theme] input[type=text]:focus,html[data-theme] input[type=password]:focus,html[data-theme] textarea:focus,html[data-theme] select:focus{outline:none;border-color:var(--ob-accent);background:var(--ob-main)}
@@ -506,6 +516,16 @@ html.embed .ob-hide-embed{display:none!important}
   </div>
 </div>
 
+<!-- Weiterleiten -->
+<div id="fwDlg" class="modal hidden" role="dialog" aria-modal="true" aria-label="Weiterleiten">
+  <div class="box">
+    <h2>Weiterleiten an …</h2>
+    <p class="note" id="fwPrev"></p>
+    <div id="fwList"></div>
+    <div class="row" style="justify-content:flex-end;margin-top:10px"><button id="fwCancel" type="button">Abbrechen</button><button id="fwGo" class="primary" type="button" disabled>Weiterleiten</button></div>
+  </div>
+</div>
+
 <!-- Einstellungen -->
 <div id="setDlg" class="modal hidden" role="dialog" aria-modal="true" aria-label="Einstellungen">
   <div class="box">
@@ -668,7 +688,7 @@ let P = null;                                   // laufender Verbindungsaufbau �
 
 async function loadSettings() {
   const d = (await DB.get('kv', 'settings')) || {};
-  S.settings = Object.assign({ name: 'Nutzer' + (1000 + Math.floor(Math.random() * 9000)), color: '#1a73e8', sound: true, notify: false, receipts: true, stun: true }, d);
+  S.settings = Object.assign({ name: 'Nutzer' + (1000 + Math.floor(Math.random() * 9000)), color: '#1a73e8', sound: true, notify: false, receipts: true, stun: true, voiceSpeed: 1 }, d);
   await DB.put('kv', S.settings, 'settings');
 }
 const saveSettings = () => DB.put('kv', S.settings, 'settings').catch(() => {});
@@ -1032,7 +1052,7 @@ async function onText(L, c, o) {
   await loadMsgs(c.id);
   if (findMsg(c.id, o.id)) { send(L, Object.assign({ t: 'ak', id: o.id }, rr(c))); return; }
   const text = clean(o.x, MAX_TEXT); if (!text) return;
-  const m = { id: o.id, cid: c.id, me: false, from: L.cid, kind: 'text', text, ts: isRoom(c) ? clampTs(o.ts) : now(), state: 'delivered', rp: replyOf(o, c) };
+  const m = { id: o.id, cid: c.id, me: false, from: L.cid, kind: 'text', text, ts: isRoom(c) ? clampTs(o.ts) : now(), state: 'delivered', rp: replyOf(o, c) }; if (o.fw === 1) m.fw = 1;
   incoming(c, m); send(L, Object.assign({ t: 'ak', id: m.id }, rr(c)));
 }
 function incoming(c, m) {
@@ -1062,7 +1082,7 @@ function onOffer(L, c, o) {
     if (m && m.me) return;
     if (size > MAX_FILE) { send(L, Object.assign({ t: 'od', id: o.id, why: 'zu groß' }, rr(c))); return; }
     if (!m) {
-      m = { id: o.id, cid: c.id, me: false, from: L.cid, kind, ts: isRoom(c) ? clampTs(o.ts) : now(), state: 'delivered', tx: 'offered', rp: replyOf(o, c),
+      m = { id: o.id, cid: c.id, me: false, from: L.cid, kind, ts: isRoom(c) ? clampTs(o.ts) : now(), state: 'delivered', tx: 'offered', rp: replyOf(o, c), fw: o.fw === 1 ? 1 : undefined,
         file: { name: safeName(o.name), size, mime: clean(o.mime, 80) || 'application/octet-stream', w: +o.w || 0, h: +o.h || 0, dur: +o.dur || 0, hash: /^[a-f0-9]{64}$/.test(o.hash || '') ? o.hash : '' } };
       incoming(c, m);
     } else if (m.tx === 'done') { send(L, Object.assign({ t: 'ak', id: m.id }, rr(c))); return; }
@@ -1163,7 +1183,7 @@ function wireSend(L, m) {
   if (m.deleted || m.kind === 'sys') return;
   const c = S.contacts.get(m.cid), room = isRoom(c);
   const rp = m.rp ? (room ? { id: m.rp.id, p: m.rp.p, from: m.rp.from } : { id: m.rp.id, p: m.rp.p, me: m.rp.me }) : undefined;
-  const base = Object.assign({ id: m.id, rp }, rr(c)); if (room) base.ts = m.ts;
+  const base = Object.assign({ id: m.id, rp }, rr(c)); if (room) base.ts = m.ts; if (m.fw) base.fw = 1;
   if (m.kind === 'text') send(L, Object.assign({ t: 'm', x: m.text }, base));
   else send(L, Object.assign({ t: 'of', k: m.kind, name: m.file.name, size: m.file.size, mime: m.file.mime, w: m.file.w, h: m.file.h, dur: m.file.dur, hash: m.file.hash }, base));
   L.wire.add(m.id);
@@ -1192,24 +1212,26 @@ function flush(key) {
   else { const L = S.conns.get(key); if (L && L.open) flushPeer(L, c); }
 }
 function newOutgoing(c, kind, extra) {
-  const m = Object.assign({ id: rid(12), cid: c.id, me: true, from: S.me.id, kind, ts: now(), state: 'queued', rp: S.reply ? Object.assign({}, S.reply) : null }, extra);
+  const fw = !!(extra && extra.fw);                                   // Weiterleiten trägt keine Antwort mit und lässt eine angefangene Antwort stehen
+  const m = Object.assign({ id: rid(12), cid: c.id, me: true, from: S.me.id, kind, ts: now(), state: 'queued', rp: S.reply && !fw ? Object.assign({}, S.reply) : null }, extra);
   if (isRoom(c)) { m.acks = []; m.rds = []; }
-  S.reply = null; renderReply(); return m;
+  if (!fw) { S.reply = null; renderReply(); }
+  return m;
 }
-async function addOutgoing(cid, kind, blob, meta) {
+async function addOutgoing(cid, kind, blob, meta, extra) {
   const c = S.contacts.get(cid); if (!c) return;
   await loadMsgs(cid);
   meta.hash = hex(await sha256(await blob.arrayBuffer()));
-  const m = newOutgoing(c, kind, { tx: isRoom(c) ? 'done' : 'queued', file: meta });
+  const m = newOutgoing(c, kind, Object.assign({ tx: isRoom(c) ? 'done' : 'queued', file: meta }, extra || {}));
   S.blobs.set(m.id, blob); try { await DB.put('blobs', blob, m.id); } catch (e) { toast('Datei konnte nicht gespeichert werden.', true); }
   const atEnd = insertMsg(S.msgs.get(cid), m); saveMsg(m); touchContact(c, m); renderList();
   if (S.cur === cid) { if (atEnd) appendMsg(m, true); else renderMsgs(); }
   flush(cid);
 }
-function sendText(text) {
-  const cid = S.cur; if (!cid) return false;
+function sendText(text, cidIn, extra) {
+  const cid = cidIn || S.cur; if (!cid || !S.contacts.get(cid)) return false;
   text = clean(text, MAX_TEXT); if (!text) return false;
-  const c = S.contacts.get(cid), m = newOutgoing(c, 'text', { text });
+  const c = S.contacts.get(cid), m = newOutgoing(c, 'text', Object.assign({ text }, extra || {}));
   loadMsgs(cid).then((arr) => { const atEnd = insertMsg(arr, m); saveMsg(m); touchContact(c, m); renderList(); if (S.cur === cid) { if (atEnd) appendMsg(m, true); else renderMsgs(); } flush(cid); });
   return true;
 }
@@ -1852,6 +1874,7 @@ function bubbleFor(m) {
     const who = room ? (m.rp.from === S.me.id ? 'Du' : (m.rp.from ? memName(c, m.rp.from) : '')) : (m.rp.me ? 'Du' : nameOf(c));
     box.append(h('div', { class: 'quote', onClick: () => jumpTo(m.rp.id) }, h('b', { text: who }), h('span', { text: m.rp.p })));
   }
+  if (m.fw && !m.deleted) box.append(h('div', { class: 'fwd', text: '↪ Weitergeleitet' }));
   if (m.deleted) box.append(h('span', { text: 'Nachricht gelöscht' }));
   else if (m.kind === 'text') box.append(h('div', { class: 'txt' }, linkify(m.text)));
   else box.append(fileBody(m));
@@ -1878,6 +1901,7 @@ function linkify(text) {
   }
   frag.append(text.slice(last)); return frag;
 }
+const SPEEDS = [1, 1.5, 2, 0.75];
 function fileBody(m) {
   const f = m.file || {}, done = m.tx === 'done', c = S.contacts.get(m.cid), room = isRoom(c), peer = room ? m.from : m.cid;
   const status = () => {
@@ -1898,7 +1922,12 @@ function fileBody(m) {
   if (m.kind === 'audio' && done) {
     const a = h('audio', { controls: true, preload: 'metadata' });
     urlOf(m).then((u) => { if (u) a.src = u; });
-    return h('div', null, a, h('div', { class: 'fsub', text: 'Sprachnachricht' + (f.dur ? ' · ' + Math.round(f.dur) + ' s' : '') }));
+    const rate = () => { const r = SPEEDS.includes(S.settings.voiceSpeed) ? S.settings.voiceSpeed : 1; a.playbackRate = r; return r; };
+    const spd = h('button', { class: 'spd ghost', type: 'button', title: 'Abspielgeschwindigkeit', 'aria-label': 'Abspielgeschwindigkeit' });
+    const label = () => { spd.textContent = rate() + '×'; };
+    spd.addEventListener('click', () => { const i = SPEEDS.indexOf(rate()); S.settings.voiceSpeed = SPEEDS[(i + 1) % SPEEDS.length]; saveSettings(); document.querySelectorAll('.msg audio').forEach((x) => { x.playbackRate = S.settings.voiceSpeed; }); document.querySelectorAll('.spd').forEach((x) => { x.textContent = S.settings.voiceSpeed + '×'; }); });
+    a.addEventListener('loadedmetadata', rate); a.addEventListener('play', rate); label();
+    return h('div', null, a, h('div', { class: 'fsub' }, 'Sprachnachricht' + (f.dur ? ' · ' + Math.round(f.dur) + ' s' : ''), spd));
   }
   if (m.kind === 'image' && m.tx !== 'done') {
     const ph = h('div', { class: 'ph' }, h('div', null, '🖼 ' + (f.name || 'Bild') + ' · ' + fmtSize(f.size || 0), status()));
@@ -1964,12 +1993,41 @@ function openMenu(m, anchor) {
   add('Antworten', () => { S.reply = { id: m.id, p: previewOf(m), me: m.me, from: m.from || '' }; renderReply(); $('#msgIn').focus(); }, 'm-reply');
   if (m.kind === 'text') add('Text kopieren', () => copyText(m.text), 'm-copy');
   if (m.kind !== 'text' && m.tx === 'done') add('Speichern', () => saveFile(m), 'm-save');
+  if (m.kind === 'text' || m.me || m.tx === 'done') add('Weiterleiten …', () => openForward(m), 'm-fwd');
   if (m.me) add(isRoom(c) ? 'Für alle löschen' : 'Für beide löschen', () => deleteBoth(m), 'm-delboth');
   add('Nur bei mir löschen', () => deleteLocal(m), 'm-dellocal');
   menu.classList.remove('hidden');
   const r = anchor.getBoundingClientRect(), mw = menu.offsetWidth, mh = menu.offsetHeight;
   menu.style.left = Math.max(8, Math.min(r.right - mw, innerWidth - mw - 8)) + 'px';
   menu.style.top = Math.max(8, Math.min(r.bottom + 4, innerHeight - mh - 8)) + 'px';
+}
+/* --- Weiterleiten --- */
+let FW = null;
+function openForward(m) {
+  FW = { m, sel: new Set() };
+  $('#fwPrev').textContent = '„' + previewOf(m).slice(0, 80) + '“';
+  const list = $('#fwList'); list.textContent = '';
+  [...S.contacts.values()].filter((c) => !c.roomOnly).sort((a, b) => (b.last || 0) - (a.last || 0)).forEach((c) => {
+    const cb = h('input', { type: 'checkbox', 'aria-label': nameOf(c) });
+    cb.addEventListener('change', () => { if (cb.checked) FW.sel.add(c.id); else FW.sel.delete(c.id); $('#fwGo').disabled = !FW.sel.size; $('#fwGo').textContent = FW.sel.size > 1 ? 'An ' + FW.sel.size + ' weiterleiten' : 'Weiterleiten'; });
+    const row = h('label', { class: 'fwrow', data: { cid: c.id } }, cb, avatar(c), h('span', { class: 'cname', text: nameOf(c) + (isRoom(c) ? ' (Raum)' : '') }), h('span', { class: 'fwst', text: isRoom(c) || isOnline(c.id) ? '' : 'offline: wird später gesendet' }));
+    list.append(row);
+  });
+  if (!list.children.length) list.append(h('p', { class: 'note', text: 'Noch keine Kontakte.' }));
+  $('#fwGo').disabled = true; $('#fwGo').textContent = 'Weiterleiten';
+  openDlg('#fwDlg');
+}
+async function forwardTo(m, cid) {
+  const c = S.contacts.get(cid); if (!c || (m.kind !== 'text' && !m.me && m.tx !== 'done')) return false;
+  if (m.kind === 'text') return sendText(m.text, cid, { fw: 1 });
+  const b = await blobOf(m.id); if (!b) return false;
+  await addOutgoing(cid, m.kind, b, Object.assign({}, m.file, { hash: undefined }), { fw: 1 });
+  return true;
+}
+async function runForward() {
+  if (!FW) return; const { m, sel } = FW; FW = null; closeDlg('#fwDlg');
+  let n = 0; for (const cid of sel) { try { if (await forwardTo(m, cid)) n++; } catch (e) { /* weiter mit dem Nächsten */ } }
+  toast(n ? 'An ' + n + (n === 1 ? ' Gespräch' : ' Gespräche') + ' weitergeleitet.' : 'Weiterleiten nicht möglich.', !n);
 }
 function toPeers(c, o) {
   if (isRoom(c)) c.members.forEach((mm) => { const L = S.conns.get(mm.id); if (mm.id !== S.me.id && L && L.open) send(L, Object.assign({}, o, rr(c))); });
@@ -2111,6 +2169,7 @@ function bind() {
   $('#riNo').onclick = () => { S.riQueue = null; closeDlg('#riDlg'); };
   $('#riYes').onclick = () => { const q = S.riQueue; S.riQueue = null; closeDlg('#riDlg'); if (!q) return; const L = S.conns.get(q.peer); if (!L || !L.open) { toast('Die Verbindung zum Einlader ist weg.', true); return; } S.permits.set(q.r, q.peer); send(L, { t: 'ra', r: q.r }); };
   $('#setClose').onclick = () => closeDlg('#setDlg');
+  $('#fwCancel').onclick = () => { FW = null; closeDlg('#fwDlg'); }; $('#fwGo').onclick = runForward;
   $('#setName').oninput = () => { S.settings.name = clean($('#setName').value, 30) || S.settings.name; saveSettings(); renderList(); S.conns.forEach((L) => send(L, { t: 'hi', n: S.settings.name, c: S.settings.color })); };
   $('#setColor').onchange = () => { S.settings.color = $('#setColor').value; saveSettings(); S.conns.forEach((L) => send(L, { t: 'hi', n: S.settings.name, c: S.settings.color })); };
   $('#setSound').onchange = () => { S.settings.sound = $('#setSound').checked; saveSettings(); };
@@ -2170,7 +2229,7 @@ function bind() {
     if (e.key !== 'Escape') return;
     if (!$('#lb').classList.contains('hidden')) { $('#lb').classList.add('hidden'); return; }
     if (!$('#msgMenu').classList.contains('hidden') || !$('#attMenu').classList.contains('hidden') || !$('#emojiPanel').classList.contains('hidden')) { closePanels(); return; }
-    for (const d of ['#bkDlg', '#pairDlg', '#infoDlg', '#rinfoDlg', '#roomDlg', '#setDlg']) if (!$(d).classList.contains('hidden')) { closeDlg(d); return; }
+    for (const d of ['#fwDlg', '#bkDlg', '#pairDlg', '#infoDlg', '#rinfoDlg', '#roomDlg', '#setDlg']) if (!$(d).classList.contains('hidden')) { closeDlg(d); return; }
     if (S.reply) { S.reply = null; renderReply(); }
   });
   document.addEventListener('visibilitychange', () => { if (shown() && S.cur) markRead(S.cur); });
@@ -2477,7 +2536,7 @@ window.__chat = {
     contacts: [...S.contacts.values()].map((c) => ({ id: c.id, kind: c.kind || 'chat', name: c.name, alias: c.alias, verified: c.verified, unread: c.unread || 0, online: isOnline(c.id), preview: c.preview, roomOnly: !!c.roomOnly, members: isRoom(c) ? c.members.map((m) => ({ id: m.id, n: m.n })) : undefined })),
     conns: [...S.conns.keys()], unread: totalUnread(), xfers: S.xfers.size, pend: S.pend.size
   }),
-  msgs: (cid) => (S.msgs.get(cid || S.cur) || []).map((m) => ({ id: m.id, me: m.me, from: m.from, kind: m.kind, text: m.text, state: m.state, tx: m.tx, deleted: !!m.deleted, rx: m.rx || null, rxm: m.rxm || null, rp: m.rp || null, acks: m.acks || null, rds: m.rds || null, hist: !!m.hist, file: m.file ? { name: m.file.name, size: m.file.size, mime: m.file.mime, w: m.file.w, h: m.file.h, hash: m.file.hash } : null })),
+  msgs: (cid) => (S.msgs.get(cid || S.cur) || []).map((m) => ({ id: m.id, me: m.me, from: m.from, kind: m.kind, text: m.text, state: m.state, tx: m.tx, deleted: !!m.deleted, fw: !!m.fw, rx: m.rx || null, rxm: m.rxm || null, rp: m.rp || null, acks: m.acks || null, rds: m.rds || null, hist: !!m.hist, file: m.file ? { name: m.file.name, size: m.file.size, mime: m.file.mime, w: m.file.w, h: m.file.h, hash: m.file.hash } : null })),
   raw: (cid, o) => send(S.conns.get(cid || S.cur), o),
   drop: (cid) => { const L = S.conns.get(cid || S.cur); if (L) connClosed(L); },
   hash: async (id) => { const b = await blobOf(id); return b ? hex(await sha256(await b.arrayBuffer())) : null; },

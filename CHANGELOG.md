@@ -1,5 +1,10 @@
 # Änderungsprotokoll
 
+## 2026-11-25 (Duell: Archiv, Bilanz, Analyse, Aussehen; Chat: Weiterleiten, Sprachtempo)
+- **Duell:** Beendete Partien werden lokal archiviert. Bilanz pro Freund in der Lobby und im Spiel. „In Orbitron analysieren“ nach der Partie (neuer Chat mit der PGN). Brettfarben passend zu den Orbitron-Themes und Figurensatz wählbar.
+- **Chat:** Nachrichten, Bilder und Dateien weiterleiten (auch an mehrere Gespräche und Räume). Sprachnachrichten mit 1×, 1,5×, 2× oder 0,75× abspielen.
+
+
 ## 2026-11-24 (Orbitron-Marke für Duell und Chat)
 - **Einheitliches Aussehen:** Duell und Chat tragen jetzt das Orbitron-Design (Farben, Schrift, Kapselknöpfe, Wortmarke mit Springer). Die drei Themes Hell, Dunkel und Neural stammen aus der App, die Wahl wird geteilt (gleicher Speicherschlüssel) und wechselt live mit. Die Schrift ist eingebettet, es gibt keine Anfrage an Schrift-Server. Eine Quelle (`brand/`), eingespielt mit `scripts/sync-brand.mjs`, geprüft von `tests/brand-test.js`.
 

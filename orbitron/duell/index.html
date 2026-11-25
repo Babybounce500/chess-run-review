@@ -113,13 +113,14 @@ html.embed main{padding:8px 10px}
 /* Brett und Figuren wie in Orbitron */
 #board{display:grid;grid-template-columns:repeat(8,1fr);aspect-ratio:1/1;width:100%;border-radius:8px;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:none;-webkit-tap-highlight-color:transparent;box-shadow:0 1px 4px rgba(0,0,0,.25)}
 .sq{position:relative;display:flex;align-items:center;justify-content:center;container-type:size;cursor:pointer}
-.sq.l{background:#f0d9b5} .sq.d{background:#b58863}
+.sq.l{background:var(--sq-l,#f0d9b5)} .sq.d{background:var(--sq-d,#b58863)}
 .sq.last::before{content:"";position:absolute;inset:0;background:rgba(255,215,0,.38)}
 .sq.sel::before{content:"";position:absolute;inset:0;background:rgba(20,130,255,.45)}
 .sq.chk::before{content:"";position:absolute;inset:0;background:radial-gradient(circle,rgba(255,0,0,.75),rgba(255,0,0,0) 72%)}
 .sq.tgt::after{content:"";position:absolute;width:30%;height:30%;border-radius:50%;background:rgba(20,20,20,.28);z-index:3;pointer-events:none}
 .sq.tgt.cap::after{width:84%;height:84%;background:transparent;border:5px solid rgba(20,20,20,.28)}
-.sq .co{position:absolute;font-size:9px;line-height:1;opacity:.6;color:#000;pointer-events:none}
+.sq .co{position:absolute;font-size:9px;line-height:1;opacity:.85;color:#000;pointer-events:none}
+.sq.l .co{color:var(--sq-d,#b58863)} .sq.d .co{color:var(--sq-l,#f0d9b5)}
 .sq .co.f{right:2px;bottom:2px} .sq .co.r{left:2px;top:2px}
 .p{position:relative;z-index:2;font-size:78cqmin;line-height:1;display:block;text-align:center;font-family:"Segoe UI Symbol","Noto Sans Symbols 2","Apple Symbols",sans-serif}
 .p.img{width:92%;height:92%;font-size:0;display:flex;align-items:center;justify-content:center}
@@ -233,7 +234,7 @@ html[data-theme] button:hover{background:var(--ob-hover);border-color:var(--ob-a
 html[data-theme] button.primary{background:var(--ob-accent);color:var(--ob-accent-ink);border-color:var(--ob-accent)}
 html[data-theme] button.primary:hover{filter:brightness(1.08)}
 html[data-theme] button.danger{background:transparent}
-html[data-theme] button.ghost{background:transparent}
+html[data-theme] button.ghost{background:transparent;border:none}
 html[data-theme] button.ghost:hover{background:var(--ob-hover)}
 html[data-theme] input[type=text],html[data-theme] input[type=password],html[data-theme] textarea,html[data-theme] select{background:var(--ob-input);border:1px solid transparent;border-radius:var(--ob-radius-sm);color:var(--ob-text);font-family:var(--ob-body)}
 html[data-theme] input[type=text]:focus,html[data-theme] input[type=password]:focus,html[data-theme] textarea:focus,html[data-theme] select:focus{outline:none;border-color:var(--ob-accent);background:var(--ob-main)}
@@ -254,6 +255,20 @@ html.embed .ob-hide-embed{display:none!important}
 .ob-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}
 html.embed .ob-top{display:none}
 .ob-top h1{margin:0}
+/* Bilanz, Partienarchiv, Aussehen */
+#statsCard h3{margin:0 0 6px;font-size:.9rem}
+#statsCard h3:not(:first-child){margin-top:12px}
+.srow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:6px 0;border-top:1px solid var(--line);font-size:.9rem}
+.srow:first-of-type{border-top:none}
+.srow .who{font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1 1 7em}
+.srow .sc{font-variant-numeric:tabular-nums;color:var(--muted);font-size:.82rem}
+.srow button{padding:3px 10px;font-size:.72rem}
+.srow .w{color:var(--ob-green,#188038);font-weight:700} .srow .l{color:var(--bad);font-weight:700} .srow .d{color:var(--muted);font-weight:700}
+#histLine{margin:4px 0 0;font-size:.85rem;color:var(--muted)}
+#lookPanel{position:fixed;left:12px;bottom:12px;width:min(300px,calc(100vw - 24px));z-index:40;box-shadow:var(--shadow)}
+#lookPanel.hidden{display:none}
+#lookPanel .row{margin-top:8px;justify-content:flex-end}
+@media (max-width:600px) and (orientation:portrait){#lookPanel{left:8px;right:8px;bottom:8px;width:auto}}
 @media (max-width:600px){.ob-top{margin-bottom:2px}.ob-mark{width:28px;height:28px;font-size:1.1rem}.ob-top .ob-theme{width:30px;height:30px;min-height:0}.ob-word{font-size:.95rem}}
 @media (orientation:landscape) and (max-height:560px){.ob-top{display:none}}   /* niedrig quer: Platz gehört dem Brett, wie zuvor die Überschrift */
 </style>
@@ -284,6 +299,14 @@ html.embed .ob-top{display:none}
   </section>
 
   <!-- Beitreten -->
+  <section id="statsCard" class="card hidden">
+    <h3>Bilanz gegen Freunde</h3>
+    <div id="statsFriends"></div>
+    <h3>Letzte Partien</h3>
+    <div id="statsGames"></div>
+    <p class="note" style="margin:8px 0 0">Alles bleibt auf diesem Gerät. Namen sind frei gewählt, gleiche Namen zählen zusammen.</p>
+    <div class="row" style="margin-top:8px"><button id="statsWipe" class="danger" type="button">Archiv löschen</button></div>
+  </section>
   <section id="joinPanel" class="card hidden">
     <b>Du wurdest zu einer Partie eingeladen.</b>
     <label for="nameJoin">Dein Spitzname</label><input id="nameJoin" type="text" maxlength="20" autocomplete="off" placeholder="z. B. Alex">
@@ -304,12 +327,14 @@ html.embed .ob-top{display:none}
           <span id="conn" class="chip">–</span>
         </div>
         <div id="banner" class="hidden"></div>
+        <p id="histLine" class="hidden"></p>
         <div id="drawBox" class="hidden row" style="margin:8px 0 0"><span>Remis angeboten.</span><button id="drawYes" class="primary">Annehmen</button><button id="drawNo">Ablehnen</button></div>
         <div class="tools">
           <button id="toggleSide" type="button" aria-controls="side" aria-expanded="true" title="Seitenleiste ein- oder ausblenden">Menü</button>
           <button id="btnFlip" type="button" title="Brett drehen">Drehen</button>
           <button id="btnChat" type="button" aria-controls="chatPanel" aria-expanded="false" title="Chat mit deinem Gegner">Chat<span id="chatBadge" class="badge hidden">0</span></button>
           <button id="btnSound" type="button" aria-pressed="true" title="Zugton ein oder aus">Ton</button>
+          <button id="btnLook" type="button" aria-controls="lookPanel" aria-expanded="false" title="Brettfarben und Figuren wählen">Aussehen</button>
           <button id="btnLeave" type="button" class="danger" title="Verbindung trennen, gespeicherte Partie löschen und von vorn beginnen">Neustart</button>
         </div>
       </div>
@@ -349,7 +374,7 @@ html.embed .ob-top{display:none}
       <div id="pgnCard" class="card hidden">
         <b>PGN</b>
         <textarea id="pgnBox" rows="4" readonly></textarea>
-        <div class="row" style="margin-top:6px"><button id="copyPgn">PGN kopieren</button><button id="dlPgn">PGN speichern</button></div>
+        <div class="row" style="margin-top:6px"><button id="copyPgn">PGN kopieren</button><button id="dlPgn">PGN speichern</button><button id="btnAnalyze" class="primary hidden" type="button" title="Die fertige Partie in Orbitron prüfen lassen">In Orbitron analysieren</button></div>
       </div>
     </div>
   </section>
@@ -368,6 +393,14 @@ html.embed .ob-top{display:none}
     <input id="chatIn" type="text" maxlength="300" autocomplete="off" placeholder="Nachricht …" aria-label="Nachricht an deinen Gegner">
     <button class="primary" type="submit" id="chatSend">Senden</button>
   </form>
+</div>
+<div id="lookPanel" class="card hidden" role="dialog" aria-label="Aussehen">
+  <b>Aussehen</b>
+  <label for="lookBoard">Brett</label>
+  <select id="lookBoard"><option value="auto">Automatisch (nach Design)</option><option value="klassisch">Klassisch</option><option value="blau">Blau</option><option value="gruen">Grün</option><option value="dunkel">Dunkel</option><option value="neural">Neural</option></select>
+  <label for="lookPieces">Figuren</label>
+  <select id="lookPieces"><option value="bild">Orbitron (Bilder)</option><option value="symbol">Symbole (Schrift)</option></select>
+  <div class="row"><button id="lookClose" class="primary" type="button">Fertig</button></div>
 </div>
 <div id="dragGhost" aria-hidden="true"></div>
 <div id="promo" class="hidden"><div class="box" id="promoBox"></div></div>
@@ -419,7 +452,7 @@ var S = {
   illegalRecv: 0, lastRx: 0, joined: false, manual: false,
   side: true, prevConn: undefined, prevOver: false, oppLeft: false, noRejoin: false,
   flipUser: false, sound: lsGet('duell_sound') !== '0', soundCount: 0, drag: null,
-  chat: [], chatOpen: false, unread: 0, chatMute: false, chatTimes: []
+  chat: [], chatOpen: false, unread: 0, chatMute: false, chatTimes: [], archived: false
 };
 function isFlipped() { return (S.color === 'b') !== S.flipUser; }   // Schwarz sieht das Brett gedreht, der Knopf „Drehen“ kehrt es um
 
@@ -494,7 +527,7 @@ function restore() {
     if (d.clock && isFinite(d.clock.w) && isFinite(d.clock.b)) S.clock = { w: +d.clock.w, b: +d.clock.b };
     S.turnStart = isFinite(d.turnStart) ? +d.turnStart : null;
     S.oppName = clean(d.oppName);
-    S.over = !!d.over; S.result = d.result || null; S.reason = clean(d.reason, 40);
+    S.over = !!d.over; S.result = d.result || null; S.reason = clean(d.reason, 40); S.archived = S.over;
     var last = g.history({ verbose: true }).pop();
     S.last = last ? [last.from, last.to] : null;
   } catch (e) { /* kaputter Speicher: neu anfangen */ }
@@ -509,6 +542,7 @@ function setResult(res, reason) {
   if (S.over) return;
   S.over = true; S.result = res; S.reason = reason;
   S.drawMine = S.drawOpp = false; S.sel = null; S.targets = [];
+  archAdd();
   save(); render();
 }
 function checkEnd(mover) {
@@ -650,7 +684,7 @@ function newGame() {
   S.color = opp(S.color);
   S.game = new Chess(); S.moves = []; S.last = null; S.sel = null; S.targets = [];
   S.clock = { w: S.baseMs, b: S.baseMs }; S.turnStart = null;
-  S.over = false; S.result = null; S.reason = '';
+  S.over = false; S.result = null; S.reason = ''; S.archived = false;
   S.drawMine = S.drawOpp = S.rematchMine = S.rematchOpp = false;
   S.side = false; S.prevOver = false;                  // neue Partie: Brett wieder groß
   save(); render();
@@ -776,6 +810,7 @@ function sqName(f, r) { return 'abcdefgh'[f] + (r + 1); }
 // Figurenbild (Satz wie in Orbitron, liegt im Ordner img/); fällt das Bild aus, springt das Unicode-Zeichen ein
 function pieceEl(color, type) {
   var s = document.createElement('span');
+  if (document.documentElement.getAttribute('data-pieces') === 'symbol') { s.className = 'p ' + color; s.textContent = PIECE[type]; return s; }
   s.className = 'p img ' + color;
   var im = document.createElement('img');
   im.alt = PIECE[type]; im.draggable = false;
@@ -890,6 +925,8 @@ function render() {
   var showPgn = n > 0;
   $('pgnCard').classList.toggle('hidden', !showPgn);
   if (showPgn) $('pgnBox').value = makePgn();
+  $('btnAnalyze').classList.toggle('hidden', !(S.over && S.result !== '*' && n >= 2));
+  histLine(); renderStats();
   tick();
 }
 
@@ -930,6 +967,92 @@ function makePgn() {
   for (var i = 0; i < hist.length; i++) t.push((i % 2 === 0 ? (i / 2 + 1) + '. ' : '') + hist[i]);
   return out + t.join(' ') + (t.length ? ' ' : '') + res + '\n';
 }
+
+/* ---------- Partienarchiv und Bilanz (nur auf diesem Gerät, getrennt von den Spielständen) ---------- */
+var ARCH_KEY = 'orbitron_duel_games_v1', LOOK_KEY = 'orbitron_duel_look_v1', PENDING_KEY = 'orbitron_pending_pgn';
+function archLoad() {
+  try { var a = JSON.parse(lsGet(ARCH_KEY) || '[]'); return Array.isArray(a) ? a.filter(function (g) { return g && typeof g.pgn === 'string' && isFinite(g.ts) && /^(w|d|l)$/.test(g.out); }) : []; }
+  catch (e) { return []; }
+}
+function archAdd() {
+  if (S.archived || !S.over || S.result === '*' || S.moves.length < 2) return;
+  S.archived = true;
+  var out = S.result === '1/2-1/2' ? 'd' : ((S.result === '1-0' ? 'w' : 'b') === S.color ? 'w' : 'l');
+  var a = archLoad();
+  a.push({ id: now().toString(36) + Math.random().toString(36).slice(2, 6), ts: now(), opp: S.oppName || 'Gegner', me: S.color, res: S.result, out: out, reason: S.reason, tc: S.baseMs > 0 ? (Math.round(S.baseMs / 60000 * 10) / 10 + (S.incMs ? '+' + Math.round(S.incMs / 1000) : '+0')) : 'ohne Uhr', plies: S.moves.length, pgn: makePgn() });
+  lsSet(ARCH_KEY, JSON.stringify(a.slice(-200)));
+}
+function tally(list) { var t = { w: 0, d: 0, l: 0 }; list.forEach(function (g) { t[g.out]++; }); return t; }
+function scoreTxt(t) { return t.w + ' S · ' + t.d + ' R · ' + t.l + ' N'; }
+function dlText(name, text) {
+  var u = URL.createObjectURL(new Blob([text], { type: 'application/x-chess-pgn' }));
+  var a = document.createElement('a'); a.href = u; a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(u); }, 4000);
+}
+// Fertige Partie in Orbitron prüfen: eingebettet direkt im Elternfenster, sonst über den Speicher und einen Link
+function orbitronUrl() { return /\/orbitron\/duell\//.test(location.pathname) ? '../gemini-chat.html' : '../orbitron/gemini-chat.html'; }
+function analyzePgn(pgn) {
+  if (EMBED) { try { if (window.parent !== window && typeof window.parent.analyzeDuelPgn === 'function') { window.parent.analyzeDuelPgn(pgn); return; } } catch (e) { /* weiter über den Speicher */ } }
+  lsSet(PENDING_KEY, pgn);
+  location.href = orbitronUrl() + '#/analyse-duell';
+}
+function dateTxt(ts) { var d = new Date(ts), p = function (x) { return (x < 10 ? '0' : '') + x; }; return p(d.getDate()) + '.' + p(d.getMonth() + 1) + '.'; }
+function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+var OUT_TXT = { w: 'Sieg', d: 'Remis', l: 'Niederlage' };
+function renderStats() {
+  var card = $('statsCard'), a = archLoad();
+  var lobbyOn = !$('lobby').classList.contains('hidden');
+  card.classList.toggle('hidden', !(lobbyOn && a.length));
+  if (!lobbyOn || !a.length) return;
+  var by = {}; a.forEach(function (g) { var k = g.opp.trim().toLowerCase(); (by[k] = by[k] || []).push(g); });
+  var fr = $('statsFriends'); fr.textContent = '';
+  Object.keys(by).map(function (k) { return by[k]; }).sort(function (x, y) { return y[y.length - 1].ts - x[x.length - 1].ts; }).forEach(function (list) {
+    var r = el('div', 'srow'); r.appendChild(el('span', 'who', list[list.length - 1].opp)); r.appendChild(el('span', 'sc', scoreTxt(tally(list)) + ' · ' + list.length + (list.length === 1 ? ' Partie' : ' Partien'))); fr.appendChild(r);
+  });
+  var gm = $('statsGames'); gm.textContent = '';
+  a.slice(-10).reverse().forEach(function (g) {
+    var r = el('div', 'srow'); r.setAttribute('data-gid', g.id);
+    r.appendChild(el('span', 'sc', dateTxt(g.ts)));
+    r.appendChild(el('span', g.out, OUT_TXT[g.out]));
+    r.appendChild(el('span', 'who', (g.me === 'w' ? 'Weiß' : 'Schwarz') + ' gegen ' + g.opp + (g.reason ? ' (' + g.reason + ')' : '')));
+    var b1 = el('button', null, 'Analysieren'); b1.type = 'button'; b1.setAttribute('data-act', 'analyze'); b1.onclick = function () { analyzePgn(g.pgn); };
+    var b2 = el('button', null, 'PGN'); b2.type = 'button'; b2.setAttribute('data-act', 'pgn'); b2.onclick = function () { dlText('duell-' + dateTxt(g.ts).replace(/\./g, '-') + g.opp.replace(/[^\w-]/g, '') + '.pgn', g.pgn); };
+    r.appendChild(b1); r.appendChild(b2); gm.appendChild(r);
+  });
+}
+var wipeArm = 0;
+$('statsWipe').onclick = function () {
+  if (wipeArm > now()) { wipeArm = 0; $('statsWipe').textContent = 'Archiv löschen'; lsSet(ARCH_KEY, '[]'); renderStats(); render(); }
+  else { wipeArm = now() + 4000; $('statsWipe').textContent = 'Wirklich alles löschen?'; setTimeout(function () { if (wipeArm <= now()) $('statsWipe').textContent = 'Archiv löschen'; }, 4100); }
+};
+function histLine() {
+  var p = $('histLine'), name = (S.oppName || '').trim().toLowerCase();
+  var list = name ? archLoad().filter(function (g) { return g.opp.trim().toLowerCase() === name; }) : [];
+  p.classList.toggle('hidden', !list.length);
+  if (list.length) p.textContent = 'Bilanz gegen ' + S.oppName + ': ' + scoreTxt(tally(list));
+}
+
+/* ---------- Aussehen: Brettfarben passend zu den Orbitron-Themes, Figurensatz ---------- */
+var BOARDS = { klassisch: ['#f0d9b5', '#b58863'], blau: ['#dee3e6', '#8ca2ad'], gruen: ['#eeeed2', '#769656'], dunkel: ['#b0b8c2', '#5b6672'], neural: ['#7d68b8', '#2d1b69'] };
+var AUTO_BOARD = { light: 'klassisch', dark: 'dunkel', neural: 'neural' };
+function look() {
+  var d = { board: 'auto', pieces: 'bild' };
+  try { var o = JSON.parse(lsGet(LOOK_KEY) || '{}'); if (o.board === 'auto' || BOARDS[o.board]) d.board = o.board; if (o.pieces === 'symbol') d.pieces = 'symbol'; } catch (e) { /* Standard */ }
+  return d;
+}
+function applyLook() {
+  var l = look(), root = document.documentElement;
+  var b = l.board === 'auto' ? (AUTO_BOARD[root.getAttribute('data-theme')] || 'klassisch') : l.board, c = BOARDS[b];
+  root.style.setProperty('--sq-l', c[0]); root.style.setProperty('--sq-d', c[1]);
+  root.setAttribute('data-board', b); root.setAttribute('data-pieces', l.pieces);
+  $('lookBoard').value = l.board; $('lookPieces').value = l.pieces;
+  if (S.id && S.joined) render();
+}
+try { new MutationObserver(function (m) { if (m.some(function (x) { return x.attributeName === 'data-theme'; })) applyLook(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] }); } catch (e) { /* ok */ }
+$('btnLook').onclick = function () { var p = $('lookPanel'), open = p.classList.contains('hidden'); p.classList.toggle('hidden', !open); $('btnLook').setAttribute('aria-expanded', String(open)); };
+$('lookClose').onclick = function () { $('lookPanel').classList.add('hidden'); $('btnLook').setAttribute('aria-expanded', 'false'); };
+function saveLook() { lsSet(LOOK_KEY, JSON.stringify({ board: $('lookBoard').value, pieces: $('lookPieces').value })); applyLook(); }
+$('lookBoard').onchange = saveLook; $('lookPieces').onchange = saveLook;
+$('btnAnalyze').onclick = function () { if (S.over && S.moves.length) analyzePgn(makePgn()); };
 
 /* ---------- Bedienung ---------- */
 function onSquare(sq) {
@@ -1065,8 +1188,10 @@ window.addEventListener('pointermove', function (e) {
     var src = board.querySelector('[data-sq="' + d.from + '"]'); if (src) src.classList.add('dragsrc');
     var r = src ? src.getBoundingClientRect() : { width: 56 };
     var g = $('dragGhost'); g.style.width = g.style.height = Math.round(r.width * 1.15) + 'px'; g.textContent = '';
-    var im = document.createElement('img'); var pp = S.game.get(d.from);
-    im.src = 'img/' + pp.color + pp.type.toUpperCase() + '.png'; im.alt = ''; g.appendChild(im); g.style.display = 'block';
+    var pp = S.game.get(d.from);
+    if (document.documentElement.getAttribute('data-pieces') === 'symbol') { g.appendChild(pieceEl(pp.color, pp.type)); g.style.fontSize = Math.round(r.width * 0.9) + 'px'; }
+    else { var im = document.createElement('img'); im.src = 'img/' + pp.color + pp.type.toUpperCase() + '.png'; im.alt = ''; g.appendChild(im); }
+    g.style.display = 'block';
   }
   var gh = $('dragGhost'), w = parseFloat(gh.style.width) || 56;
   gh.style.left = (e.clientX - w / 2) + 'px'; gh.style.top = (e.clientY - w / 2) + 'px';
@@ -1305,6 +1430,7 @@ function bootRoom() {
   S.id = clean(qs.get('r'), 6).toLowerCase();
   if (!S.id) {
     $('lobby').classList.remove('hidden');
+    renderStats();
     $('nameIn').value = clean(lsGet('duell_name'));
     $('modeNote').classList.toggle('hidden', !MANUAL);
     return;
@@ -1349,7 +1475,7 @@ window.__duell = {
       over: S.over, result: S.result, reason: S.reason, conn: S.conn, tc: S.tc,
       name: S.name, oppName: S.oppName, illegalRecv: S.illegalRecv,
       clock: { w: Math.round(remaining('w')), b: Math.round(remaining('b')) },
-      pgn: S.moves.length ? makePgn() : '', drawOpp: S.drawOpp, drawMine: S.drawMine, manual: S.manual, side: S.side,
+      look: look(), archived: S.archived, pgn: S.moves.length ? makePgn() : '', drawOpp: S.drawOpp, drawMine: S.drawMine, manual: S.manual, side: S.side,
       flipped: isFlipped(), sound: S.sound, soundCount: S.soundCount, embed: EMBED,
       unread: S.unread, chatOpen: S.chatOpen, chatMute: S.chatMute, chat: S.chat.map(function (m) { return (m.me ? 'ich: ' : 'er: ') + m.t; })
     };
@@ -1364,6 +1490,7 @@ window.__duell = {
 // Neuer Einladungslink im selben Tab (nur der Teil nach # ändert sich): Seite neu aufbauen
 window.addEventListener('hashchange', function () { location.reload(); });
 
+applyLook();
 boot();
 })();
 </script>
