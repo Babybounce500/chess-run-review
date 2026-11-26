@@ -109,6 +109,56 @@ progress{width:100%;height:8px}
 #times{font-variant-numeric:tabular-nums}
 #times b{font-size:1.4rem}
 @media (max-width:760px){.boardrow{flex-wrap:wrap}#palette{contain:none;width:100%;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;max-width:420px;margin:0 auto}#an{grid-template-columns:minmax(0,1fr)}.kpis{grid-template-columns:repeat(2,1fr)}#sum{grid-template-columns:1fr}main{padding:10px 8px}}
+/* Eingebettet in Orbitron: dort steht schon eine Kopfzeile */
+html.embed .top,html.embed .intro{display:none}
+html.embed main{padding-top:8px}
+#lock{position:fixed;inset:0;z-index:90;background:var(--bg,#fff);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:24px}
+#promo{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+#promo button{width:68px;height:68px;padding:6px!important;border-radius:14px!important;background:#f0d9b5!important}
+#promo img{width:100%;height:100%}
+/* Finger: größere Ziele */
+@media (pointer:coarse){button,select{min-height:42px}#buildBar .row label input{width:22px;height:22px}#castles label{min-height:36px}}
+/* Tablet und schmales Fenster: zwei Spalten bleiben, schmaler */
+@media (min-width:761px) and (max-width:1000px){#an{grid-template-columns:minmax(0,1.2fr) minmax(240px,1fr);gap:10px}.kpis{grid-template-columns:repeat(2,1fr)}#palette{width:42px}}
+/* Tablet hochkant: eine Spalte, großes Brett, Figuren daneben */
+@media (min-width:601px) and (max-width:1000px) and (orientation:portrait){
+  #an{grid-template-columns:minmax(0,1fr)}
+  #an>div{width:100%;max-width:680px;margin:0 auto}
+  .boardrow{flex-wrap:nowrap}
+  #palette{contain:size;display:flex;flex-direction:column;width:50px;max-width:none;margin:0;align-self:stretch}
+  #palette button{aspect-ratio:auto;min-height:0}
+  .kpis{grid-template-columns:repeat(4,1fr)}
+}
+/* Große Bildschirme */
+@media (min-width:1400px) and (min-height:860px){main{max-width:1300px}#an{grid-template-columns:minmax(0,720px) minmax(360px,1fr)}}
+/* Handy hochkant */
+@media (max-width:600px){
+  .tabs{flex-wrap:nowrap}.tabs button{flex:1 1 0;min-width:0;padding-left:4px!important;padding-right:4px!important;font-size:.7rem!important}
+  .card{padding:10px;margin-bottom:10px}
+  .kpi b{font-size:1rem}
+  #players{grid-template-columns:minmax(0,1fr)}
+  table{font-size:.78rem}th,td{padding:5px}
+  #evalbar{width:10px}.boardrow{gap:5px}
+  .row>label{flex:1 1 auto}.row select{max-width:100%}
+  #graph{height:120px}
+}
+@media (max-width:360px){main{padding-left:6px;padding-right:6px}#palette{gap:3px}.sq .co{display:none}}
+/* Handy quer (niedrig): Brett in voller Höhe links, Figuren daneben in zwei Spalten, alles andere rechts */
+@media (orientation:landscape) and (max-height:560px){
+  main{padding:4px 8px;max-width:none}
+  .top,.intro{display:none}
+  .tabs{margin-bottom:6px!important}
+  /* Brett = Fensterhöhe minus Reiterzeile; daneben Bewertungsbalken und Figuren */
+  #an{grid-template-columns:min(calc(100dvh + 50px),62vw) minmax(0,1fr);gap:8px}
+  html[data-theme] .tabs button,.tabs button{min-height:34px;padding-top:3px!important;padding-bottom:3px!important}
+  .boardrow{flex-wrap:nowrap}
+  #evalbar{width:10px}
+  #palette{contain:size;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:minmax(0,1fr);width:80px;max-width:none;margin:0;align-self:stretch;gap:3px}
+  #palette button{aspect-ratio:auto;min-height:0}
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  #graph{height:110px}
+}
+@media (prefers-reduced-motion:reduce){#evalfill{transition:none}}
 /*ORBITRON-BRAND:START*/
 /* Orbitron Marke: eine Quelle für Duell, Chat und künftige Seiten.
    Werte stammen aus gemini-chat.html (Themes light, dark, neural) und werden von tests/brand-test.js dagegen geprüft.
@@ -176,7 +226,7 @@ html.embed .ob-hide-embed{display:none!important}
 <body>
 <main>
   <div class="top"><h1 class="ob-brand"><span class="ob-mark" aria-hidden="true">♞</span><span class="ob-text"><span class="ob-word">Orbitron</span><span class="ob-sub">Engine-Labor</span></span></h1><button id="btnTheme" class="ob-theme" type="button" aria-label="Design wechseln"></button></div>
-  <p class="note">Testseite, getrennt von Orbitron. Stockfish 10 als WebAssembly (neu) gegen die bisherige asm.js-Fassung. Nur zum Üben und Analysieren, nie während einer laufenden Partie.</p>
+  <p class="note intro">Stockfish läuft in deinem Browser. Stockfish 10 als WebAssembly (neu), im Vergleich auch die bisherige asm.js-Fassung. Nur zum Üben und Analysieren, nie während einer laufenden Partie.</p>
   <div class="row tabs" style="margin-bottom:10px"><button id="tabAn" type="button" class="on">Analyse</button><button id="tabFull" type="button">Gesamtanalyse</button><button id="tabCmp" type="button">Vergleich alt gegen neu</button></div>
 
   <section id="an">
@@ -256,6 +306,8 @@ html.embed .ob-hide-embed{display:none!important}
 </main>
 
 <div id="ghost" aria-hidden="true"></div>
+<div id="promo" class="hidden" role="dialog" aria-label="Umwandlungsfigur wählen"></div>
+<div id="lock" class="hidden" role="alert"><b style="font-size:1.3rem">Während deiner Duellpartie gesperrt</b><p class="note" style="max-width:34em;margin:0">Keine Engine-Hilfe, solange eine Partie läuft. Sobald sie beendet ist (oder du im Duell „Neustart“ wählst), öffnet sich das Analysebrett von selbst.</p></div>
 <script src="vendor/chess.js"></script>
 <script src="data.js"></script>
 <script>
@@ -275,7 +327,7 @@ class Engine {
       const t0 = performance.now();
       const timer = setTimeout(() => rej(new Error('Engine antwortet nicht')), 30000);
       try { this.w = new Worker(FILES[this.kind]); } catch (e) { clearTimeout(timer); rej(e); return; }
-      this.w.onerror = (e) => { clearTimeout(timer); rej(new Error(e.message || 'Engine konnte nicht laden')); };
+      this.w.onerror = (e) => { clearTimeout(timer); if (e.preventDefault) e.preventDefault(); rej(new Error(e.message || 'Engine konnte nicht laden')); if (this.abort) this.abort(); };   // Absturz mitten in der Suche: Ergebnis freigeben, neu starten
       this.w.onmessage = (e) => { const l = String(e.data); if (l === 'uciok') { clearTimeout(timer); this.loadMs = Math.round(performance.now() - t0); res(this); } else if (this.onLine) this.onLine(l); };
       this.w.postMessage('uci');
     });
@@ -299,6 +351,9 @@ class Engine {
     await this.sync();
     const info = { best: null, lines: [], depth: 0, nps: 0, nodes: 0, time: 0 };
     this.busy = new Promise((res) => {
+      let guard = 0;
+      this.abort = () => { clearTimeout(guard); this.abort = null; info.failed = true; this.restart(); res(info); };
+      if (o.movetime) guard = setTimeout(() => { if (this.abort) this.abort(); }, o.movetime + 8000);
       this.onLine = (l) => {
         if (l.startsWith('info ') && l.includes(' score ') && l.includes(' pv ')) {
           if (/ (upperbound|lowerbound) /.test(l)) return;
@@ -308,7 +363,7 @@ class Engine {
           if (k === 0) info.depth = depth;
           info.nps = num(/ nps (\d+)/) || info.nps; info.nodes = num(/ nodes (\d+)/) || info.nodes; info.time = num(/ time (\d+)/) || info.time;
           if (o.onInfo) o.onInfo(info);
-        } else if (l.startsWith('bestmove')) { info.best = l.split(' ')[1]; this.onLine = null; this.busy = null; res(info); }
+        } else if (l.startsWith('bestmove')) { clearTimeout(guard); this.abort = null; info.best = l.split(' ')[1]; this.onLine = null; this.busy = null; res(info); }
       };
     });
     const result = this.busy;
@@ -323,9 +378,19 @@ class Engine {
     const done = await Promise.race([p.then(() => true), new Promise((r) => setTimeout(() => r(false), 3000))]);
     if (!done) this.restart();
   }
-  restart() { try { this.w.terminate(); } catch (e) { /* ok */ } this.w = null; this.ready = null; this.busy = null; this.onLine = null; }
+  restart() { try { this.w.terminate(); } catch (e) { /* ok */ } this.w = null; this.ready = null; this.busy = null; this.onLine = null; this.abort = null; }
 }
 const engines = { wasm: new Engine('wasm'), asm: new Engine('asm') };
+const LIVE_MS = 60000;                                    // laufende Analyse höchstens eine Minute je Stellung (Akku, Wärme)
+if (new URLSearchParams(location.search).get('embed') === '1') document.documentElement.classList.add('embed');
+let locked = false;
+const hiddenInHost = () => { try { const f = window.frameElement; return !!f && (f.hidden || f.getClientRects().length === 0); } catch (e) { return false; } };
+const watching = () => !document.hidden && !hiddenInHost() && !locked;
+// Läuft im selben Orbitron-Fenster eine Duellpartie? Dann gibt es keine Engine-Hilfe.
+function duelRunning() {
+  try { if (window.parent === window) return false; const f = window.parent.document.getElementById('moduleFrame'); const d = f && f.contentWindow && f.contentWindow.__duell; const st = d && d.state(); return !!(st && !st.over && (st.plies > 0 || st.conn === 'open')); }
+  catch (e) { return false; }
+}
 
 /* ---------- Hilfen ---------- */
 const fmtEval = (line, turn) => { if (!line) return '–'; const s = turn === 'w' ? 1 : -1; if (line.mate != null) { const m = line.mate * s; return (m > 0 ? '#' : '-#') + Math.abs(line.mate); } const v = line.cp * s / 100; return (v > 0 ? '+' : '') + v.toFixed(2); };
@@ -377,7 +442,7 @@ function showInfo(info, fen) {
 }
 let paintAt = 0;
 async function analyse() {
-  if ($('an').classList.contains('hidden') || busyCmp || fullBusy) return;
+  if ($('an').classList.contains('hidden') || busyCmp || fullBusy || !watching()) return;
   const mine = ++token, kind = $('engSel').value, eng = engines[kind], fen = game.fen();
   last = null; renderBoard(); $('lines').textContent = '';
   ['kEval', 'kDepth', 'kNps', 'kNodes'].forEach((i) => { $(i).textContent = '–'; });
@@ -390,11 +455,11 @@ async function analyse() {
   try {
     await eng.start(); if (mine !== token) return;
     $('status').textContent = NAMES[kind] + ' rechnet (geladen in ' + eng.loadMs + ' ms).';
-    await eng.search(fen, { multipv: +$('mpv').value, onInfo: (info) => {
+    const done = await eng.search(fen, { movetime: LIVE_MS, multipv: +$('mpv').value, onInfo: (info) => {
       if (mine !== token) return; const firstHint = !last; last = info;
       if (performance.now() - paintAt > 120 || info.depth < 6) { paintAt = performance.now(); showInfo(info, fen); if (firstHint || info.depth % 4 === 0) renderBoard(); }
     } });
-    if (mine === token && last) { showInfo(last, fen); renderBoard(); }
+    if (mine === token && last) { showInfo(last, fen); renderBoard(); $('status').textContent = done.failed ? 'Die Engine ist ausgestiegen und wurde neu gestartet. Ändere die Stellung oder starte die Analyse neu.' : 'Fertig gerechnet (Tiefe ' + last.depth + '). Nach einer Minute je Stellung ist Schluss, das schont Akku und Lüfter.'; }
   } catch (e) {
     if (mine !== token) return;
     if (kind === 'wasm') { $('status').textContent = 'WebAssembly geht in diesem Browser nicht, ich nehme die alte Fassung. (' + e.message + ')'; $('engSel').value = 'asm'; analyse(); }
@@ -406,7 +471,19 @@ $('board').addEventListener('click', (e) => {
   const sq = e.target.closest('.sq'); if (!sq) return; const s = sq.dataset.sq;
   if (sel) {
     const m = game.moves({ square: sel, verbose: true }).find((x) => x.to === s);
-    if (m) { game.move({ from: sel, to: s, promotion: 'q' }); sel = null; analyse(); return; }
+    if (m) {
+      const from = sel; sel = null;
+      if (!m.promotion) { game.move({ from, to: s }); analyse(); return; }
+      const box = $('promo'), color = game.turn(); box.textContent = ''; box.classList.remove('hidden');
+      [['q', 'Dame'], ['r', 'Turm'], ['b', 'Läufer'], ['n', 'Springer']].forEach(([k, name]) => {
+        const bt = document.createElement('button'); bt.type = 'button'; bt.dataset.promo = k; bt.setAttribute('aria-label', name);
+        const im = document.createElement('img'); im.src = 'img/' + color + k.toUpperCase() + '.png'; im.alt = name; bt.appendChild(im);
+        bt.onclick = (ev) => { ev.stopPropagation(); box.classList.add('hidden'); game.move({ from, to: s, promotion: k }); analyse(); };
+        box.appendChild(bt);
+      });
+      box.onclick = (ev) => { if (ev.target === box) { box.classList.add('hidden'); renderBoard(); } };
+      renderBoard(); return;
+    }
   }
   const p = game.get(s); sel = p && p.color === game.turn() && sel !== s ? s : null; renderBoard();
 });
@@ -569,7 +646,7 @@ function addRow(i, r) {
   $('rows').appendChild(tr);
 }
 async function runCompare() {
-  if (busyCmp || fullBusy) return; busyCmp = true; abort = false; results = []; token++;
+  if (busyCmp || locked) return; if (fullBusy) { $('cmpStatus').textContent = 'Erst läuft noch die Gesamtanalyse.'; return; } busyCmp = true; abort = false; results = []; token++;
   const kind = $('setSel').value, list = spread(window.ENGINE_SETS[kind], +$('cnt').value), mt = +$('mt').value;
   $('rows').textContent = ''; summary(); $('run').disabled = true; $('stopRun').classList.remove('hidden'); $('csv').disabled = true; $('prog').max = list.length; $('prog').value = 0;
   try {
@@ -678,7 +755,7 @@ function showReport() {
 }
 const secs = (ms) => (ms / 1000).toLocaleString('de-DE', { maximumFractionDigits: 1 }) + ' s';
 async function runFull() {
-  if (fullBusy || busyCmp) return;
+  if (fullBusy || busyCmp || locked) return;
   const game = parseGame($('pgn').value);
   if (!game) { $('fStatus').textContent = 'Das ist keine lesbare PGN mit Zügen.'; return; }
   fullBusy = true; fullAbort = false; fullResult = null; token++;
@@ -708,6 +785,7 @@ async function runFull() {
       $('fStatus').textContent = 'Fertig: ' + total + ' Stellungen bewertet.'; $('fJson').disabled = false; showReport();
     }
   } catch (e) { $('fStatus').textContent = 'Fehler: ' + e.message; }
+  pool.forEach((e) => e.restart()); pool = [];                  // Speicher freigeben (wichtig auf Handys)
   fullBusy = false; $('fRun').disabled = false; $('fStop').classList.add('hidden');
 }
 $('fRun').onclick = runFull;
@@ -732,10 +810,24 @@ $('tabAn').onclick = () => { if (!busyCmp && !fullBusy) tab('an'); };
 $('tabFull').onclick = () => tab('full');
 $('tabCmp').onclick = () => tab('cmp');
 // Im Hintergrund nicht weiterrechnen (Akku, Lüfter)
-document.addEventListener('visibilitychange', () => { if (busyCmp || fullBusy || $('an').classList.contains('hidden')) return; if (document.hidden) { token++; Object.values(engines).forEach((e) => e.halt()); } else analyse(); });
+// Nur rechnen, wenn jemand zusieht: Tab im Hintergrund, Orbitron-Fenster zu oder Sperre halten die laufende Analyse an
+let wasWatching = watching();
+setInterval(() => {
+  const nowLocked = duelRunning();
+  if (nowLocked !== locked) {
+    locked = nowLocked; $('lock').classList.toggle('hidden', !locked);
+    if (locked) { token++; fullAbort = true; abort = true; $('promo').classList.add('hidden'); Object.values(engines).concat(pool).forEach((e) => e.halt()); $('lines').textContent = ''; ['kEval', 'kDepth', 'kNps', 'kNodes'].forEach((i) => { $(i).textContent = '–'; }); last = null; renderBoard(); }
+  }
+  const now2 = watching();
+  if (now2 === wasWatching) return;
+  wasWatching = now2;
+  if (busyCmp || fullBusy || $('an').classList.contains('hidden')) return;
+  if (now2) analyse(); else { token++; Object.values(engines).forEach((e) => e.halt()); }
+}, 700);
 
-window.__lab = { build: () => ({ on: build, setup: Object.assign({}, setup), problem: buildProblem, tool }), full: () => fullResult && { runs: fullResult.runs.map((r) => ({ kind: r.kind, workers: r.workers, ms: r.ms, depths: r.evals.map((e) => e.depth), best: r.evals.map((e) => e.best) })), rows: fullResult.rev.rows.map((r) => ({ ply: r.ply, san: r.san, tag: r.tag, best: r.best, ev: evalText(r.after) })), w: fullResult.rev.w, b: fullResult.rev.b }, fullBusy: () => fullBusy, state: () => ({ fen: game.fen(), engine: $('engSel').value, running, depth: last ? last.depth : 0, nps: last ? last.nps : 0, best: last && last.lines[0] ? last.lines[0].pv[0] : null, lines: last ? last.lines.filter(Boolean).length : 0, busyCmp, loadMs: { asm: engines.asm.loadMs, wasm: engines.wasm.loadMs } }), results: () => results, csv: csvText, hasWasm };
+window.__lab = { busy: () => Object.values(engines).concat(pool).filter((e) => e.busy).length, locked: () => locked, poolSize: () => pool.length, build: () => ({ on: build, setup: Object.assign({}, setup), problem: buildProblem, tool }), full: () => fullResult && { runs: fullResult.runs.map((r) => ({ kind: r.kind, workers: r.workers, ms: r.ms, depths: r.evals.map((e) => e.depth), best: r.evals.map((e) => e.best) })), rows: fullResult.rev.rows.map((r) => ({ ply: r.ply, san: r.san, tag: r.tag, best: r.best, ev: evalText(r.after) })), w: fullResult.rev.w, b: fullResult.rev.b }, fullBusy: () => fullBusy, state: () => ({ fen: game.fen(), engine: $('engSel').value, running, depth: last ? last.depth : 0, nps: last ? last.nps : 0, best: last && last.lines[0] ? last.lines[0].pv[0] : null, lines: last ? last.lines.filter(Boolean).length : 0, busyCmp, loadMs: { asm: engines.asm.loadMs, wasm: engines.wasm.loadMs } }), results: () => results, csv: csvText, hasWasm };
 if (!hasWasm) $('engSel').value = 'asm';
+locked = duelRunning(); $('lock').classList.toggle('hidden', !locked); renderBoard();
 analyse();
 })();
 </script>

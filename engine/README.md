@@ -17,6 +17,9 @@ Dann http://127.0.0.1:8091 im Browser öffnen (Strg+C beendet den Server). Ein D
 ## Messung (26.11.2026, Rechner mit 4 Threads, headless Chrome)
 Morphy, Pariser Oper (34 Stellungen), Profil „Wie Orbitron heute“: alt 62,6 s bei mittlerer Tiefe 12,5, neu mit 3 Arbeitern 9,2 s bei Tiefe 14,0.
 
+## In Orbitron
+Reiter „Analysebrett“ (auch `#/analysebrett`, Befehl `/engine`). Eigener Rahmen: Stellung bleibt beim Wechseln, die laufende Analyse pausiert, sobald das Fenster zu ist. Läuft im selben Orbitron-Fenster eine Duellpartie, ist das Analysebrett gesperrt (eine zweite, getrennt geöffnete Seite kann das nicht erkennen). Laufende Analyse höchstens 60 s je Stellung. Kopie nach Orbitron: index.html, data.js, img/, vendor/ nach `engine/`.
+
 ## Neu aufbauen und testen
 ```
 node tools/setup.js

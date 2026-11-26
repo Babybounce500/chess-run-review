@@ -1,5 +1,11 @@
 # Änderungsprotokoll
 
+## 2026-11-26 (Analysebrett in Orbitron, Review und Media Queries)
+- Neuer Reiter **Analysebrett** in der Orbitron-Sidebar: schnelle Engine, Stellungen bauen, Gesamtanalyse. Eigener Rahmen, offline nutzbar, Direktlink `#/analysebrett`. Während einer Duellpartie gesperrt.
+- Review: Umwandlung wählbar, Schutz bei Engine-Absturz, laufende Analyse pausiert im Hintergrund und endet nach 60 s, Zusatz-Arbeiter werden beendet.
+- Layouts für Handy hochkant und quer, Tablet, Laptop und große Bildschirme.
+
+
 ## 2026-11-26 (Engine-Labor: Brett repariert, Stellungen bauen)
 - Alle Felder sind gleich groß (leere Reihen fielen zusammen). Das Brett wird bei laufender Analyse nicht mehr neu aufgebaut, Klicks und Züge gehen nicht mehr verloren.
 - **Stellung bauen:** Figuren vom Rand aufs Brett ziehen oder antippen, frei verschieben, entfernen; Zugrecht, Rochaden, FEN, Prüfung auf ungültige Stellungen, sofortige Analyse.

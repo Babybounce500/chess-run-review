@@ -57,6 +57,7 @@ body{font-family:var(--font);background:var(--main-bg);color:var(--text);-webkit
 .nav-item.nav-duel .nav-badge{margin-left:auto;font-size:.62rem;font-weight:700;letter-spacing:.03em;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.26);color:#fff}
 .nav-item.nav-duel .nav-badge.live{background:#1fa463}
 .module-dock.duel .module-switcher{display:none}
+#navEngine .nav-badge{margin-left:auto;font-size:.62rem;font-weight:700;letter-spacing:.03em;padding:2px 8px;border-radius:999px;background:var(--active-bg);color:var(--active-text)}
 .offline-badge{font-size:.62rem;letter-spacing:.02em;color:var(--text-muted);padding:2px 10px;margin:0 4px 4px;border:1px solid var(--border);border-radius:999px;text-align:center}
 .offline-badge.ready{color:var(--accent2);border-color:var(--accent2)}
 .offline-badge.off{color:#b26a00;border-color:#b26a00}
@@ -525,6 +526,7 @@ html,body,button,input,select,textarea{font-family:var(--neural-font)!important;
       <div class="nav-section">
         <button class="nav-item nav-duel" id="navDuel" type="button" onclick="openOnlineDuel()" title="Gegen einen Freund spielen, direkt von Browser zu Browser"><i class="bi bi-people-fill"></i><span class="chess-nav-label">Online Duell</span><span class="nav-badge" id="navDuelBadge">NEU</span></button>
         <button class="nav-item nav-chat" id="navChat" type="button" onclick="openOnlineChat()" title="Chat, Anrufe und Dateien direkt zwischen Browsern, ohne Server"><i class="bi bi-chat-dots-fill"></i><span class="chess-nav-label">Chat &amp; Anrufe</span><span class="nav-badge" id="navChatBadge">NEU</span></button>
+        <button class="nav-item" id="navEngine" type="button" onclick="openEngineLab()" title="Stellungen bauen, ganze Partien schnell analysieren (Stockfish läuft im Browser)"><i class="bi bi-grid-3x3-gap-fill"></i><span class="chess-nav-label">Analysebrett</span><span class="nav-badge" id="navEngineBadge">NEU</span></button>
         <button class="nav-item" onclick="window.location.href='chess-coach.html'"><i class="bi bi-clipboard2-pulse"></i><span class="chess-nav-label">Partie-Coach</span></button>
         <button class="nav-item" onclick="document.getElementById('fileInput').click()"><i class="bi bi-image"></i><span class="chess-nav-label">Screenshot prüfen</span></button>
         <button class="nav-item" onclick="openChessModule('chess-center.html','Chess Center')"><i class="bi bi-bullseye"></i><span class="chess-nav-label">Chess Center</span></button>
@@ -657,6 +659,7 @@ html,body,button,input,select,textarea{font-family:var(--neural-font)!important;
     </div>
     <iframe class="module-frame" id="moduleFrame" title="Chess App" allow="clipboard-write; clipboard-read; fullscreen; screen-wake-lock; camera; microphone; display-capture; autoplay; web-share"></iframe>
     <iframe class="module-frame" id="chatFrame" title="Chat und Anrufe" hidden allow="clipboard-write; clipboard-read; fullscreen; screen-wake-lock; camera; microphone; display-capture; autoplay; web-share"></iframe>
+    <iframe class="module-frame" id="labFrame" title="Analysebrett" hidden allow="clipboard-write"></iframe>
   </div>
 </div>
 
@@ -2154,13 +2157,16 @@ const CHAT_URL='chat/index.html?embed=1';
 const isDuelUrl=u=>/(^|\/)duell\/index\.html/.test(u||'');
 const isChatUrl=u=>/(^|\/)chat\/index\.html/.test(u||'');
 const isKeepUrl=u=>isDuelUrl(u);
+const LAB_URL='engine/index.html?embed=1';
+const isLabUrl=u=>/(^|\/)engine\/index\.html/.test(u||'');
 window.switchChessModule=function(url,title){
   $('moduleTitle').textContent=title;
-  const chat=isChatUrl(url),cf=$('chatFrame');
-  // Chat und Duell haben je einen eigenen Rahmen und laufen beim Wechseln weiter (Verbindung, Anruf, Partie bleiben bestehen)
-  cf.hidden=!chat;$('moduleFrame').hidden=chat;
-  if(chat){
-    if(!cf.dataset.url){cf.src=url;cf.dataset.url=url}
+  const chat=isChatUrl(url),lab=isLabUrl(url),cf=$('chatFrame'),lf=$('labFrame');
+  // Chat, Analysebrett und Duell haben je einen eigenen Rahmen und behalten beim Wechseln ihren Stand (Verbindung, Anruf, Stellung, Partie)
+  cf.hidden=!chat;lf.hidden=!lab;$('moduleFrame').hidden=chat||lab;
+  if(chat||lab){
+    const own=chat?cf:lf;
+    if(!own.dataset.url){own.src=url;own.dataset.url=url}
     $('moduleDock').classList.add('duel','open');
     document.querySelectorAll('.module-switcher button').forEach(b=>b.classList.remove('active'));
     return;
@@ -2185,6 +2191,10 @@ window.analyzeDuelPgn=function(pgn){
   try{closeChessModule()}catch(e){}
   newChat();promptInput.value=pgn;sendMessage();
   return true;
+};
+window.openEngineLab=function(){
+  try{closeSidebar()}catch(e){}
+  openChessModule(LAB_URL,'Analysebrett');
 };
 window.openOnlineDuel=function(){
   try{closeSidebar()}catch(e){}
