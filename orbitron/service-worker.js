@@ -34,7 +34,7 @@ async function answer(request){
   const cache=await caches.open(CACHE_NAME);
   const hit=await stored(cache,request);
   // Mitgelieferte Bibliotheken (Stockfish, Schriften …) ändern sich nur zusammen mit dem Speichernamen: sofort aus dem Speicher
-  if(hit&&new URL(request.url).pathname.startsWith(new URL('./vendor/',self.registration.scope).pathname))return hit;
+  if(hit&&new URL(request.url).pathname.includes('/vendor/'))return hit;      // gilt auch für engine/vendor/ (Stockfish WebAssembly)
   const net=fetch(request).then(response=>{
     if(response.status===200)cache.put(request,response.clone()).catch(()=>{});
     return response;
