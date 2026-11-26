@@ -149,7 +149,7 @@ html[data-board="holz"] #board .sq:nth-child(7n+3){background-position:35% 95%}
 #moves{max-height:240px;overflow:auto;font-variant-numeric:tabular-nums;font-size:.95rem}
 #moves span.n{color:var(--muted);margin-right:3px}
 #moves span.m{margin-right:10px}
-#promo{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:9}
+#promo{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:45}
 #promo .box{display:flex;gap:8px}
 #promo button{width:64px;height:64px;padding:0;border-radius:12px;border:2px solid #fff;background:#f0d9b5;display:flex;align-items:center;justify-content:center}
 #promo .p{font-size:44px}
@@ -201,6 +201,43 @@ html[data-board="holz"] #board .sq:nth-child(7n+3){background-position:35% 95%}
   .player{margin:0}
 }
 code{background:var(--bg);padding:1px 5px;border-radius:4px}
+/* ---------- Matt-Rennen ---------- */
+#racePanel{position:fixed;inset:0;z-index:30;background:var(--bg);overflow:auto;padding:10px}
+#racePanel.hidden{display:none}
+.race-wrap{max-width:600px;margin:0 auto;--rb:min(100%, 560px, max(240px, calc(100dvh - 230px)))}
+.race-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+.race-head b{font-family:var(--ob-font,inherit);letter-spacing:.04em}
+.race-head .row{flex-wrap:nowrap}
+.race-head button{padding:4px 12px}
+#raceScore{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;margin-bottom:6px}
+#raceScore .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+#raceScore .nm.opp{text-align:right}
+#raceNum{font-size:1.5rem;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+#raceInfo{display:flex;justify-content:space-between;gap:8px;min-height:1.5em;font-weight:600}
+#raceClock{font-variant-numeric:tabular-nums}
+#raceMsg{min-height:2.9em;margin:6px 0;text-align:center}
+#raceMsg.good{color:var(--ob-green,#188038);font-weight:700}
+#raceMsg.bad{color:var(--bad);font-weight:700}
+#raceStage{position:relative;width:var(--rb);margin:0 auto}
+#raceBoard{display:grid;grid-template-columns:repeat(8,1fr);aspect-ratio:1/1;width:100%;border-radius:8px;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:none;-webkit-tap-highlight-color:transparent;box-shadow:0 1px 4px rgba(0,0,0,.25)}
+#raceStage.locked #raceBoard{filter:grayscale(.55) brightness(.85)}
+#raceCount{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:min(22vw,110px);font-weight:800;color:#fff;background:rgba(0,0,0,.55);border-radius:8px}
+#raceCount.hidden{display:none}
+#raceSetup,#raceAsk{margin-top:10px}
+#raceDots{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+#raceDots i{width:12px;height:12px;border-radius:50%;border:1px solid var(--line)}
+#raceDots i.me{background:var(--ob-green,#188038)} #raceDots i.opp{background:var(--bad)} #raceDots i.both{background:var(--muted)} #raceDots i.none{background:var(--line)}
+#raceDots i.now{outline:2px solid var(--accent);outline-offset:1px}
+html[data-board="holz"] #raceBoard .sq.l{background-image:url(img/board/holz-hell.jpg);background-size:220% 220%}
+html[data-board="holz"] #raceBoard .sq.d{background-image:url(img/board/holz-dunkel.jpg);background-size:220% 220%}
+html[data-board="holz"] #raceBoard .sq:nth-child(3n){background-position:55% 20%}
+html[data-board="holz"] #raceBoard .sq:nth-child(3n+1){background-position:10% 75%}
+@media (orientation:landscape) and (max-height:560px){
+  .race-wrap{max-width:900px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 14px;--rb:calc(100dvh - 20px)}
+  #raceStage{grid-column:1;grid-row:1 / span 8;margin:0;width:min(var(--rb),55vw)}
+  .race-wrap>*:not(#raceStage){grid-column:2}
+  #raceCount{font-size:22vh}
+}
 /*ORBITRON-BRAND:START*/
 /* Orbitron Marke: eine Quelle für Duell, Chat und künftige Seiten.
    Werte stammen aus gemini-chat.html (Themes light, dark, neural) und werden von tests/brand-test.js dagegen geprüft.
@@ -303,7 +340,7 @@ html.embed .ob-top{display:none}
     </div>
     <label for="colSel">Deine Farbe</label>
     <select id="colSel"><option value="r">zufällig</option><option value="w">Weiß</option><option value="b">Schwarz</option></select>
-    <div class="row" style="margin-top:12px"><button id="createBtn" class="primary">Partie erstellen</button></div>
+    <div class="row" style="margin-top:12px"><button id="createBtn" class="primary">Partie erstellen</button><button id="createRaceBtn" type="button" title="Gleichzeitig dieselben Mattaufgaben lösen">⚔️ Matt-Rennen</button></div>
     <p id="modeNote" class="note hidden">Hier gibt es keinen Vermittlungs-Server. Du und dein Gegner tauscht deshalb einmal zwei Codes per Chat aus (Link hin, Antwort zurück). Danach läuft alles direkt zwischen euch.</p>
     <p id="lobbyErr" class="note" style="color:var(--bad)"></p>
     <p id="offlineNote" class="note hidden"></p>
@@ -345,6 +382,7 @@ html.embed .ob-top{display:none}
           <button id="toggleSide" type="button" aria-controls="side" aria-expanded="true" title="Seitenleiste ein- oder ausblenden">Menü</button>
           <button id="btnFlip" type="button" title="Brett drehen">Drehen</button>
           <button id="btnChat" type="button" aria-controls="chatPanel" aria-expanded="false" title="Chat mit deinem Gegner">Chat<span id="chatBadge" class="badge hidden">0</span></button>
+          <button id="btnRace" type="button" hidden title="Gleichzeitig dieselben Mattaufgaben lösen">⚔️ Matt-Rennen</button>
           <button id="btnSound" type="button" aria-pressed="true" title="Zugton ein oder aus">Ton</button>
           <button id="btnLook" type="button" aria-controls="lookPanel" aria-expanded="false" title="Brettfarben und Figuren wählen">Aussehen</button>
           <button id="btnLeave" type="button" class="danger" title="Verbindung trennen, gespeicherte Partie löschen und von vorn beginnen">Neustart</button>
@@ -393,6 +431,25 @@ html.embed .ob-top{display:none}
   <p class="credit">Figuren: Colin M. L. Burnett (Wikimedia Commons), wie in Orbitron.</p>
 </main>
 
+<div id="racePanel" class="hidden" role="dialog" aria-label="Matt-Rennen">
+  <div class="race-wrap">
+    <div class="race-head"><b>⚔️ Matt-Rennen</b><span class="row"><button id="raceChat" type="button">Chat</button><button id="raceClose" type="button" aria-label="Matt-Rennen schließen">✕</button></span></div>
+    <div id="raceScore"><span class="nm" id="raceMe"></span><span id="raceNum">0 : 0</span><span class="nm opp" id="raceOpp"></span></div>
+    <div id="raceInfo"><span id="raceTask"></span><span id="raceClock"></span></div>
+    <div id="raceStage"><div id="raceBoard" role="grid" aria-label="Aufgabenbrett"></div><div id="raceCount" class="hidden" aria-live="assertive"></div></div>
+    <p id="raceMsg" aria-live="polite"></p>
+    <div id="raceDots" aria-hidden="true"></div>
+    <div id="raceSetup" class="card">
+      <div class="grid2">
+        <div><label for="raceLv">Aufgaben</label><select id="raceLv"><option value="mix">Gemischt (Matt in 1 und 2)</option><option value="1">Nur Matt in 1</option><option value="2">Nur Matt in 2</option></select></div>
+        <div><label for="raceN">Runden</label><select id="raceN"><option value="5">5</option><option value="10">10</option><option value="3">3</option></select></div>
+      </div>
+      <div class="row" style="margin-top:10px"><button id="raceInvite" class="primary" type="button">Herausfordern</button></div>
+      <p class="note" style="margin:8px 0 0">Beide sehen dieselbe Stellung. Wer schneller matt setzt, bekommt den Punkt. Ein falscher Zug sperrt dich 3 Sekunden. Gemessen wird deine eigene Zeit, eine langsame Leitung schadet also nicht. Die Stellungen stammen aus Partien des Entwicklers.</p>
+    </div>
+    <div id="raceAsk" class="card hidden"><b id="raceAskTxt"></b><div class="row" style="margin-top:10px"><button id="raceYes" class="primary" type="button">Mitmachen</button><button id="raceNo" type="button">Ablehnen</button></div></div>
+  </div>
+</div>
 <div id="chatPanel" class="hidden" role="dialog" aria-label="Chat">
   <div class="chat-head"><b>Chat</b>
     <span class="chat-tools"><button id="chatMute" type="button" aria-pressed="false" title="Nachrichten deines Gegners ausblenden">Stumm</button><button id="chatClose" type="button" aria-label="Chat schließen">✕</button></span>
@@ -629,6 +686,7 @@ function onMsg(raw) {
       }
       save(); render(); return;
     case 'chat': return onChat(d);
+    case 'race': return onRace(d);
     case 'leave':
       S.oppLeft = true; S.noRejoin = true;
       closePeer(); S.conn = 'lost'; render(); return;
@@ -918,6 +976,7 @@ function render() {
   $('movesCard').classList.toggle('hidden', n === 0);
   $('game').classList.toggle('waiting', S.conn !== 'open' && n === 0);
   chatUi();
+  raceEntry();
   $('inviteCard').classList.toggle('hidden', !(S.role === 'host' && !S.manual && S.conn !== 'open' && n === 0));
   $('manualHost').classList.toggle('hidden', !(S.manual && S.role === 'host' && S.conn !== 'open'));
   $('manualGuest').classList.toggle('hidden', !(S.manual && S.role === 'guest' && S.conn !== 'open'));
@@ -1469,7 +1528,8 @@ function bootRoom() {
   }).catch(function () { fatal('Der Server ist nicht erreichbar.'); });
 }
 
-$('createBtn').onclick = function () {
+$('createBtn').onclick = function (e) {
+  if (!(e && e.race)) { try { sessionStorage.removeItem('duell_race'); } catch (x) { /* ok */ } }
   var nm = clean($('nameIn').value) || 'Spieler'; lsSet('duell_name', nm);
   var col = $('colSel').value;
   if (MANUAL) { manualHostStart('m' + Math.random().toString(36).slice(2, 7), false); return; }
@@ -1480,6 +1540,307 @@ $('createBtn').onclick = function () {
     location.href = u;
   }).catch(function () { $('lobbyErr').textContent = 'Der Server ist nicht erreichbar.'; });
 };
+
+/* ---------- Matt-Rennen: beide lösen gleichzeitig dieselbe Mattaufgabe ---------- */
+// Der Host verteilt die Aufgaben und wertet. Jeder misst seine eigene Lösungszeit ab dem Moment, in dem er die Stellung sieht.
+// Geprüft wird mit chess.js: Jeder Zug, der das Matt erzwingt, zählt (nicht nur eine hinterlegte Lösung).
+/*MATES:START*/
+var MATES = {"1":["r2qk1r1/p1ppnpQp/1p1b4/3p2B1/8/5N2/PPP2PPP/R3R1K1 w q - 5 16","2rr4/8/8/6pk/p3Q3/bp5P/P4BP1/6K1 w - - 4 43","8/BbN1pkbp/p4pp1/8/8/4Kn2/PPPr1PPP/R6R b - - 4 17","5r1k/6pp/8/p4N2/2P1p1Q1/P7/1P3qPP/R6K w - - 1 29","3rk3/p1R3Qp/1p2pn1n/3p4/1P1P4/P1R5/5PPP/6K1 w - - 1 32","4R3/p1k4p/1p1rQ3/3p4/1P1P4/P7/5PPP/6K1 w - - 1 38","2kr3r/ppp1pp1p/6p1/8/2B5/1Rn2P2/P1P2P1P/4K2R b - - 1 16","r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4","r4r2/ppp3kp/4R1p1/8/3p1bQ1/1B3R1K/PP1q3N/8 b - - 5 30","r3kbnr/pp1qp1pp/2n1N3/2p1P3/3p4/5Q2/PPPP1PPP/RNB1K2R w KQ - 1 9","r3kbnr/pp1qp2p/2n1N1p1/2p1PQ2/3p4/8/PPPP1PPP/RNB1K2R w KQ - 0 10","8/ppR4p/4k1p1/2P5/5r2/8/P3r1PP/B5K1 b - - 0 30","6r1/pp1b3k/2nb1q1p/3Q1p2/2BP4/8/PP2RPPP/R5K1 w - - 3 22","8/pp1bR1rk/2n3qp/3Q4/2BP1p2/6P1/PP3P1P/6K1 w - - 1 26","1rbqrk2/p1p3pp/5n2/2p1p3/2Qn4/1B1P3P/PB3PP1/R4RK1 w - - 4 18","1R6/1pk1r2p/2p2p2/P1Pp4/5P2/7r/8/1R3K2 w - - 0 36","2rq2n1/2k1p3/Qp1p4/p1pP2p1/4P3/8/1PP3P1/1K1RBB2 w - - 4 27","2rq2n1/2k1p3/Q2p4/p1pP2p1/4P3/8/1PP3P1/1K1R1B2 w - - 0 28","r4r2/ppp1pk2/6p1/5bQ1/5Pp1/2bP4/P1P1K2R/1q2R3 b - - 5 30","r1bq1b1r/ppppk1p1/5p1p/3Qn2B/4P2B/8/PPP2PPP/RN2K2R w KQ - 6 11","2k5/2prpnbp/N5p1/1R3p2/8/3p4/PP1n1PKP/5R2 w - - 0 32","1n1kr3/1Qp1q2p/5b2/2Np1p2/3P1B2/8/PPb2PPP/R5K1 w - - 4 25","6k1/ppp1p2p/1b1p2pK/3P1r2/4N3/2PB4/PP2R3/n7 b - - 5 29","r1bQ4/ppp2krp/2q1p3/5p2/8/3B1N2/P1P2PPP/R4RK1 w - - 8 20","1r6/5kp1/p2p3p/2p2P2/3qP2P/3P4/1PK5/3R4 b - - 4 32","8/4BR2/pkp1p3/1p1pP2P/3P4/2P5/P1P3P1/6K1 w - - 1 31","rn1qkb1r/pp1npppp/2p5/8/2B1P3/3P1Q2/PP3PPP/RNB2RK1 w kq - 1 8","r1bq1rk1/1pp1b1p1/p1n1p2p/3nBp2/2BPpNQ1/2P5/PP1N1PPP/R4RK1 w - - 0 13","8/1R4R1/p3pk2/3p1n1p/3P2p1/1P2P1P1/P2q1PKP/8 w - - 3 32","rnbqkb1r/pp3ppp/2p1pn2/4N2Q/3Pp3/8/PPP2PPP/RNB1KB1R w KQkq - 2 6","6k1/1pp4p/2bp2p1/K7/2PP2P1/4r2P/Pr4Q1/8 b - - 1 33","2kr2nr/1ppqbppp/4p3/1b1pP3/3P4/2N2N2/2P2PPP/R1BQR1K1 w - - 0 15","3Bk2r/Q3b1pp/2q1p3/4P3/3p3n/8/2PN1PPP/RR4K1 w - - 1 28","7k/ppp5/7p/3P2p1/3b2q1/BP6/P5Q1/5K2 b - - 0 38","2r2rk1/pb2qp2/1p2N1pp/2p2p2/2P5/2Q2P2/PP4PP/4R1K1 w - - 0 30","rn1qkb1r/pp2pppp/2p2n2/4N3/2BPp1b1/8/PPP2PPP/RNBQK2R w KQkq - 4 6","r4rk1/p2nbpp1/2pp2bP/4p3/Np2P2P/1P1P1N2/q1PQBP2/2K3RR b - - 0 17","r1bq2kr/3n2p1/4p1Bp/1p1pP3/p1pP4/P1P2Q2/1P3PPP/RN3RK1 w - - 1 16","r4rk1/pp3pp1/2pp1n1p/3P1q1P/4p1nB/2P1P1P1/PP3P2/R2QKB1R b KQ - 0 17","rn3bnr/ppp1qQp1/3k3p/4p3/8/2N1P3/PPPP2PP/R1B2RK1 w - - 4 12","r4r1k/1p2np1P/1qn1p1p1/pB1pP1p1/P2P4/1N3Q2/1P3P2/3RK2R w K - 1 22","rnbk1b1N/ppp1nQ2/4P2p/8/3p1p2/8/PPP2PPP/RN3RK1 w - - 1 17","r5nr/p2p2k1/1pnNp2p/2p3qB/4Q3/3P4/PPP3PP/R4RK1 w - - 0 19","4kr1r/pQ4p1/2p1p1p1/B1PNP1n1/4P1P1/5Pq1/PP5p/R4R1K w - - 1 28","4r1nr/p2p2k1/1pn1p2p/2p3qB/4Q3/3P4/PPP3PP/R4RK1 w - - 0 20","r4rk1/pp3p2/3p2p1/2pP2q1/2B1P2b/3Qn3/PPP4K/5R2 b - - 1 24","1r3rk1/4bppp/3p4/p2Pp1P1/4P3/2PQB2P/q7/2KR2R1 b - - 1 26","5rk1/pp2ppbp/3p2p1/3P2B1/8/3B3P/1PK2PP1/q2R3R b - - 0 20","r4b1r/1Q6/3qp3/p2p3k/3PpPNp/1P2P2P/6P1/2R3K1 w - - 1 26","r4rk1/pQ3Rpp/8/8/8/PB1P1P1P/1PP3q1/R2K1n2 b - - 0 22","r2q4/ppk3pp/2nb4/3Q4/8/8/PPP1r2P/RNB3NK b - - 0 18","r4rk1/3npp1p/3p2p1/2pKn3/2P1P3/8/p1B2P2/R6R b - - 1 30","4r3/ppp3k1/2np1bp1/7q/2QN4/2p3P1/PPP2P2/1K1R4 b - - 2 24","3r3k/1pR2Qpp/p3p3/3pP3/2bP4/1q3N2/5PPP/4R1K1 w - - 3 23","2r2r2/kpRR3p/p2p2p1/3P4/4P3/1P2b3/P5PP/7K b - - 1 31","rn4k1/pR4bp/2p1p1p1/8/2Pr2P1/2q5/P3KP2/4R3 b - - 5 26","r4rk1/pp4p1/7p/8/4R1nP/1PP5/PB3P1q/R2Q1K2 b - - 1 21","1k1r3r/p2P1p2/B1Q4p/4p1p1/4n3/5N1P/5PPK/2n5 w - - 0 32","2N4r/3Q4/1b3pkB/p3p2p/4P1p1/8/2P2PPP/5RK1 w - - 0 34","6k1/pp4bp/3p2p1/r7/Q1q1p3/K1P1B3/PP3P2/R7 b - - 13 38"],"2":["r2qk3/p1ppnp1p/1p1b1Q2/3p2r1/8/5N2/PPP2PPP/R3R1K1 w q - 0 17","8/p3Q2p/1p4pk/1q2P3/5PK1/6BP/8/8 b - - 1 59","r1bk1r2/1pp3Qp/p1n1pbp1/3P4/2B5/1P6/P1P2PPP/2B2RK1 w - - 1 18","r2q1rk1/ppp2pbp/3p2p1/3P4/3pPn2/2PB1P2/PPQ2P1P/R2N1RK1 b - - 0 14","r2q4/pp1P4/2p1B1kr/8/7b/5QB1/PPP3P1/R3R1K1 w - - 7 28","4r1k1/2p3bR/1p1p2B1/p5N1/6p1/4B3/P1P1K1P1/6q1 b - - 1 27","3r4/p1R1p2p/1p3bp1/6k1/6N1/7P/P3QPP1/6K1 w - - 3 30","8/p7/6np/6k1/3Q2P1/5PK1/PP6/8 w - - 3 39","r7/ppp2pk1/3p1q2/8/P4p2/1P4PK/2P3BP/4r3 b - - 3 27","6k1/pp6/7K/5r2/8/8/PP4r1/7R b - - 0 32","r1bq1b1r/ppppk3/5p1p/3QP2p/4P2B/8/PPP3PP/RN2K2R w KQ - 0 13","1Q3b1r/1pNk1pp1/3Pp2p/2r5/8/5B2/PP1q1PPP/R3R1K1 w - - 1 23","7r/2rk1pp1/Q2bp2p/1N4q1/8/5B2/PP3PPP/R3R1K1 w - - 3 26","1nk1r3/Q1p1q1bp/2p5/2Np1p2/3P1B2/5N2/PPb2PPP/R5K1 w - - 0 21","1nk1r3/Q1p1q2p/2p2b2/2NpNp2/3P1B2/8/PPb2PPP/R5K1 w - - 2 22","3r4/p7/N4R2/1p2Rpk1/8/7P/P4PP1/6K1 w - - 4 37","r7/p6p/2pN1Qpk/2p1p3/3qP3/1P4P1/P1P2P1P/R5K1 w - - 1 30","r2qr1k1/1pp2p2/p3bR1Q/8/4P3/B1P4P/P1P3P1/R5K1 w - - 1 24","r5nr/ppqbk2p/2p1p1B1/3pP2Q/3P4/2P5/P1P3PP/R1B2RK1 w - - 1 14","r1k5/p5R1/1pp1p3/3pP1B1/3P4/2P5/P1P3PP/R5K1 w - - 0 24","1q5k/p1p4p/4pN2/3pQpp1/3P4/2P3P1/P4rPP/5RK1 w - - 0 29","r1b2k1r/p1p2ppp/1p5n/1B2q3/8/2N5/PP3PPP/R2Q1RK1 w - - 2 15","r2qkbnr/pppnp1p1/7p/3pN1p1/2PP4/4P3/PP3PPP/1R1QKB1R w Kkq - 2 8","r5k1/1pp4p/p1n3p1/4pb2/2P5/5KBP/P2r1PP1/1Q6 b - - 2 30","5r2/ppp1k1bp/6p1/8/2B1K3/N1P1P2P/PP4P1/R6n b - - 5 19","rn1qkb1r/pp2pppp/2p1bn2/4N2Q/2BPp3/2N5/PPP2PPP/R1B1K2R w KQkq - 8 8","8/p1pq1pkp/3p1pp1/1p6/3P4/2P2K2/PPb2P2/4RR2 b - - 0 33","r4rk1/1p2np2/1qn1p1pP/pB1pP1p1/P2P4/1N3Q2/1P3P2/3RK2R w K - 0 21","5r1r/pp1k2p1/2p1p1p1/B1PNP1n1/4P1P1/1Q3Pq1/PP5p/R4R1K w - - 1 27","r4rk1/pp3p2/3p2p1/2pP2q1/2B1P1nb/3QR3/PPP5/5RK1 b - - 3 23","rn4r1/ppp4p/4b1k1/5p2/7Q/8/PPP2PPP/RNB1R1K1 w - - 1 20","1r3rk1/4bppp/3p4/p2Pp1P1/2q1P3/2PQB2P/P1K5/3R2R1 b - - 4 25","r4b1r/1Q6/3qpk2/p2pN3/3Pp2p/1P2P2P/5PP1/2R3K1 w - - 6 24","3r2k1/1pR3pp/p3p3/3pP3/2bP1Q2/1q3N2/5PPP/4R1K1 w - - 1 22","r4rk1/ppq3p1/7p/8/4R1nP/1PP5/PB3P1P/R2Q2K1 b - - 0 20","6k1/pp4bp/3p2p1/1r6/2q1p3/K1P1B3/PPQ2P2/R7 b - - 11 37","rn4k1/pR4bp/2p1p1p1/8/2P2rP1/2q5/P4P2/3KR3 b - - 3 25","r5k1/p6p/1p4q1/2p5/P1Pb3n/1P1p2P1/7P/2Q1R2K b - - 6 39","4r3/pQ4pp/2n5/2k5/5B2/2K5/PPP1q2P/RN6 b - - 6 30","4r3/pQ4pp/2n5/2k5/2q2B2/8/PPPK3P/RN6 b - - 8 31","5kr1/8/1b3pQ1/p3pN1p/4P1p1/8/2P2PPP/5RK1 w - - 6 38","8/5r1p/1p4p1/p1b5/4P3/1P2R1kP/P5P1/7K b - - 15 34","6k1/b4p1p/4p1p1/4P3/5K2/5P2/5P1P/qr6 b - - 1 36","2Q5/8/2p5/1k2p3/N3P3/1P4Pp/P1q5/5K2 w - - 8 41","2q3k1/1R6/3r2p1/K1p5/P5b1/1PP1P3/2P5/8 b - - 0 32","8/4k1pp/8/3Q1R2/pqP5/1P6/7P/7K w - - 1 44","2r3k1/5p1p/6p1/1p6/1P4PK/4q2P/8/8 b - - 1 41","6k1/5p2/6p1/3r4/P6p/7P/2P2qPK/8 b - - 0 36","6k1/5p1p/4p1p1/4b3/7K/5P2/5P1P/q6r b - - 5 40","2r3k1/7p/5p2/1p6/1P3KP1/7q/8/8 b - - 1 44","2Q5/8/3pQ3/p2P4/1k6/8/PpP5/6K1 w - - 2 42","6k1/1pp2p2/6p1/p3q3/K7/7p/8/8 b - - 1 43"]};
+/*MATES:END*/
+var ROUND_MS = 45000, PENALTY_MS = 3000, COUNT_MS = 3000, PAUSE_MS = 3500;
+var R = { phase: 'off' };
+function rnow() { return performance.now(); }
+function raceBusy() { return R.phase === 'count' || R.phase === 'solve' || R.phase === 'wait' || R.phase === 'result'; }
+function raceAllowed() { return dcOpen() && (S.over || S.moves.length === 0); }
+function raceSend(o) { o.t = 'race'; return sendMsg(o); }
+function sec(ms) { return (ms / 1000).toFixed(1).replace('.', ',') + ' s'; }
+
+function hasMate1(g) { return g.moves().some(function (s) { return s.indexOf('#') > 0; }); }
+// Erzwingt der gerade gespielte Zug das Matt im nächsten Zug? (jede Antwort muss ein Matt zulassen)
+function stillForced(g) {
+  var replies = g.moves();
+  if (!replies.length) return false;                       // Patt
+  for (var i = 0; i < replies.length; i++) { g.move(replies[i]); var m = hasMate1(g); g.undo(); if (!m) return false; }
+  return true;
+}
+// Verteidigung: die Antwort mit den wenigsten Mattzügen
+function bestDefence(g) {
+  var replies = g.moves().sort(), best = null, least = 1e9;
+  replies.forEach(function (r) { g.move(r); var c = g.moves().filter(function (s) { return s.indexOf('#') > 0; }).length; g.undo(); if (c < least) { least = c; best = r; } });
+  return best;
+}
+function solutionOf(fen, n) {
+  var g = new Chess(fen), list = g.moves();
+  for (var i = 0; i < list.length; i++) {
+    if (list[i].indexOf('#') > 0) return list[i];
+    if (n === 2) { g.move(list[i]); var ok = stillForced(g); g.undo(); if (ok) return list[i]; }
+  }
+  return '';
+}
+
+function raceReset(phase) {
+  clearTimeout(R.next);
+  R = { phase: phase || 'off', id: R.id, total: R.total || 5, lv: R.lv || 'mix', me: 0, opp: 0, marks: [], i: -1 };
+}
+function raceMsg(text, cls) { var e = $('raceMsg'); e.textContent = text || ''; e.className = cls || ''; }
+function raceOpen(open) {
+  $('racePanel').classList.toggle('hidden', !open);
+  if (open) raceRender();
+}
+function raceEntry() {
+  var b = $('btnRace');
+  b.hidden = !(raceAllowed() || R.phase !== 'off');
+  // Von der Startseite mit „Matt-Rennen“ gekommen: nach dem Verbinden gleich die Auswahl zeigen
+  var want = false;
+  try { want = sessionStorage.getItem('duell_race') === '1'; } catch (e) { /* ok */ }
+  if (want && S.role === 'host' && raceAllowed() && R.phase === 'off') {
+    try { sessionStorage.removeItem('duell_race'); } catch (e) { /* ok */ }
+    raceReset('setup'); raceOpen(true);
+  }
+}
+function raceRender() {
+  var p = R.phase, live = raceBusy() || p === 'done';
+  $('raceMe').textContent = S.name || 'Du'; $('raceOpp').textContent = S.oppName || 'Gegner';
+  $('raceNum').textContent = (R.me || 0) + ' : ' + (R.opp || 0);
+  $('raceSetup').classList.toggle('hidden', !(p === 'off' || p === 'setup' || p === 'asked' || p === 'done'));
+  $('raceAsk').classList.toggle('hidden', p !== 'invited');
+  $('raceStage').classList.toggle('hidden', !R.fen);
+  $('raceStage').classList.toggle('locked', p === 'solve' && R.lockUntil > rnow());
+  $('raceInvite').disabled = !raceAllowed() || p === 'asked';
+  $('raceInvite').textContent = p === 'asked' ? 'Warte auf Antwort …' : (p === 'done' ? 'Noch ein Rennen' : 'Herausfordern');
+  $('raceTask').textContent = live && R.i >= 0 && p !== 'done' ? 'Runde ' + (R.i + 1) + '/' + R.total + ' · ' + (R.turn === 'w' ? 'Weiß' : 'Schwarz') + ' setzt in ' + R.n + ' matt' : '';
+  if (p !== 'solve') $('raceClock').textContent = '';
+  var dots = $('raceDots'); dots.textContent = '';
+  if (live) for (var i = 0; i < R.total; i++) { var d = document.createElement('i'); d.className = (R.marks[i] || '') + (i === R.i && p !== 'done' ? ' now' : ''); dots.appendChild(d); }
+  raceBoardRender();
+}
+function raceBoardRender() {
+  var b = $('raceBoard'); b.textContent = '';
+  if (!R.fen || !R.game) return;
+  var flip = R.turn === 'b', hidden = R.phase === 'count';
+  for (var i = 0; i < 64; i++) {
+    var row = i >> 3, col = i & 7, file = flip ? 7 - col : col, rank = flip ? row : 7 - row, sq = sqName(file, rank);
+    var d = document.createElement('div');
+    d.className = 'sq ' + (((file + rank) % 2) ? 'l' : 'd');
+    d.setAttribute('data-sq', sq); d.setAttribute('role', 'gridcell');
+    var pc0 = hidden ? null : R.game.get(sq);               // während des Countdowns bleibt die Stellung verdeckt
+    if (R.last && (R.last[0] === sq || R.last[1] === sq)) d.className += ' last';
+    if (R.sel === sq) d.className += ' sel';
+    if (R.targets && R.targets.indexOf(sq) >= 0) d.className += ' tgt' + (pc0 ? ' cap' : '');
+    if (pc0) { d.appendChild(pieceEl(pc0.color, pc0.type)); d.setAttribute('aria-label', sq + ' ' + (pc0.color === 'w' ? 'weißer ' : 'schwarzer ') + NAME_DE[pc0.type]); } else d.setAttribute('aria-label', sq);
+    if (col === 0) { var rl = document.createElement('span'); rl.className = 'co r'; rl.textContent = String(rank + 1); d.appendChild(rl); }
+    if (row === 7) { var fl = document.createElement('span'); fl.className = 'co f'; fl.textContent = 'abcdefgh'[file]; d.appendChild(fl); }
+    b.appendChild(d);
+  }
+}
+
+/* ----- Ablauf ----- */
+function racePick(lv, total) {
+  var pools = { 1: MATES[1].slice(), 2: MATES[2].slice() }, list = [];
+  for (var i = 0; i < total; i++) {
+    var n = lv === 'mix' ? (i % 2 ? 2 : 1) : +lv, pool = pools[n];
+    list.push({ fen: pool.splice(Math.floor(Math.random() * pool.length), 1)[0], n: n });
+  }
+  return list;
+}
+function raceBegin() {                                       // nur Host
+  var id = Math.random().toString(36).slice(2, 8), list = racePick(R.lv, R.total);
+  R.id = id; R.me = 0; R.opp = 0; R.marks = []; R.list = list;
+  raceSend({ a: 'start', id: id, total: R.total });
+  raceRound(0);
+}
+function raceRound(i) {                                      // nur Host
+  if (S.role !== 'host' || !R.list || !R.list[i]) return;
+  var q = R.list[i];
+  raceSend({ a: 'round', id: R.id, i: i, fen: q.fen, n: q.n });
+  raceShow(i, q.fen, q.n);
+}
+function raceShow(i, fen, n) {
+  R.phase = 'count'; R.i = i; R.fen = fen; R.n = n; R.game = new Chess(fen); R.turn = R.game.turn(); R.step = 0;
+  R.sel = null; R.targets = []; R.last = null; R.lockUntil = 0; R.mine = undefined; R.theirs = undefined; R.decided = false;
+  R.goAt = rnow() + COUNT_MS;
+  raceMsg('Gleich geht es los …'); $('raceCount').classList.remove('hidden'); $('raceCount').textContent = '3';
+  raceOpen(true);
+}
+function raceElapsed() { return rnow() - R.goAt; }
+function raceReport(ms) {                                    // ms = eigene Zeit, null = nicht geschafft
+  if (R.mine !== undefined) return;
+  R.mine = ms; R.phase = 'wait'; R.sel = null; R.targets = [];
+  raceSend({ a: 'done', id: R.id, i: R.i, ms: ms });
+  if (ms != null) raceMsg('Matt in ' + sec(ms) + '! Warte auf ' + (S.oppName || 'Gegner') + ' …', 'good');
+  raceRender(); raceJudge();
+}
+function raceJudge() {                                       // nur Host
+  if (S.role !== 'host' || R.decided || R.mine === undefined || R.theirs === undefined) return;
+  R.decided = true;
+  var h = R.mine, g = R.theirs;
+  var w = h == null && g == null ? 'none' : g == null || (h != null && h < g) ? 'h' : h == null || g < h ? 'g' : 'both';
+  var sh = R.me + (w === 'h' || w === 'both' ? 1 : 0), sg = R.opp + (w === 'g' || w === 'both' ? 1 : 0);
+  raceSend({ a: 'result', id: R.id, i: R.i, w: w, h: h, g: g, sh: sh, sg: sg });
+  raceResult(w, h, g, sh, sg);
+  var i = R.i, id = R.id;
+  R.next = setTimeout(function () {
+    if (R.id !== id || R.phase !== 'result') return;
+    if (i + 1 < R.total) raceRound(i + 1); else { raceSend({ a: 'end', id: id }); raceEnd(); }
+  }, PAUSE_MS);
+}
+function raceResult(w, h, g, sh, sg) {
+  var host = S.role === 'host', mine = host ? h : g, theirs = host ? g : h;
+  var mark = w === 'none' || w === 'both' ? w : ((w === 'h') === host ? 'me' : 'opp');
+  R.phase = 'result'; R.marks[R.i] = mark; R.me = host ? sh : sg; R.opp = host ? sg : sh; R.sel = null; R.targets = [];
+  $('raceCount').classList.add('hidden');
+  var sol = solutionOf(R.fen, R.n), name = S.oppName || 'Gegner';
+  var head = mark === 'me' ? 'Punkt für dich' : mark === 'opp' ? 'Punkt für ' + name : mark === 'both' ? 'Gleichstand, beide punkten' : 'Niemand hat es geschafft';
+  var times = (mine != null ? 'du ' + sec(mine) : 'du –') + ' · ' + name + ' ' + (theirs != null ? sec(theirs) : '–');
+  raceMsg(head + ' (' + times + '). Eine Lösung: ' + sol, mark === 'me' || mark === 'both' ? 'good' : 'bad');
+  raceRender();
+}
+function raceEnd() {
+  var name = S.oppName || 'Gegner';
+  R.phase = 'done';
+  raceMsg(R.me > R.opp ? '🏆 Du gewinnst das Rennen ' + R.me + ' : ' + R.opp : R.me < R.opp ? name + ' gewinnt das Rennen ' + R.opp + ' : ' + R.me : 'Unentschieden ' + R.me + ' : ' + R.opp, R.me >= R.opp ? 'good' : 'bad');
+  raceRender();
+}
+function raceStop(text) {
+  raceReset('setup'); $('raceCount').classList.add('hidden'); raceMsg(text, text ? 'bad' : ''); raceRender(); raceEntry();
+}
+function onRace(d) {
+  if (typeof d.a !== 'string') return;
+  var host = S.role === 'host';
+  if (d.a === 'invite') {
+    if (!raceAllowed() || raceBusy()) { raceSend({ a: 'no' }); return; }
+    var total = [3, 5, 10].indexOf(d.total) >= 0 ? d.total : 5, lv = ['mix', '1', '2'].indexOf(d.lv) >= 0 ? d.lv : 'mix';
+    if (R.phase === 'asked' && host) return;                 // beide gleichzeitig: die Einladung des Hosts gilt
+    raceReset('invited'); R.total = total; R.lv = lv;
+    $('raceAskTxt').textContent = (S.oppName || 'Gegner') + ' fordert dich heraus: ' + total + ' Runden, ' + (lv === 'mix' ? 'Matt in 1 und 2' : 'Matt in ' + lv) + '.';
+    raceMsg(''); raceOpen(true); return;
+  }
+  if (d.a === 'yes') { if (host && R.phase === 'asked') raceBegin(); else if (!host && R.phase === 'asked') { /* der Host startet */ } return; }
+  if (d.a === 'no') { if (R.phase === 'asked') { raceReset('setup'); raceMsg((S.oppName || 'Gegner') + ' möchte gerade nicht.', 'bad'); raceRender(); } return; }
+  if (d.a === 'quit') { if (R.phase !== 'off') raceStop((S.oppName || 'Gegner') + ' hat das Rennen verlassen.'); return; }
+  if (d.a === 'start') {
+    if (host || (R.phase !== 'asked' && R.phase !== 'accepted')) return;
+    R.id = clean(d.id, 8); R.total = [3, 5, 10].indexOf(d.total) >= 0 ? d.total : 5; R.me = 0; R.opp = 0; R.marks = []; R.fen = null; R.phase = 'accepted'; return;
+  }
+  if (d.id !== R.id) return;
+  if (d.a === 'round') {
+    if (host || (R.phase !== 'accepted' && R.phase !== 'result')) return;
+    if (!(d.i >= 0 && d.i < R.total && d.i === Math.floor(d.i)) || (d.n !== 1 && d.n !== 2) || typeof d.fen !== 'string' || d.fen.length > 100 || !new Chess().validate_fen(d.fen).valid) return;
+    raceShow(d.i, d.fen, d.n); return;
+  }
+  if (d.a === 'end') { if (!host && R.phase === 'result') raceEnd(); return; }   // ohne Rundennummer
+  if (d.i !== R.i) return;
+  if (d.a === 'done') {
+    if (R.theirs !== undefined) return;
+    R.theirs = typeof d.ms === 'number' && isFinite(d.ms) && d.ms >= 0 ? Math.round(d.ms) : null;
+    raceJudge(); return;
+  }
+  if (d.a === 'result' && !host) {
+    if (['h', 'g', 'both', 'none'].indexOf(d.w) < 0 || !isFinite(d.sh) || !isFinite(d.sg)) return;
+    raceResult(d.w, isFinite(d.h) && d.h !== null ? +d.h : null, isFinite(d.g) && d.g !== null ? +d.g : null, +d.sh, +d.sg); return;
+  }
+}
+
+/* ----- Züge im Rennen ----- */
+function raceMove(from, to, promo) {
+  if (R.phase !== 'solve' || R.lockUntil > rnow() || R.replying) return;
+  var g = R.game, m = g.move({ from: from, to: to, promotion: promo });
+  R.sel = null; R.targets = [];
+  if (!m) { raceBoardRender(); return; }
+  var mate = g.in_checkmate(), good = mate || (R.n === 2 && R.step === 0 && stillForced(g));
+  R.last = [m.from, m.to]; tickSound(!!m.captured);
+  if (mate) { raceReport(Math.round(raceElapsed())); return; }
+  if (!good) {
+    g.undo(); R.last = null; R.lockUntil = rnow() + PENALTY_MS;
+    raceMsg(m.san + ' setzt nicht matt. 3 Sekunden Pause.', 'bad'); raceRender(); return;
+  }
+  R.step = 1; R.replying = true; raceMsg(m.san + ' ist richtig. Jetzt das Matt!', 'good'); raceBoardRender();
+  var id = R.id, i = R.i;
+  setTimeout(function () {
+    R.replying = false;
+    if (R.id !== id || R.i !== i || R.phase !== 'solve') return;
+    var r = g.move(bestDefence(g)); if (r) { R.last = [r.from, r.to]; tickSound(!!r.captured); }
+    raceBoardRender();
+  }, 250);
+}
+function raceTry(from, to) {
+  var c = R.game.moves({ square: from, verbose: true }).filter(function (m) { return m.to === to; });
+  if (!c.length) return false;
+  if (!c[0].promotion) { raceMove(from, to); return true; }
+  var box = $('promoBox'); box.textContent = '';
+  ['q', 'r', 'b', 'n'].forEach(function (k) {
+    var bt = document.createElement('button');
+    bt.appendChild(pieceEl(R.turn, k)); bt.setAttribute('data-promo', k); bt.setAttribute('aria-label', NAME_DE[k]);
+    bt.onclick = function () { $('promo').classList.add('hidden'); raceMove(from, to, k); };
+    box.appendChild(bt);
+  });
+  $('promo').classList.remove('hidden'); return true;
+}
+function raceSquare(el) { while (el && el !== document.body) { if (el.getAttribute && el.getAttribute('data-sq')) return el.getAttribute('data-sq'); el = el.parentNode; } return null; }
+$('raceBoard').addEventListener('pointerdown', function (e) {
+  if (e.button > 0 || R.phase !== 'solve' || R.lockUntil > rnow() || R.replying) return;
+  var sq = raceSquare(e.target); if (!sq) return;
+  e.preventDefault();
+  if (R.sel && R.targets.indexOf(sq) >= 0) { raceTry(R.sel, sq); return; }
+  var p = R.game.get(sq);
+  if (p && p.color === R.game.turn()) { R.sel = sq; R.targets = R.game.moves({ square: sq, verbose: true }).map(function (m) { return m.to; }); R.downAt = sq; }
+  else { R.sel = null; R.targets = []; }
+  raceBoardRender();
+});
+// Ziehen: loslassen auf einem Zielfeld führt den Zug ebenfalls aus
+window.addEventListener('pointerup', function (e) {
+  if (R.phase !== 'solve' || !R.sel || !R.downAt) return;
+  var from = R.downAt; R.downAt = null;
+  var sq = raceSquare(document.elementFromPoint(e.clientX, e.clientY));
+  if (sq && sq !== from && R.sel === from && R.targets.indexOf(sq) >= 0) raceTry(from, sq);
+});
+
+/* ----- Takt: Countdown, Uhr, Sperre, Zeitlimit, Verbindungsverlust ----- */
+setInterval(function () {
+  if (R.phase === 'off' || R.phase === 'setup' || R.phase === 'done') return;
+  if (!dcOpen()) { raceStop('Verbindung unterbrochen, das Rennen ist beendet.'); return; }
+  if (R.phase === 'count') {
+    var left = R.goAt - rnow();
+    if (left > 0) { $('raceCount').textContent = String(Math.ceil(left / 1000)); return; }
+    R.phase = 'solve'; R.goAt = rnow(); $('raceCount').classList.add('hidden'); raceMsg('Los! Setze matt.'); raceRender(); return;
+  }
+  if (R.phase === 'solve') {
+    var t = raceElapsed();
+    $('raceClock').textContent = sec(t);
+    if (R.lockUntil && R.lockUntil <= rnow()) { R.lockUntil = 0; raceMsg('Weiter geht es.'); raceRender(); }
+    // Schon langsamer als die gemeldete Zeit des anderen oder Zeitlimit erreicht: diese Runde ist entschieden
+    if (typeof R.theirs === 'number' && t > R.theirs) { raceMsg((S.oppName || 'Gegner') + ' war schneller.', 'bad'); raceReport(null); }
+    else if (t >= ROUND_MS) { raceMsg('Zeit abgelaufen.', 'bad'); raceReport(null); }
+    return;
+  }
+  // Der Host wartet höchstens bis zum Zeitlimit (plus Spielraum) auf die Meldung des Gasts
+  if (R.phase === 'wait' && S.role === 'host' && R.theirs === undefined && raceElapsed() > ROUND_MS + 10000) { R.theirs = null; raceJudge(); }
+}, 100);
+
+/* ----- Knöpfe ----- */
+$('btnRace').onclick = function () { if (R.phase === 'off') { raceReset('setup'); raceMsg(''); } raceOpen(true); };
+$('raceInvite').onclick = function () {
+  if (!raceAllowed()) return;
+  var total = +$('raceN').value, lv = $('raceLv').value;
+  raceReset('asked'); R.total = total; R.lv = lv;
+  if (!raceSend({ a: 'invite', total: total, lv: lv })) { R.phase = 'setup'; }
+  raceMsg(''); raceRender();
+};
+$('raceYes').onclick = function () {
+  if (R.phase !== 'invited') return;
+  if (S.role === 'host') { raceSend({ a: 'yes' }); raceBegin(); }
+  else { R.phase = 'asked'; raceSend({ a: 'yes' }); raceMsg('Gleich geht es los …'); raceRender(); }
+};
+$('raceNo').onclick = function () { raceSend({ a: 'no' }); raceReset('setup'); raceOpen(false); };
+$('raceClose').onclick = function () {
+  if (R.phase !== 'off' && R.phase !== 'setup' && R.phase !== 'done') raceSend({ a: R.phase === 'invited' ? 'no' : 'quit' });
+  raceReset('off'); R.fen = null; raceMsg(''); $('raceCount').classList.add('hidden'); raceOpen(false); render();
+};
+$('raceChat').onclick = function () { openChat(!S.chatOpen); };
+$('createRaceBtn').onclick = function () { try { sessionStorage.setItem('duell_race', '1'); } catch (e) { /* ok */ } $('createBtn').onclick({ race: true }); };
+function raceState() {
+  return { phase: R.phase, i: R.i, total: R.total, n: R.n, fen: R.game && R.phase !== 'count' ? R.game.fen() : null, start: R.fen || null, me: R.me, opp: R.opp, mine: R.mine, locked: R.lockUntil > rnow(), marks: (R.marks || []).slice(), msg: $('raceMsg').textContent, open: !$('racePanel').classList.contains('hidden'), pool: [MATES[1].length, MATES[2].length] };
+}
 
 /* Test-Zugang: gibt nur Lesezugriff und die eigenen Bedienfunktionen frei, keine Engine. */
 window.__duell = {
@@ -1494,6 +1855,7 @@ window.__duell = {
       unread: S.unread, chatOpen: S.chatOpen, chatMute: S.chatMute, chat: S.chat.map(function (m) { return (m.me ? 'ich: ' : 'er: ') + m.t; })
     };
   },
+  race: raceState,
   move: function (u) { return myMove(u.slice(0, 2), u.slice(2, 4), u.length > 4 ? u[4] : undefined); },
   raw: function (o) { return sendMsg(o); },
   forceColor: function (c) { S.color = c; render(); },                       // nur für Tests

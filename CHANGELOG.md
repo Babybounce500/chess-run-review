@@ -1,5 +1,8 @@
 # Änderungsprotokoll
 
+## 2026-11-26 (Matt-Rennen)
+- Im Online Duell neu: **⚔️ Matt-Rennen**. Beide lösen gleichzeitig dieselben Mattaufgaben (Matt in 1 und 2, 3, 5 oder 10 Runden), wer schneller ist, bekommt den Punkt.
+
 ## 2026-11-26 (Mobile Chess entfernt)
 - Der Reiter **Mobile Chess** ist entfernt, die alte Adresse leitet auf **Neural Chess** weiter.
 
