@@ -1980,8 +1980,9 @@ if('serviceWorker' in navigator){
 // Anzeige in der Seitenleiste: Ist alles für den Betrieb ohne Netz gespeichert?
 (function(){
   const b=document.getElementById('offlineBadge');if(!b||!('serviceWorker' in navigator))return;
-  let timer=0;
+  let timer=0,known=null;
   function show(d){
+    known=d;
     const ready=d.cached>=d.total,off=!navigator.onLine;
     b.hidden=false;b.classList.toggle('ready',ready&&!off);b.classList.toggle('off',off);
     b.textContent=off?(ready?'Offline · läuft aus dem Speicher':'Offline · nur teilweise gespeichert'):(ready?'✓ Offline bereit':'Offline-Speicher: '+d.cached+' von '+d.total);
@@ -1989,7 +1990,9 @@ if('serviceWorker' in navigator){
     clearTimeout(timer);if(!ready)timer=setTimeout(ask,5000);
   }
   function ask(){navigator.serviceWorker.ready.then(reg=>{if(!reg.active)return;const ch=new MessageChannel();ch.port1.onmessage=e=>show(e.data);reg.active.postMessage('offline-status',[ch.port2])})}
-  window.addEventListener('online',ask);window.addEventListener('offline',ask);
+  // Beim Wechsel sofort umschalten (das Nachzählen aller Dateien dauert einen Moment), danach neu fragen
+  const flip=()=>{if(known)show(known);ask()};
+  window.addEventListener('online',flip);window.addEventListener('offline',flip);
   window.addEventListener('load',ask);
 })();
 updateInstallButton();

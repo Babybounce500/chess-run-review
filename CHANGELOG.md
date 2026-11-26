@@ -1,5 +1,10 @@
 # Änderungsprotokoll
 
+## 2026-11-26 (Analysebrett: Pfeile, Varianten, Erklärungen)
+- **Vorschlagspfeile** für die besten Züge, **Varianten durchklicken** und abspielen, Zugliste mit Vor und Zurück, **Urteil zum eigenen Zug**, Erklärung in Worten, Wendepunkte nach der Gesamtanalyse, deutsche Notation, Kurzanleitung und Tasten.
+- Stellungswechsel reagiert jetzt typisch in unter 0,4 s (vorher bis 3 s): eine vorgeladene zweite Engine springt ein.
+
+
 ## 2026-11-26 (Analysebrett in Orbitron, Review und Media Queries)
 - Neuer Reiter **Analysebrett** in der Orbitron-Sidebar: schnelle Engine, Stellungen bauen, Gesamtanalyse. Eigener Rahmen, offline nutzbar, Direktlink `#/analysebrett`. Während einer Duellpartie gesperrt.
 - Review: Umwandlung wählbar, Schutz bei Engine-Absturz, laufende Analyse pausiert im Hintergrund und endet nach 60 s, Zusatz-Arbeiter werden beendet.

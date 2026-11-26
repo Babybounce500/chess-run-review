@@ -56,7 +56,9 @@ select,textarea,input{padding:7px 9px;width:100%}
 .boardrow{display:flex;gap:8px}
 #evalbar{width:16px;flex:none;border-radius:6px;overflow:hidden;background:#333;position:relative;border:1px solid var(--line,#ddd)}
 #evalfill{position:absolute;left:0;right:0;bottom:0;height:50%;background:#f4f4f4;transition:height .25s}
-#board{flex:1;min-width:0;align-self:flex-start;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));grid-template-rows:repeat(8,minmax(0,1fr));aspect-ratio:1/1;border-radius:8px;overflow:hidden;user-select:none;touch-action:manipulation}
+.boardwrap{flex:1;min-width:0;align-self:flex-start;position:relative}
+#arrows{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3}
+#board{width:100%;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));grid-template-rows:repeat(8,minmax(0,1fr));aspect-ratio:1/1;border-radius:8px;overflow:hidden;user-select:none;touch-action:manipulation}
 .sq{position:relative;display:flex;align-items:center;justify-content:center;cursor:pointer;min-width:0;min-height:0;overflow:hidden}
 .sq.l{background:#f0d9b5}.sq.d{background:#b58863}
 .sq.last{box-shadow:inset 0 0 0 100px rgba(255,215,0,.35)}
@@ -109,6 +111,35 @@ progress{width:100%;height:8px}
 #times{font-variant-numeric:tabular-nums}
 #times b{font-size:1.4rem}
 @media (max-width:760px){.boardrow{flex-wrap:wrap}#palette{contain:none;width:100%;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;max-width:420px;margin:0 auto}#an{grid-template-columns:minmax(0,1fr)}.kpis{grid-template-columns:repeat(2,1fr)}#sum{grid-template-columns:1fr}main{padding:10px 8px}}
+/* Zugleiste, Variante, Urteil, Zugliste, Erklärungen */
+.nav{margin-top:8px}
+#an.previewing .nav{display:none}
+.nav .step{min-width:44px;padding-left:8px!important;padding-right:8px!important}
+#preview{border-left:4px solid #d89b00;margin-top:8px}
+#preview .head,#verdict .head{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.chips{display:flex;flex-wrap:wrap;gap:3px;min-width:0}
+html[data-theme] .chips button,.chips button{min-height:0;padding:3px 7px!important;border-radius:7px!important;font:inherit;font-size:.86rem!important;line-height:1.35;background:var(--hover,#eef)!important;border:1px solid transparent;white-space:nowrap}
+html[data-theme] .chips button.on,.chips button.on{background:var(--accent,#1a73e8)!important;color:var(--accent-ink,#fff)!important}
+@media (pointer:coarse){html[data-theme] .chips button,.chips button{min-height:34px}}
+#verdict{margin-top:8px;border-left:4px solid var(--accent,#1a73e8)}
+#verdict.good{border-left-color:#188038}#verdict.i{border-left-color:#d89b00}#verdict.m{border-left-color:#e06a00}#verdict.b{border-left-color:#c0392b}
+#verdict p{margin:0}
+#moveList{max-height:112px;overflow:auto}
+#moveList .no{color:var(--muted,#666);font-size:.8rem;align-self:center;padding-left:4px}
+html[data-theme] #moveList button.i,#moveList button.i{box-shadow:inset 0 -3px 0 #d89b00}
+html[data-theme] #moveList button.m,#moveList button.m{box-shadow:inset 0 -3px 0 #e06a00}
+html[data-theme] #moveList button.b,#moveList button.b{box-shadow:inset 0 -3px 0 #c0392b}
+.line{align-items:flex-start}
+.line span.mv{flex:1;display:flex;flex-wrap:wrap;gap:3px}
+.line .dot{flex:none;width:10px;height:10px;border-radius:50%;margin-top:8px}
+html[data-theme] .line .see,.line .see{flex:none;padding:3px 10px!important}
+#insights{margin:6px 0 0;padding-left:18px}#insights li{margin:4px 0}
+#cfg summary,#help summary{cursor:pointer;color:var(--muted,#666);font-size:.85rem}
+#cfg .row{margin-top:8px}
+#help ul{padding-left:18px;margin:8px 0 0;font-size:.88rem}
+kbd{border:1px solid var(--line,#ccc);border-radius:4px;padding:0 4px;font-size:.8rem}
+#turning{display:flex;flex-direction:column;gap:6px}
+html[data-theme] #turning button,#turning button{text-align:left;border-radius:10px!important;font-family:system-ui,sans-serif!important;font-size:.9rem!important}
 /* Eingebettet in Orbitron: dort steht schon eine Kopfzeile */
 html.embed .top,html.embed .intro{display:none}
 html.embed main{padding-top:8px}
@@ -131,8 +162,10 @@ html.embed main{padding-top:8px}
 }
 /* Große Bildschirme */
 @media (min-width:1400px) and (min-height:860px){main{max-width:1300px}#an{grid-template-columns:minmax(0,720px) minmax(360px,1fr)}}
-/* Handy hochkant */
+/* Handy hochkant: Einleitung weg, Figurenablage erst beim Bauen, damit Variante und Urteil direkt am Brett liegen */
 @media (max-width:600px){
+  .intro{display:none}
+  #an:not(.building) #palette{display:none}
   .tabs{flex-wrap:nowrap}.tabs button{flex:1 1 0;min-width:0;padding-left:4px!important;padding-right:4px!important;font-size:.7rem!important}
   .card{padding:10px;margin-bottom:10px}
   .kpi b{font-size:1rem}
@@ -227,12 +260,19 @@ html.embed .ob-hide-embed{display:none!important}
 <main>
   <div class="top"><h1 class="ob-brand"><span class="ob-mark" aria-hidden="true">♞</span><span class="ob-text"><span class="ob-word">Orbitron</span><span class="ob-sub">Engine-Labor</span></span></h1><button id="btnTheme" class="ob-theme" type="button" aria-label="Design wechseln"></button></div>
   <p class="note intro">Stockfish läuft in deinem Browser. Stockfish 10 als WebAssembly (neu), im Vergleich auch die bisherige asm.js-Fassung. Nur zum Üben und Analysieren, nie während einer laufenden Partie.</p>
-  <div class="row tabs" style="margin-bottom:10px"><button id="tabAn" type="button" class="on">Analyse</button><button id="tabFull" type="button">Gesamtanalyse</button><button id="tabCmp" type="button">Vergleich alt gegen neu</button></div>
+  <div class="row tabs" style="margin-bottom:10px"><button id="tabAn" type="button" class="on">Analyse</button><button id="tabFull" type="button">Gesamtanalyse</button><button id="tabCmp" type="button" title="Alte und neue Engine vergleichen">Engine-Test</button></div>
 
   <section id="an">
     <div>
-      <div class="boardrow"><div id="evalbar" title="Bewertung aus Sicht von Weiß"><div id="evalfill"></div></div><div id="board" role="grid" aria-label="Analysebrett"></div><div id="palette" aria-label="Figuren zum Aufstellen"></div></div>
-      <div class="row" style="margin-top:8px"><button id="back" type="button">Zug zurück</button><button id="flip" type="button">Drehen</button><button id="reset" type="button">Grundstellung</button><button id="playBest" type="button">Besten Zug spielen</button><button id="build" type="button" aria-pressed="false">Stellung bauen</button></div>
+      <div class="boardrow"><div id="evalbar" title="Bewertung aus Sicht von Weiß"><div id="evalfill"></div></div><div class="boardwrap"><div id="board" role="grid" aria-label="Analysebrett"></div><svg id="arrows" viewBox="0 0 8 8" aria-hidden="true"></svg></div><div id="palette" aria-label="Figuren zum Aufstellen"></div></div>
+      <div id="preview" class="card hidden">
+        <div class="head"><b>Variante ansehen</b><span id="pvPos" class="note"></span></div>
+        <div id="pvMoves" class="chips" style="margin:8px 0"></div>
+        <div class="row"><button id="pvFirst" class="step" type="button" aria-label="Variante: Anfang">⏮</button><button id="pvPrev" class="step" type="button" aria-label="Variante: zurück">◀</button><button id="pvPlay" type="button">▶ Abspielen</button><button id="pvNext" class="step" type="button" aria-label="Variante: weiter">▶</button><button id="pvLast" class="step" type="button" aria-label="Variante: Ende">⏭</button><button id="pvTake" type="button" class="primary" title="Die gezeigten Züge aufs Brett übernehmen">Übernehmen</button><button id="pvClose" type="button">Schließen</button></div>
+      </div>
+      <div class="row nav"><button id="first" class="step" type="button" aria-label="Zum Anfang" title="Zum Anfang (Pos1)">⏮</button><button id="back" class="step" type="button" aria-label="Zug zurück" title="Zug zurück (Pfeil links)">◀</button><button id="fwd" class="step" type="button" aria-label="Zug vor" title="Zug vor (Pfeil rechts)">▶</button><button id="end" class="step" type="button" aria-label="Zum Ende" title="Zum Ende (Ende)">⏭</button><button id="flip" type="button">Drehen</button><button id="reset" type="button">Grundstellung</button><button id="playBest" type="button">Besten Zug spielen</button><button id="build" type="button" aria-pressed="false">Stellung bauen</button></div>
+      <div id="verdict" class="card hidden" role="status"><div class="head"><p id="vText"></p><span class="row" style="flex-wrap:nowrap"><button id="vShow" type="button">Besser ansehen</button><button id="vClose" type="button" aria-label="Hinweis schließen">✕</button></span></div></div>
+      <div id="movesCard" class="card hidden" style="margin-top:8px"><div id="moveList" class="chips" aria-label="Züge der Partie"></div></div>
       <div id="buildBar" class="card hidden" style="margin-top:8px">
         <p class="note" style="margin:0 0 8px">Zieh Figuren vom Rand aufs Brett, verschiebe sie frei, zieh sie vom Brett, um sie zu entfernen. Oder tippe eine Figur am Rand an und dann die Felder.</p>
         <div class="row"><label>Am Zug <select id="turnSel"><option value="w">Weiß</option><option value="b">Schwarz</option></select></label><button id="clearB" type="button">Brett leeren</button><button id="startB" type="button">Grundstellung</button><button id="buildDone" type="button" class="primary">Fertig</button></div>
@@ -244,11 +284,7 @@ html.embed .ob-hide-embed{display:none!important}
     </div>
     <div>
       <div class="card">
-        <div class="row">
-          <label>Engine <select id="engSel"><option value="wasm">Neu (WebAssembly)</option><option value="asm">Alt (asm.js)</option></select></label>
-          <label>Linien <select id="mpv"><option>1</option><option selected>3</option><option>5</option></select></label>
-          <button id="toggle" type="button" class="primary">Analyse anhalten</button>
-        </div>
+        <div class="row" style="justify-content:space-between"><b>Beste Züge</b><button id="toggle" type="button" class="primary">Analyse anhalten</button></div>
         <div class="kpis">
           <div class="kpi"><b id="kEval">–</b><span>Bewertung</span></div>
           <div class="kpi"><b id="kDepth">–</b><span>Tiefe</span></div>
@@ -256,12 +292,30 @@ html.embed .ob-hide-embed{display:none!important}
           <div class="kpi"><b id="kNodes">–</b><span>geprüft</span></div>
         </div>
         <div id="lines"></div>
+        <p class="note" style="margin:6px 0">Tippe einen Zug in einer Variante an, um ihn auf dem Brett zu sehen.</p>
+        <details id="cfg"><summary>Einstellungen</summary>
+          <div class="row">
+            <label>Pfeile <select id="arrowSel"><option value="0">aus</option><option value="1">bester Zug</option><option value="3" selected>drei beste</option></select></label>
+            <label>Varianten <select id="mpv"><option>1</option><option selected>3</option><option>5</option></select></label>
+            <label>Notation <select id="notSel"><option value="de">Deutsch (D T L S)</option><option value="en">Englisch (Q R B N)</option></select></label>
+            <label>Engine <select id="engSel"><option value="wasm">Neu (WebAssembly)</option><option value="asm">Alt (asm.js)</option></select></label>
+          </div>
+        </details>
       </div>
+      <div class="card"><b>Was ist hier los?</b><ul id="insights"><li class="note">Die Erklärung erscheint, sobald die Engine rechnet.</li></ul></div>
       <div class="card">
         <label for="pos">Stellung (FEN) oder Partie (PGN) einfügen</label>
         <textarea id="pos" rows="3" placeholder="FEN oder PGN"></textarea>
         <div class="row" style="margin-top:8px"><button id="load" type="button">Laden</button><span id="loadErr" class="note"></span></div>
       </div>
+      <details id="help" class="card"><summary>So geht’s</summary><ul>
+        <li><b>Pfeile:</b> Grün ist der beste Zug, Blau der zweite, Grau der dritte. Rot zeigt in einer analysierten Partie den gespielten Fehler.</li>
+        <li><b>Variante ansehen:</b> Zug in einer Linie antippen, dann mit ◀ ▶ durchgehen oder abspielen. „Übernehmen“ macht sie zu deinen Zügen.</li>
+        <li><b>Selbst ziehen:</b> Figur antippen, dann das Zielfeld. Danach erscheint ein Urteil zu deinem Zug.</li>
+        <li><b>Stellung bauen:</b> Figuren vom Rand aufs Brett ziehen.</li>
+        <li><b>Ganze Partie:</b> Reiter „Gesamtanalyse“, dann Wendepunkte antippen.</li>
+        <li><b>Tasten:</b> <kbd>←</kbd> <kbd>→</kbd> blättern, <kbd>Pos1</kbd> <kbd>Ende</kbd>, <kbd>F</kbd> dreht, <kbd>Leertaste</kbd> hält die Analyse an, <kbd>Esc</kbd> schließt die Variante.</li>
+      </ul></details>
     </div>
   </section>
 
@@ -281,6 +335,7 @@ html.embed .ob-hide-embed{display:none!important}
     <div id="times" class="card hidden"></div>
     <div id="report" class="hidden">
       <div class="card"><div id="players"></div></div>
+      <div id="turnCard" class="card"><b>Wendepunkte</b><div id="turning" style="margin-top:8px"></div></div>
       <div class="card"><canvas id="graph" aria-label="Bewertungsverlauf aus Sicht von Weiß"></canvas><p class="note" style="margin:6px 0 0">Oben gut für Weiß, unten gut für Schwarz. Tippen öffnet die Stellung.</p></div>
       <div class="card scroll"><table><thead><tr><th>Zug</th><th>Gespielt</th><th>Urteil</th><th>Besser war</th><th>Bewertung danach</th><th>Tiefe</th></tr></thead><tbody id="fRows"></tbody></table></div>
     </div>
@@ -320,7 +375,7 @@ const hasWasm = typeof WebAssembly === 'object';
 
 /* ---------- Engine: ein Arbeiter je Variante, immer nur eine Suche gleichzeitig ---------- */
 class Engine {
-  constructor(kind) { this.kind = kind; this.w = null; this.ready = null; this.busy = null; this.onLine = null; this.gate = Promise.resolve(); }
+  constructor(kind) { this.kind = kind; this.w = null; this.ready = null; this.busy = null; this.onLine = null; this.gate = Promise.resolve(); this.spare = null; }
   start() {
     if (this.ready) return this.ready;
     this.ready = new Promise((res, rej) => {
@@ -353,6 +408,7 @@ class Engine {
     this.busy = new Promise((res) => {
       let guard = 0;
       this.abort = () => { clearTimeout(guard); this.abort = null; info.failed = true; this.restart(); res(info); };
+      this.release = () => { clearTimeout(guard); info.stopped = true; res(info); };
       if (o.movetime) guard = setTimeout(() => { if (this.abort) this.abort(); }, o.movetime + 8000);
       this.onLine = (l) => {
         if (l.startsWith('info ') && l.includes(' score ') && l.includes(' pv ')) {
@@ -375,10 +431,30 @@ class Engine {
   async stopNow() {
     if (!this.busy) return;
     const p = this.busy; this.w.postMessage('stop');
-    const done = await Promise.race([p.then(() => true), new Promise((r) => setTimeout(() => r(false), 3000))]);
-    if (!done) this.restart();
+    // Diese Stockfish-Fassung hört erst am Ende der laufenden Rechentiefe zu (mitunter Sekunden): dann lieber sofort austauschen
+    const done = await Promise.race([p.then(() => true), new Promise((r) => setTimeout(() => r(false), 150))]);
+    if (!done && this.busy === p) { this.swap(); this.warm(); }
   }
-  restart() { try { this.w.terminate(); } catch (e) { /* ok */ } this.w = null; this.ready = null; this.busy = null; this.onLine = null; this.abort = null; }
+  warm() {                                               // Ersatz im Voraus laden (rechnet nicht, bis er gebraucht wird)
+    if (this.spare) return;
+    let w; try { w = new Worker(FILES[this.kind]); } catch (e) { return; }
+    const sp = { w, ok: false };
+    w.onmessage = (e) => { if (String(e.data) === 'uciok') sp.ok = true; };
+    w.onerror = (e) => { if (e.preventDefault) e.preventDefault(); if (this.spare === sp) this.spare = null; };
+    w.postMessage('uci'); this.spare = sp;
+  }
+  swap() {
+    const release = this.release;
+    try { this.w.terminate(); } catch (e) { /* ok */ }
+    this.busy = null; this.onLine = null; this.abort = null; this.release = null;
+    if (this.spare && this.spare.ok) {
+      const w = this.spare.w; this.spare = null; this.w = w; this.ready = Promise.resolve(this);
+      w.onmessage = (e) => { if (this.onLine) this.onLine(String(e.data)); };
+      w.onerror = (e) => { if (e.preventDefault) e.preventDefault(); if (this.abort) this.abort(); };
+    } else { this.w = null; this.ready = null; }
+    if (release) release();
+  }
+  restart() { if (this.spare) { try { this.spare.w.terminate(); } catch (e) { /* ok */ } this.spare = null; } try { this.w.terminate(); } catch (e) { /* ok */ } this.w = null; this.ready = null; this.busy = null; this.onLine = null; this.abort = null; }
 }
 const engines = { wasm: new Engine('wasm'), asm: new Engine('asm') };
 const LIVE_MS = 60000;                                    // laufende Analyse höchstens eine Minute je Stellung (Akku, Wärme)
@@ -396,31 +472,33 @@ function duelRunning() {
 const fmtEval = (line, turn) => { if (!line) return '–'; const s = turn === 'w' ? 1 : -1; if (line.mate != null) { const m = line.mate * s; return (m > 0 ? '#' : '-#') + Math.abs(line.mate); } const v = line.cp * s / 100; return (v > 0 ? '+' : '') + v.toFixed(2); };
 const fmtBig = (n) => !n ? '–' : n >= 1e6 ? (n / 1e6).toFixed(2) + ' Mio.' : n >= 1e4 ? Math.round(n / 1000) + ' Tsd.' : String(n);
 const uciMove = (g, u) => g.move({ from: u.slice(0, 2), to: u.slice(2, 4), promotion: u.length > 4 ? u[4] : undefined });
-function sanLine(fen, pv, max) {
+const UI = (() => { let v = { arrows: '3', notation: 'de', mpv: '3' }; try { Object.assign(v, JSON.parse(localStorage.getItem('orbitron_lab_ui') || '{}')); } catch (e) { /* Standard */ } return v; })();
+const saveUi = () => { try { localStorage.setItem('orbitron_lab_ui', JSON.stringify(UI)); } catch (e) { /* ok */ } };
+const DE = { K: 'K', Q: 'D', R: 'T', B: 'L', N: 'S' };
+const nice = (san) => UI.notation === 'de' ? san.replace(/^[KQRBN]/, (m) => DE[m]).replace(/=([QRBN])/, (m, p) => '=' + DE[p]) : san;
+function sanList(fen, pv, max) {
   const g = new Chess(fen), out = [];
   for (let i = 0; i < Math.min(pv.length, max); i++) {
     const turn = g.turn(), no = g.fen().split(' ')[5]; const m = uciMove(g, pv[i]); if (!m) break;
-    out.push((turn === 'w' ? no + '. ' : (i === 0 ? no + '… ' : '')) + m.san);
+    out.push((turn === 'w' ? no + '. ' : (i === 0 ? no + '… ' : '')) + nice(m.san));
   }
-  return out.join(' ');
+  return out;
 }
-const sanOne = (fen, u) => { const g = new Chess(fen), m = u && u !== '(none)' ? uciMove(g, u) : null; return m ? m.san : '–'; };
+const sanOne = (fen, u) => { const g = new Chess(fen), m = u && u !== '(none)' ? uciMove(g, u) : null; return m ? nice(m.san) : '–'; };
 
 /* ---------- Analyse ---------- */
-let game = new Chess(), startFen = game.fen(), sel = null, flipped = false, running = true, token = 0, last = null;
+let game = new Chess(), sel = null, flipped = false, running = true, token = 0, last = null, redo = [], notes = null;
 function renderBoard() {
   // Die 64 Felder bleiben dieselben Elemente: nur Geändertes wird angefasst. Sonst gehen während der laufenden Analyse Klicks und Züge verloren.
   const b = $('board'); if (b.children.length !== 64) { b.textContent = ''; for (let i = 0; i < 64; i++) b.appendChild(document.createElement('div')); }
-  const hist = game.history({ verbose: true }), lm = hist[hist.length - 1];
-  const targets = sel ? game.moves({ square: sel, verbose: true }).map((m) => m.to) : [];
-  const hint = last && last.lines[0] && !drag ? last.lines[0].pv[0] : null;
+  const view = preview ? previewGame() : game, hist = view.history({ verbose: true }), lm = hist[hist.length - 1];
+  const targets = sel && !preview ? game.moves({ square: sel, verbose: true }).map((m) => m.to) : [];
   for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
     const f = flipped ? 7 - c : c, rank = flipped ? r + 1 : 8 - r, sq = 'abcdefgh'[f] + rank, el = b.children[r * 8 + c];
     const cls = ['sq', ((f + 1) + rank) % 2 === 0 ? 'd' : 'l'];
     if (!build && lm && (lm.from === sq || lm.to === sq)) cls.push('last');
     if (sel === sq) cls.push('sel');
     if (targets.includes(sq)) cls.push('tgt');
-    if (hint && (hint.slice(0, 2) === sq || hint.slice(2, 4) === sq)) cls.push('hint');
     if (drag && drag.moved && drag.from === sq) cls.push('dragsrc');
     const name = cls.join(' '); if (el.className !== name) el.className = name;
     el.dataset.sq = sq;
@@ -431,35 +509,236 @@ function renderBoard() {
     if (file) { const s = document.createElement('span'); s.className = 'co f'; s.textContent = file; el.appendChild(s); }
     if (num) { const s = document.createElement('span'); s.className = 'co r'; s.textContent = num; el.appendChild(s); }
   }
+  drawArrows();
 }
+/* ---------- Pfeile ---------- */
+const COLORS = ['rgba(21,128,61,.85)', 'rgba(26,115,232,.66)', 'rgba(110,110,110,.6)'], WIDTH = [0.19, 0.14, 0.11];
+let arrowSig = '';
+function arrowList() {
+  if (locked || drag) return [];
+  if (preview) { const u = preview.pv[preview.i]; return u ? [{ uci: u, color: 'rgba(216,155,0,.9)', w: 0.19, rank: 'v' }] : []; }
+  if (build && buildProblem) return [];
+  const out = [], n = Number(UI.arrows);
+  const note = noteHere();
+  if (note && note.tag) out.push({ uci: note.uci, color: 'rgba(192,57,43,.75)', w: 0.13, rank: 'gespielt' });
+  if (n && last && last.fen === game.fen() && last.depth >= 6) last.lines.slice(0, n).forEach((l, k) => { if (l && l.pv[0]) out.push({ uci: l.pv[0], color: COLORS[Math.min(k, 2)], w: WIDTH[Math.min(k, 2)], rank: String(k + 1) }); });
+  return out;
+}
+function drawArrows() {
+  const list = arrowList(), sig = (flipped ? 'f' : '') + list.map((a) => a.rank + a.uci).join();
+  if (sig === arrowSig) return; arrowSig = sig;
+  const svg = $('arrows'); svg.textContent = '';
+  const NS = 'http://www.w3.org/2000/svg', xy = (sq) => { const f = sq.charCodeAt(0) - 97, r = +sq[1]; return [(flipped ? 7 - f : f) + 0.5, (flipped ? r - 1 : 8 - r) + 0.5]; };
+  const make = (tag, attrs) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); return e; };
+  list.slice().reverse().forEach((a) => {                                  // der beste Zug liegt oben
+    const [x1, y1] = xy(a.uci.slice(0, 2)), [x2, y2] = xy(a.uci.slice(2, 4)), len = Math.hypot(x2 - x1, y2 - y1) || 1, ux = (x2 - x1) / len, uy = (y2 - y1) / len;
+    const tip = [x2 - ux * 0.1, y2 - uy * 0.1], head = 0.2 + a.w, base = [tip[0] - ux * head, tip[1] - uy * head], hw = a.w * 1.35;
+    const g = make('g', { 'data-uci': a.uci, 'data-rank': a.rank, fill: a.color, stroke: 'none' });
+    g.appendChild(make('line', { x1: x1 + ux * 0.28, y1: y1 + uy * 0.28, x2: base[0], y2: base[1], stroke: a.color, 'stroke-width': a.w, 'stroke-linecap': 'round' }));
+    g.appendChild(make('polygon', { points: [tip, [base[0] - uy * hw, base[1] + ux * hw], [base[0] + uy * hw, base[1] - ux * hw]].map((p) => p.join(',')).join(' ') }));
+    svg.appendChild(g);
+  });
+}
+
+/* ---------- Zugliste: vor und zurück, ohne spätere Züge zu verlieren ---------- */
+function timeline() { const u = []; let m; while ((m = game.undo())) u.push(m); const start = game.fen(); for (let i = u.length - 1; i >= 0; i--) game.move(u[i]); return { start, done: u.reverse(), ahead: redo.slice().reverse() }; }
+function setGame(g, withNotes) { game = g; redo = []; notes = withNotes || null; sel = null; pending = null; hideVerdict(); closePreview(true); }
+function goTo(n) { while (game.history().length > n) redo.push(game.undo()); while (game.history().length < n && redo.length) game.move(redo.pop()); sel = null; pending = null; hideVerdict(); closePreview(true); }
+function step(n) { if (build) return; const len = game.history().length, max = len + redo.length, to = Math.max(0, Math.min(max, n)); if (to === len) return; goTo(to); analyse(); }
+const noteHere = () => { if (!notes || build) return null; const i = game.history().length; return notes[i] && redo.length ? notes[i] : null; };
+function renderMoves() {
+  const t = timeline(), all = t.done.concat(t.ahead), card = $('movesCard');
+  card.classList.toggle('hidden', build || !all.length); const box = $('moveList'); box.textContent = '';
+  if (build || !all.length) return;
+  const g = new Chess(t.start);
+  all.forEach((m, i) => {
+    const white = g.turn() === 'w', no = g.fen().split(' ')[5], moved = g.move(m); if (!moved) return;
+    if (white || i === 0) { const sp = document.createElement('span'); sp.className = 'no'; sp.textContent = no + (white ? '.' : '…'); box.appendChild(sp); }
+    const b = document.createElement('button'); b.type = 'button'; b.dataset.n = i + 1; b.textContent = nice(moved.san);
+    if (i === t.done.length - 1) b.classList.add('on');
+    if (notes && notes[i] && notes[i].tag) { b.classList.add(notes[i].tag); b.title = TAGS[notes[i].tag]; }
+    box.appendChild(b);
+  });
+  const on = box.querySelector('.on'); if (on) box.scrollTop = Math.max(0, on.offsetTop - box.offsetTop - box.clientHeight / 2);
+  $('first').disabled = $('back').disabled = !t.done.length; $('fwd').disabled = $('end').disabled = !t.ahead.length;
+}
+
+/* ---------- Variante ansehen ---------- */
+let preview = null, pvTimer = 0;
+function previewGame() { const g = new Chess(preview.base); for (let i = 0; i < preview.i; i++) uciMove(g, preview.pv[i]); return g; }
+function openPreview(base, pv, i) {
+  if (locked || !pv.length) return; if (build) setBuild(false);
+  stopPlay(); preview = { base, pv: pv.slice(0, sanList(base, pv, 16).length), i: Math.max(0, Math.min(i, pv.length)), labels: sanList(base, pv, 16) }; sel = null;
+  $('preview').classList.remove('hidden'); $('an').classList.add('previewing'); paintPreview();
+  const r = $('board').getBoundingClientRect(); if (r.top < 0 || r.bottom > innerHeight) $('board').scrollIntoView({ block: 'start' });
+}
+function paintPreview() {
+  if (!preview) return; const box = $('pvMoves');
+  if (box.dataset.sig !== preview.base + preview.labels.join()) { box.dataset.sig = preview.base + preview.labels.join(); box.textContent = ''; preview.labels.forEach((l, k) => { const b = document.createElement('button'); b.type = 'button'; b.dataset.i = k + 1; b.textContent = l; box.appendChild(b); }); }
+  [...box.children].forEach((b, k) => b.classList.toggle('on', k === preview.i - 1));
+  $('pvPos').textContent = preview.i ? 'Zug ' + preview.i + ' von ' + preview.pv.length : 'Ausgangsstellung';
+  $('pvFirst').disabled = $('pvPrev').disabled = preview.i === 0; $('pvNext').disabled = $('pvLast').disabled = preview.i === preview.pv.length;
+  renderBoard();
+}
+function pvGo(i) { if (!preview) return; preview.i = Math.max(0, Math.min(preview.pv.length, i)); paintPreview(); }
+function stopPlay() { clearInterval(pvTimer); pvTimer = 0; $('pvPlay').textContent = '▶ Abspielen'; }
+function togglePlay() {
+  if (!preview) return; if (pvTimer) { stopPlay(); return; }
+  if (preview.i >= preview.pv.length) pvGo(0);
+  $('pvPlay').textContent = '⏸ Anhalten';
+  pvTimer = setInterval(() => { if (!preview || preview.i >= preview.pv.length) { stopPlay(); return; } pvGo(preview.i + 1); }, 900);
+}
+function closePreview(quiet) { if (!preview) return; stopPlay(); preview = null; $('preview').classList.add('hidden'); $('an').classList.remove('previewing'); $('pvMoves').dataset.sig = ''; if (!quiet) renderBoard(); }
+function takeOver() {
+  if (!preview) return; const { base, pv, i } = preview; closePreview(true);
+  const t = timeline(), all = t.done.concat(t.ahead), g = new Chess(t.start); let at = g.fen() === base ? 0 : -1;
+  for (let k = 0; at < 0 && k < all.length; k++) { g.move(all[k]); if (g.fen() === base) at = k + 1; }
+  if (at >= 0) goTo(at); else setGame(new Chess(base));
+  for (let k = 0; k < i; k++) playMove({ from: pv[k].slice(0, 2), to: pv[k].slice(2, 4), promotion: pv[k][4] }, true);
+  analyse();
+}
+
+/* ---------- Eigener Zug: Urteil ---------- */
+let pending = null, verdictInfo = null;
+function hideVerdict() { verdictInfo = null; $('verdict').classList.add('hidden'); }
+function showVerdict(cls, text, show) { verdictInfo = show || null; const v = $('verdict'); v.className = 'card ' + cls; $('vText').textContent = text; $('vShow').classList.toggle('hidden', !show); }
+const whiteEval = (line, turn) => { const s = turn === 'w' ? 1 : -1; return { cp: line.cp == null ? null : line.cp * s, mate: line.mate == null ? null : line.mate * s }; };
+function playMove(mv, quiet) {
+  const before = game.fen(), ready = !quiet && !build && last && last.fen === before && last.depth >= 8 && last.lines[0] ? { line: Object.assign({}, last.lines[0], { pv: last.lines[0].pv.slice() }), depth: last.depth } : null;
+  const m = game.move(mv); if (!m) return false;
+  const nxt = redo[redo.length - 1];
+  if (nxt && nxt.from === m.from && nxt.to === m.to && nxt.promotion === m.promotion) redo.pop(); else { redo = []; if (notes) notes = notes.slice(0, game.history().length - 1); }
+  hideVerdict(); pending = null;
+  if (ready) {
+    const uci = m.from + m.to + (m.promotion || ''), no = before.split(' ')[5], label = no + (m.color === 'w' ? '. ' : '… ') + nice(m.san);
+    if (game.in_checkmate()) showVerdict('good', label + ': Matt!');
+    else pending = { fen: before, after: game.fen(), line: ready.line, need: Math.min(ready.depth, 13), uci, label, side: m.color };
+  }
+  return true;
+}
+function judgePending(info) {
+  if (!pending || info.fen !== pending.after || info.depth < pending.need || !info.lines[0]) return;
+  const p = pending; pending = null;
+  const best = p.line.pv[0], dir = p.side === 'w' ? 1 : -1;
+  const b = whiteEval(p.line, p.side), a = whiteEval(info.lines[0], p.side === 'w' ? 'b' : 'w');
+  const loss = p.uci === best ? 0 : Math.max(0, (chance(b) - chance(a)) * dir);
+  const tag = loss >= 0.3 ? 'b' : loss >= 0.2 ? 'm' : loss >= 0.1 ? 'i' : '';
+  const now = ' Bewertung jetzt ' + evalText(a) + '.';
+  if (p.uci === best) showVerdict('good', p.label + ': Bester Zug.' + now);
+  else if (!tag) showVerdict('good', p.label + ': ' + (loss < 0.03 ? 'Sehr guter Zug.' : 'Guter Zug.') + ' Die Engine hätte ' + sanOne(p.fen, best) + ' gespielt.' + now, { base: p.fen, pv: p.line.pv });
+  else showVerdict(tag, p.label + ': ' + TAGS[tag] + '. Besser war ' + sanOne(p.fen, best) + ' (' + evalText(b) + ').' + now, { base: p.fen, pv: p.line.pv });
+}
+
+/* ---------- Erklärung in Worten ---------- */
+const VAL = { p: 1, n: 3, b: 3, r: 5, q: 9, k: 0 };
+const WHOM = { p: 'den Bauern', n: 'den Springer', b: 'den Läufer', r: 'den Turm', q: 'die Dame' }, WHAT = { p: 'Bauer', n: 'Springer', b: 'Läufer', r: 'Turm', q: 'Dame' };
+const side = (c) => c === 'w' ? 'Weiß' : 'Schwarz';
+const material = (g) => { let s = 0; g.board().flat().forEach((p) => { if (p) s += (p.color === 'w' ? 1 : -1) * VAL[p.type]; }); return s; };
+function loose(g) {                       // Figuren, die die Seite am Zug schlagen kann, ohne dass zurückgeschlagen werden kann
+  const found = {};
+  g.moves({ verbose: true }).filter((m) => m.captured && m.captured !== 'p').forEach((m) => { g.move(m); if (!g.moves({ verbose: true }).some((x) => x.to === m.to)) found[m.to] = m.captured; g.undo(); });
+  return Object.entries(found).slice(0, 2);
+}
+function explain(info, fen) {
+  const g = new Chess(fen), turn = g.turn(), first = info.lines[0], out = []; if (!first) return out;
+  const w = whiteEval(first, turn);
+  if (w.mate != null) out.push(side(w.mate > 0 ? 'w' : 'b') + ' kann in ' + Math.abs(w.mate) + (Math.abs(w.mate) === 1 ? ' Zug' : ' Zügen') + ' mattsetzen.');
+  else { const v = Math.abs(w.cp), who = side(w.cp > 0 ? 'w' : 'b'); out.push(v < 35 ? 'Die Stellung ist ausgeglichen.' : v < 100 ? who + ' steht etwas besser.' : v < 250 ? who + ' steht klar besser.' : who + ' steht auf Gewinn.'); }
+  const copy = new Chess(fen), m = uciMove(copy, first.pv[0]);
+  if (m) {
+    const why = [];
+    if (copy.in_checkmate()) why.push('setzt matt');
+    else {
+      if (m.captured) why.push('schlägt ' + WHOM[m.captured] + ' auf ' + m.to);
+      if (copy.in_check()) why.push('gibt Schach');
+      if (/^O-O/.test(m.san)) why.push('bringt den König in Sicherheit und den Turm ins Spiel');
+      if (m.promotion) why.push('wandelt den Bauern um');
+      const opening = +fen.split(' ')[5] <= 12;
+      if (opening && !m.captured && /[nb]/.test(m.piece) && m.from[1] === (turn === 'w' ? '1' : '8')) why.push('entwickelt ' + WHOM[m.piece]);
+      if (opening && m.piece === 'p' && /^[de]/.test(m.to) && /[45]/.test(m.to[1])) why.push('kämpft um das Zentrum');
+    }
+    out.push('Bester Zug: ' + nice(m.san) + (why.length ? ', er ' + why.join(' und ') + '.' : '.'));
+  }
+  const second = info.lines[1];
+  if (second && first.depth >= 10) { const dir = turn === 'w' ? 1 : -1; if ((chance(w) - chance(whiteEval(second, turn))) * dir >= 0.2) out.push('Nur dieser Zug ist wirklich gut. Der zweitbeste ist deutlich schwächer.'); }
+  // Material am Ende der Hauptvariante (bis 12 Halbzüge), aber nur an einer Stelle, an der gerade nicht geschlagen wird
+  const line = new Chess(fen), start = material(line), steps = [];
+  for (let i = 0; i < Math.min(first.pv.length, 13); i++) { const mm = uciMove(line, first.pv[i]); if (!mm) break; steps.push({ took: !!mm.captured, check: line.in_check(), bal: material(line) }); }
+  let end = null; for (let i = Math.min(steps.length - 2, 11); i >= 3; i--) { if (!steps[i].took && !steps[i + 1].took && !steps[i].check) { end = i; break; } }
+  if (end != null && w.mate == null) {
+    const dir = turn === 'w' ? 1 : -1, gain = (steps[end].bal - start) * dir, good = chance(w) * dir > 0.15, n = Math.ceil((end + 1) / 2);
+    if (gain >= 2) out.push('Nach etwa ' + n + ' Zügen der Hauptvariante hat ' + side(turn) + ' Material gewonnen (' + gain + ' Bauerneinheiten).');
+    else if (gain <= -2) out.push(good ? side(turn) + ' gibt Material her (' + (-gain) + ' Bauerneinheiten) und steht trotzdem gut: Angriff oder Stellung wiegen das auf.' : 'Nach etwa ' + n + ' Zügen der Hauptvariante hat ' + side(turn) + ' Material verloren (' + (-gain) + ' Bauerneinheiten).');
+  }
+  loose(g).forEach(([sq, p]) => out.push('Ungedeckt: ' + WHAT[p] + ' auf ' + sq + ' (' + side(turn === 'w' ? 'b' : 'w') + ') kann geschlagen werden.'));
+  if (!g.in_check()) { const parts = fen.split(' '); parts[1] = turn === 'w' ? 'b' : 'w'; parts[3] = '-'; const other = new Chess(); if (other.load(parts.join(' '))) loose(other).forEach(([sq, p]) => out.push('Vorsicht: ' + WHAT[p] + ' auf ' + sq + ' (' + side(turn) + ') steht ungedeckt angegriffen.')); }
+  const bal = material(g); out.push('Material: ' + (bal === 0 ? 'gleich.' : side(bal > 0 ? 'w' : 'b') + ' hat ' + Math.abs(bal) + ' Bauerneinheiten mehr.'));
+  return out.slice(0, 6);
+}
+let insightSig = '';
+function showInsights(list) {
+  const sig = list.join('|'); if (sig === insightSig) return; insightSig = sig;
+  const box = $('insights'); box.textContent = '';
+  if (!list.length) { const li = document.createElement('li'); li.className = 'note'; li.textContent = 'Die Erklärung erscheint, sobald die Engine rechnet.'; box.appendChild(li); return; }
+  list.forEach((t) => { const li = document.createElement('li'); li.textContent = t; box.appendChild(li); });
+}
+
 function showInfo(info, fen) {
   const turn = fen.split(' ')[1];
   $('kEval').textContent = fmtEval(info.lines[0], turn); $('kDepth').textContent = info.depth || '–'; $('kNps').textContent = fmtBig(info.nps); $('kNodes').textContent = fmtBig(info.nodes);
   const first = info.lines[0];
   if (first) { const s = turn === 'w' ? 1 : -1, v = first.mate != null ? (first.mate * s > 0 ? 100 : 0) : 100 / (1 + Math.pow(10, -(first.cp * s) / 400)); $('evalfill').style.height = Math.max(2, Math.min(98, v)) + '%'; }
-  const box = $('lines'); box.textContent = '';
-  info.lines.filter(Boolean).forEach((l) => { const d = document.createElement('div'); d.className = 'line'; const a = document.createElement('b'); a.textContent = fmtEval(l, turn); const t = document.createElement('span'); t.textContent = sanLine(fen, l.pv, 12); d.append(a, t); box.appendChild(d); });
+  const box = $('lines'), lines = info.lines.filter(Boolean);
+  lines.forEach((l, k) => {
+    let d = box.children[k];
+    if (!d) {
+      d = document.createElement('div'); d.className = 'line';
+      const dot = document.createElement('i'); dot.className = 'dot'; const a = document.createElement('b'); const t = document.createElement('span'); t.className = 'mv chips';
+      const see = document.createElement('button'); see.type = 'button'; see.className = 'see'; see.textContent = '▶'; see.setAttribute('aria-label', 'Variante abspielen'); see.title = 'Variante abspielen';
+      d.append(a, t, see); d.insertBefore(dot, a); box.appendChild(d);
+    }
+    d.pv = l.pv; d.fen = fen;
+    d.querySelector('.dot').style.background = Number(UI.arrows) > k ? COLORS[Math.min(k, 2)] : 'transparent';
+    const ev = fmtEval(l, turn), a = d.querySelector('b'); if (a.textContent !== ev) a.textContent = ev;
+    const t = d.querySelector('.mv'), moves = sanList(fen, l.pv, 12);
+    while (t.children.length < moves.length) { const b = document.createElement('button'); b.type = 'button'; b.dataset.i = t.children.length + 1; t.appendChild(b); }
+    while (t.children.length > moves.length) t.lastChild.remove();
+    moves.forEach((m, j) => { const txt = m + ' '; if (t.children[j].textContent !== txt) t.children[j].textContent = txt; });
+  });
+  while (box.children.length > lines.length) box.lastChild.remove();
+  showInsights(explain(info, fen));
 }
-let paintAt = 0;
+let paintAt = 0, paintTimer = 0;
+// Hinweis zur analysierten Partie: Was wurde hier gespielt?
+function updateNote() {
+  const n = noteHere();
+  if (n && n.tag) showVerdict(n.tag, 'In der Partie folgte ' + n.label + ' (' + TAGS[n.tag] + '). Besser war ' + n.bestSan + '.', { base: game.fen(), pv: n.bestPv });
+  else if (verdictInfo && verdictInfo.base && !pending && notes) hideVerdict();
+}
 async function analyse() {
+  renderMoves(); updateNote();
   if ($('an').classList.contains('hidden') || busyCmp || fullBusy || !watching()) return;
-  const mine = ++token, kind = $('engSel').value, eng = engines[kind], fen = game.fen();
-  last = null; renderBoard(); $('lines').textContent = '';
+  const mine = ++token, kind = $('engSel').value, eng = engines[kind], fen = game.fen(); clearTimeout(paintTimer); paintTimer = 0;
+  last = null; renderBoard(); $('lines').textContent = ''; showInsights([]);
   ['kEval', 'kDepth', 'kNps', 'kNodes'].forEach((i) => { $(i).textContent = '–'; });
   await Promise.all(Object.values(engines).map((e) => e.halt()));
   if (mine !== token) return;
   if (build && buildProblem) { $('status').textContent = 'Keine Analyse: ' + buildProblem; return; }
-  if (game.game_over()) { $('status').textContent = game.in_checkmate() ? 'Matt. ' + (game.turn() === 'w' ? 'Schwarz' : 'Weiß') + ' gewinnt.' : 'Remis.'; return; }
+  if (game.game_over()) { const t = game.in_checkmate() ? 'Matt. ' + (game.turn() === 'w' ? 'Schwarz' : 'Weiß') + ' gewinnt.' : 'Remis.'; $('status').textContent = t; showInsights([t]); return; }
   if (!running) { $('status').textContent = 'Analyse angehalten.'; return; }
   $('status').textContent = NAMES[kind] + ' lädt …';
   try {
     await eng.start(); if (mine !== token) return;
     $('status').textContent = NAMES[kind] + ' rechnet (geladen in ' + eng.loadMs + ' ms).';
+    setTimeout(() => { if (mine === token && eng.ready) eng.warm(); }, 1500);
     const done = await eng.search(fen, { movetime: LIVE_MS, multipv: +$('mpv').value, onInfo: (info) => {
-      if (mine !== token) return; const firstHint = !last; last = info;
-      if (performance.now() - paintAt > 120 || info.depth < 6) { paintAt = performance.now(); showInfo(info, fen); if (firstHint || info.depth % 4 === 0) renderBoard(); }
+      if (mine !== token) return; const firstHint = !last; info.fen = fen; last = info; judgePending(info);
+      // gedrosselt zeichnen, aber den letzten Stand nie verschlucken: sonst bleibt die Anzeige stehen, während die Engine lange an einer Tiefe rechnet
+      const paint = () => { paintTimer = 0; if (mine !== token || !last) return; paintAt = performance.now(); showInfo(last, fen); drawArrows(); };
+      const wait = (info.depth < 12 ? 120 : 400) - (performance.now() - paintAt);
+      if (firstHint || wait <= 0) { clearTimeout(paintTimer); paint(); } else if (!paintTimer) paintTimer = setTimeout(paint, wait);
     } });
-    if (mine === token && last) { showInfo(last, fen); renderBoard(); $('status').textContent = done.failed ? 'Die Engine ist ausgestiegen und wurde neu gestartet. Ändere die Stellung oder starte die Analyse neu.' : 'Fertig gerechnet (Tiefe ' + last.depth + '). Nach einer Minute je Stellung ist Schluss, das schont Akku und Lüfter.'; }
+    if (mine === token && last) { judgePending(Object.assign({}, last, { depth: 99 })); showInfo(last, fen); renderBoard(); $('status').textContent = done.failed ? 'Die Engine ist ausgestiegen und wurde neu gestartet. Ändere die Stellung oder starte die Analyse neu.' : 'Fertig gerechnet (Tiefe ' + last.depth + '). Nach einer Minute je Stellung ist Schluss, das schont Akku und Lüfter.'; }
   } catch (e) {
     if (mine !== token) return;
     if (kind === 'wasm') { $('status').textContent = 'WebAssembly geht in diesem Browser nicht, ich nehme die alte Fassung. (' + e.message + ')'; $('engSel').value = 'asm'; analyse(); }
@@ -468,17 +747,18 @@ async function analyse() {
 }
 $('board').addEventListener('click', (e) => {
   if (build) return;
+  if (preview) { closePreview(); return; }
   const sq = e.target.closest('.sq'); if (!sq) return; const s = sq.dataset.sq;
   if (sel) {
     const m = game.moves({ square: sel, verbose: true }).find((x) => x.to === s);
     if (m) {
       const from = sel; sel = null;
-      if (!m.promotion) { game.move({ from, to: s }); analyse(); return; }
+      if (!m.promotion) { playMove({ from, to: s }); analyse(); return; }
       const box = $('promo'), color = game.turn(); box.textContent = ''; box.classList.remove('hidden');
       [['q', 'Dame'], ['r', 'Turm'], ['b', 'Läufer'], ['n', 'Springer']].forEach(([k, name]) => {
         const bt = document.createElement('button'); bt.type = 'button'; bt.dataset.promo = k; bt.setAttribute('aria-label', name);
         const im = document.createElement('img'); im.src = 'img/' + color + k.toUpperCase() + '.png'; im.alt = name; bt.appendChild(im);
-        bt.onclick = (ev) => { ev.stopPropagation(); box.classList.add('hidden'); game.move({ from, to: s, promotion: k }); analyse(); };
+        bt.onclick = (ev) => { ev.stopPropagation(); box.classList.add('hidden'); playMove({ from, to: s, promotion: k }); analyse(); };
         box.appendChild(bt);
       });
       box.onclick = (ev) => { if (ev.target === box) { box.classList.add('hidden'); renderBoard(); } };
@@ -487,26 +767,49 @@ $('board').addEventListener('click', (e) => {
   }
   const p = game.get(s); sel = p && p.color === game.turn() && sel !== s ? s : null; renderBoard();
 });
-$('back').onclick = () => { if (game.undo()) { sel = null; analyse(); } };
+$('back').onclick = () => step(game.history().length - 1);
+$('fwd').onclick = () => step(game.history().length + 1);
+$('first').onclick = () => step(0);
+$('end').onclick = () => step(game.history().length + redo.length);
 $('flip').onclick = () => { flipped = !flipped; renderBoard(); };
-$('reset').onclick = () => { game = new Chess(); sel = null; if (build) { readSetup(); applySetup(); } else analyse(); };
-$('playBest').onclick = () => { const u = last && last.lines[0] && last.lines[0].pv[0]; if (u && uciMove(game, u)) { sel = null; analyse(); } };
+$('reset').onclick = () => { setGame(new Chess()); if (build) { readSetup(); applySetup(); } else analyse(); };
+$('playBest').onclick = () => { closePreview(); const u = last && last.fen === game.fen() && last.lines[0] && last.lines[0].pv[0]; if (u && playMove({ from: u.slice(0, 2), to: u.slice(2, 4), promotion: u[4] })) { sel = null; analyse(); } };
 $('toggle').onclick = () => { running = !running; $('toggle').textContent = running ? 'Analyse anhalten' : 'Analyse starten'; if (running) analyse(); else { token++; Object.values(engines).forEach((e) => e.halt()); $('status').textContent = 'Analyse angehalten.'; } };
-$('engSel').onchange = analyse; $('mpv').onchange = analyse;
+$('engSel').onchange = analyse; $('mpv').onchange = () => { UI.mpv = $('mpv').value; saveUi(); analyse(); };
+$('arrowSel').value = UI.arrows; $('notSel').value = UI.notation; $('mpv').value = UI.mpv;
+$('arrowSel').onchange = () => { UI.arrows = $('arrowSel').value; saveUi(); arrowSig = '?'; if (last) showInfo(last, last.fen); renderBoard(); };
+$('notSel').onchange = () => { UI.notation = $('notSel').value; saveUi(); insightSig = ''; renderMoves(); if (last) showInfo(last, last.fen); if (preview) { preview.labels = sanList(preview.base, preview.pv, 16); paintPreview(); } };
+$('lines').addEventListener('click', (e) => { const line = e.target.closest('.line'); if (!line || !line.pv) return; const chip = e.target.closest('.mv button'); if (chip) openPreview(line.fen, line.pv, +chip.dataset.i); else if (e.target.closest('.see')) { openPreview(line.fen, line.pv, 0); togglePlay(); } });
+$('moveList').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) step(+b.dataset.n); });
+$('pvMoves').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) { stopPlay(); pvGo(+b.dataset.i); } });
+$('pvFirst').onclick = () => { stopPlay(); pvGo(0); }; $('pvPrev').onclick = () => { stopPlay(); pvGo(preview.i - 1); }; $('pvNext').onclick = () => { stopPlay(); pvGo(preview.i + 1); }; $('pvLast').onclick = () => { stopPlay(); pvGo(preview.pv.length); };
+$('pvPlay').onclick = togglePlay; $('pvTake').onclick = takeOver; $('pvClose').onclick = () => closePreview();
+$('vShow').onclick = () => { const v = verdictInfo; if (v) openPreview(v.base, v.pv, 1); };
+$('vClose').onclick = () => { pending = null; hideVerdict(); };
+document.addEventListener('keydown', (e) => {
+  if (locked || $('an').classList.contains('hidden') || e.ctrlKey || e.metaKey || e.altKey || /^(INPUT|TEXTAREA|SELECT)$/.test((e.target && e.target.tagName) || '')) return;
+  if (e.key === 'Escape' && preview) { e.preventDefault(); closePreview(); }
+  else if (e.key === 'ArrowLeft') { e.preventDefault(); if (preview) { stopPlay(); pvGo(preview.i - 1); } else $('back').click(); }
+  else if (e.key === 'ArrowRight') { e.preventDefault(); if (preview) { stopPlay(); pvGo(preview.i + 1); } else $('fwd').click(); }
+  else if (e.key === 'Home') { e.preventDefault(); if (preview) pvGo(0); else $('first').click(); }
+  else if (e.key === 'End') { e.preventDefault(); if (preview) pvGo(preview.pv.length); else $('end').click(); }
+  else if (e.key === 'f' || e.key === 'F') $('flip').click();
+  else if (e.key === ' ' && !(e.target && e.target.tagName === 'BUTTON')) { e.preventDefault(); $('toggle').click(); }
+});
 function loadPosition(text) {
   const t = String(text || '').trim(); if (!t) return false;
   const g = new Chess();
   if (/^([pnbrqkPNBRQK1-8]+\/){7}[pnbrqkPNBRQK1-8]+\s+[wb]\s/.test(t)) { if (!g.load(t)) return false; }
   else if (!g.load_pgn(t, { sloppy: true }) || !g.history().length) return false;
   if (g.board().flat().filter((p) => p && p.type === 'k').length !== 2) return false;
-  game = g; sel = null; flipped = g.turn() === 'b' && !g.history().length; return true;
+  setGame(g); flipped = g.turn() === 'b' && !g.history().length; return true;
 }
 $('load').onclick = () => { if (loadPosition($('pos').value)) { $('loadErr').textContent = ''; if (build) { readSetup(); applySetup(); } else analyse(); } else $('loadErr').textContent = 'Das ist weder eine gültige FEN noch eine lesbare PGN.'; };
 
 /* ---------- Stellung bauen: Figuren vom Rand aufs Brett ziehen oder antippen ---------- */
 let build = false, setup = {}, tool = null, drag = null, buildProblem = '', buildTimer = 0;
 const FILE = 'abcdefgh';
-function pieceAt(sq) { if (build) return setup[sq] || null; const p = game.get(sq); return p ? p.color + p.type.toUpperCase() : null; }
+function pieceAt(sq) { if (build) return setup[sq] || null; const p = (preview ? previewGame() : game).get(sq); return p ? p.color + p.type.toUpperCase() : null; }
 function readSetup() {
   setup = {}; for (let r = 1; r <= 8; r++) for (let f = 0; f < 8; f++) { const p = game.get(FILE[f] + r); if (p) setup[FILE[f] + r] = p.color + p.type.toUpperCase(); }
   const parts = game.fen().split(' '); $('turnSel').value = parts[1];
@@ -542,16 +845,18 @@ function applySetup() {
   $('buildFen').value = fen;
   const msg = $('buildMsg'); msg.textContent = buildProblem || 'Gültige Stellung, wird analysiert.'; msg.className = buildProblem ? 'bad' : '';
   token++; last = null; sel = null; clearTimeout(buildTimer);
-  if (!buildProblem) game = new Chess(fen);
+  if (!buildProblem) { game = new Chess(fen); redo = []; notes = null; }
+  renderMoves(); showInsights([]);
   renderBoard(); $('lines').textContent = ''; ['kEval', 'kDepth', 'kNps', 'kNodes'].forEach((i) => { $(i).textContent = '–'; }); $('evalfill').style.height = '50%';
   buildTimer = setTimeout(analyse, 250);
 }
 function setBuild(on) {
   if (on === build) return;
+  closePreview(true); hideVerdict(); pending = null;
   if (on) { readSetup(); build = true; } else { build = false; buildProblem = ''; tool = null; paintTools(); }
   $('an').classList.toggle('building', build); $('buildBar').classList.toggle('hidden', !build);
   $('build').setAttribute('aria-pressed', String(build)); $('build').textContent = build ? 'Bauen beenden' : 'Stellung bauen';
-  $('back').disabled = build; $('playBest').disabled = build;
+  ['first', 'back', 'fwd', 'end', 'playBest'].forEach((i) => { $(i).disabled = build; });
   if (build) applySetup(); else analyse();
 }
 function paintTools() { document.querySelectorAll('#palette button').forEach((b) => b.classList.toggle('on', b.dataset.piece === tool)); }
@@ -611,7 +916,7 @@ $('buildDone').onclick = () => setBuild(false);
 $('turnSel').onchange = applySetup;
 $('castles').addEventListener('change', applySetup);
 $('clearB').onclick = () => { setup = {}; applySetup(); };
-$('startB').onclick = () => { game = new Chess(); readSetup(); applySetup(); };
+$('startB').onclick = () => { setGame(new Chess()); readSetup(); applySetup(); };
 $('copyFen').onclick = () => { const i = $('buildFen'); const fallback = () => { i.select(); document.execCommand('copy'); }; if (navigator.clipboard) navigator.clipboard.writeText(i.value).catch(fallback); else fallback(); $('copyFen').textContent = 'Kopiert'; setTimeout(() => { $('copyFen').textContent = 'FEN kopieren'; }, 1500); };
 
 /* ---------- Vergleich ---------- */
@@ -730,8 +1035,25 @@ function drawGraph() {
   g.strokeStyle = '#8a8a8a'; g.setLineDash([4, 4]); g.beginPath(); g.moveTo(0, H / 2); g.lineTo(W, H / 2); g.stroke(); g.setLineDash([]);
   fullResult.rev.rows.forEach((r) => { if (!r.tag) return; g.beginPath(); g.arc(x(r.ply), y(r.after), 4.5, 0, 7); g.fillStyle = { i: '#d89b00', m: '#e06a00', b: '#c0392b' }[r.tag]; g.fill(); });
 }
-function openPosition(fen) { if (fullBusy) return; setBuild(false); loadPosition(fen); tab('an'); }
-$('graph').addEventListener('click', (e) => { if (!fullResult) return; const r = e.currentTarget.getBoundingClientRect(), n = fullResult.evals.length; const i = Math.max(0, Math.min(n - 1, Math.round((e.clientX - r.left - 6) / (r.width - 12) * (n - 1)))); openPosition(fullResult.game.positions[i]); });
+// Die analysierte Partie aufs Brett legen: durchblätterbar, mit den Urteilen als Markierungen
+function openGame(n) {
+  if (fullBusy || !fullResult) return; setBuild(false);
+  const { game: src, rev, evals } = fullResult, g = new Chess(src.header.FEN || undefined);
+  src.moves.forEach((m) => g.move(m.san));
+  setGame(g, rev.rows.map((r, i) => ({ tag: r.tag, uci: src.moves[i].from + src.moves[i].to + (src.moves[i].promotion || ''), label: Math.ceil(r.ply / 2) + (r.side === 'w' ? '. ' : '… ') + nice(src.moves[i].san), bestSan: sanOne(src.positions[i], evals[i].best), bestPv: evals[i].pv && evals[i].pv.length ? evals[i].pv : [evals[i].best].filter(Boolean) })));
+  goTo(n); flipped = false; tab('an'); window.scrollTo(0, 0);
+}
+function showTurningPoints() {
+  const { game: src, rev, evals } = fullResult, box = $('turning'); box.textContent = '';
+  const top = rev.rows.map((r, i) => ({ r, i })).filter((x) => x.r.tag).sort((a, b) => b.r.loss - a.r.loss).slice(0, 3);
+  if (!top.length) { const p = document.createElement('p'); p.className = 'note'; p.textContent = 'Keine großen Ausschläge: Beide Seiten haben sauber gespielt.'; box.appendChild(p); return; }
+  top.forEach(({ r, i }) => {
+    const b = document.createElement('button'); b.type = 'button'; b.dataset.ply = r.ply;
+    b.textContent = Math.ceil(r.ply / 2) + (r.side === 'w' ? '. ' : '… ') + nice(src.moves[i].san) + ' · ' + TAGS[r.tag] + ' von ' + side(r.side) + ': ' + evalText(evals[i]) + ' → ' + evalText(r.after) + (r.best ? '. Besser: ' + r.best : '');
+    b.onclick = () => openGame(r.ply - 1); box.appendChild(b);
+  });
+}
+$('graph').addEventListener('click', (e) => { if (!fullResult) return; const r = e.currentTarget.getBoundingClientRect(), n = fullResult.evals.length; const i = Math.max(0, Math.min(n - 1, Math.round((e.clientX - r.left - 6) / (r.width - 12) * (n - 1)))); openGame(i); });
 function showReport() {
   const { game, rev } = fullResult; $('report').classList.remove('hidden');
   const box = $('players'); box.textContent = '';
@@ -746,12 +1068,12 @@ function showReport() {
   rev.rows.forEach((r) => {
     const tr = document.createElement('tr');
     const cell = (t) => { const td = document.createElement('td'); td.textContent = t; tr.appendChild(td); return td; };
-    cell(Math.ceil(r.ply / 2) + (r.side === 'w' ? '.' : '…')); cell(r.san);
+    cell(Math.ceil(r.ply / 2) + (r.side === 'w' ? '.' : '…')); cell(nice(r.san));
     const j = cell(''); if (r.tag) { const s3 = document.createElement('span'); s3.className = 'tag ' + r.tag; s3.textContent = TAGS[r.tag]; j.appendChild(s3); }
     cell(r.tag ? r.best : ''); cell(evalText(r.after)); cell(r.after.depth || '–');
-    tr.onclick = () => openPosition(r.tag ? r.fenBefore : r.fenAfter); body.appendChild(tr);
+    tr.onclick = () => openGame(r.tag ? r.ply - 1 : r.ply); body.appendChild(tr);
   });
-  drawGraph();
+  showTurningPoints(); drawGraph();
 }
 const secs = (ms) => (ms / 1000).toLocaleString('de-DE', { maximumFractionDigits: 1 }) + ' s';
 async function runFull() {
@@ -816,7 +1138,7 @@ setInterval(() => {
   const nowLocked = duelRunning();
   if (nowLocked !== locked) {
     locked = nowLocked; $('lock').classList.toggle('hidden', !locked);
-    if (locked) { token++; fullAbort = true; abort = true; $('promo').classList.add('hidden'); Object.values(engines).concat(pool).forEach((e) => e.halt()); $('lines').textContent = ''; ['kEval', 'kDepth', 'kNps', 'kNodes'].forEach((i) => { $(i).textContent = '–'; }); last = null; renderBoard(); }
+    if (locked) { token++; fullAbort = true; abort = true; $('promo').classList.add('hidden'); Object.values(engines).concat(pool).forEach((e) => e.halt()); $('lines').textContent = ''; ['kEval', 'kDepth', 'kNps', 'kNodes'].forEach((i) => { $(i).textContent = '–'; }); last = null; pending = null; hideVerdict(); closePreview(true); showInsights([]); renderBoard(); }
   }
   const now2 = watching();
   if (now2 === wasWatching) return;
@@ -825,7 +1147,7 @@ setInterval(() => {
   if (now2) analyse(); else { token++; Object.values(engines).forEach((e) => e.halt()); }
 }, 700);
 
-window.__lab = { busy: () => Object.values(engines).concat(pool).filter((e) => e.busy).length, locked: () => locked, poolSize: () => pool.length, build: () => ({ on: build, setup: Object.assign({}, setup), problem: buildProblem, tool }), full: () => fullResult && { runs: fullResult.runs.map((r) => ({ kind: r.kind, workers: r.workers, ms: r.ms, depths: r.evals.map((e) => e.depth), best: r.evals.map((e) => e.best) })), rows: fullResult.rev.rows.map((r) => ({ ply: r.ply, san: r.san, tag: r.tag, best: r.best, ev: evalText(r.after) })), w: fullResult.rev.w, b: fullResult.rev.b }, fullBusy: () => fullBusy, state: () => ({ fen: game.fen(), engine: $('engSel').value, running, depth: last ? last.depth : 0, nps: last ? last.nps : 0, best: last && last.lines[0] ? last.lines[0].pv[0] : null, lines: last ? last.lines.filter(Boolean).length : 0, busyCmp, loadMs: { asm: engines.asm.loadMs, wasm: engines.wasm.loadMs } }), results: () => results, csv: csvText, hasWasm };
+window.__lab = { preview: () => preview && { i: preview.i, n: preview.pv.length, fen: previewGame().fen(), pv: preview.pv, playing: !!pvTimer }, moves: () => ({ at: game.history().length, total: game.history().length + redo.length, tags: notes ? notes.filter((n) => n.tag).length : 0 }), explain: (fen, pv, cp) => explain({ lines: [{ pv, cp, mate: null, depth: 14 }] }, fen), busy: () => Object.values(engines).concat(pool).filter((e) => e.busy).length, locked: () => locked, poolSize: () => pool.length, build: () => ({ on: build, setup: Object.assign({}, setup), problem: buildProblem, tool }), full: () => fullResult && { runs: fullResult.runs.map((r) => ({ kind: r.kind, workers: r.workers, ms: r.ms, depths: r.evals.map((e) => e.depth), best: r.evals.map((e) => e.best) })), rows: fullResult.rev.rows.map((r) => ({ ply: r.ply, san: r.san, tag: r.tag, best: r.best, ev: evalText(r.after) })), w: fullResult.rev.w, b: fullResult.rev.b }, fullBusy: () => fullBusy, state: () => ({ fen: game.fen(), engine: $('engSel').value, running, depth: last ? last.depth : 0, nps: last ? last.nps : 0, best: last && last.lines[0] ? last.lines[0].pv[0] : null, lines: last ? last.lines.filter(Boolean).length : 0, busyCmp, loadMs: { asm: engines.asm.loadMs, wasm: engines.wasm.loadMs } }), results: () => results, csv: csvText, hasWasm };
 if (!hasWasm) $('engSel').value = 'asm';
 locked = duelRunning(); $('lock').classList.toggle('hidden', !locked); renderBoard();
 analyse();
