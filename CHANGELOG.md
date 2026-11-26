@@ -1,5 +1,10 @@
 # Änderungsprotokoll
 
+## 2026-11-26 (Engine-Labor: Brett repariert, Stellungen bauen)
+- Alle Felder sind gleich groß (leere Reihen fielen zusammen). Das Brett wird bei laufender Analyse nicht mehr neu aufgebaut, Klicks und Züge gehen nicht mehr verloren.
+- **Stellung bauen:** Figuren vom Rand aufs Brett ziehen oder antippen, frei verschieben, entfernen; Zugrecht, Rochaden, FEN, Prüfung auf ungültige Stellungen, sofortige Analyse.
+
+
 ## 2026-11-26 (Engine-Labor zum Testen)
 - Neue eigenständige Testseite `engine/`: Stockfish 10 als WebAssembly gegen die bisherige Fassung, Live-Analyse, schnelle Gesamtanalyse mit parallelen Arbeitern und Fehlerurteilen, Vergleich an Matt- und Patzer-Stellungen. Orbitron ist unverändert.
 

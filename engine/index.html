@@ -52,18 +52,33 @@ select,textarea,input{padding:7px 9px;width:100%}
 .hidden{display:none!important}
 .note{font-size:.85rem;color:var(--muted,#666)}
 .tabs button.on{background:var(--accent,#1a73e8);color:var(--accent-ink,#fff);border-color:var(--accent,#1a73e8)}
-#an{display:grid;grid-template-columns:minmax(0,520px) minmax(260px,1fr);gap:14px;align-items:start}
+#an{display:grid;grid-template-columns:minmax(0,584px) minmax(260px,1fr);gap:14px;align-items:start}
 .boardrow{display:flex;gap:8px}
 #evalbar{width:16px;flex:none;border-radius:6px;overflow:hidden;background:#333;position:relative;border:1px solid var(--line,#ddd)}
 #evalfill{position:absolute;left:0;right:0;bottom:0;height:50%;background:#f4f4f4;transition:height .25s}
-#board{flex:1;display:grid;grid-template-columns:repeat(8,1fr);aspect-ratio:1/1;border-radius:8px;overflow:hidden;user-select:none;touch-action:manipulation}
-.sq{position:relative;display:flex;align-items:center;justify-content:center;cursor:pointer;min-width:0}
+#board{flex:1;min-width:0;align-self:flex-start;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));grid-template-rows:repeat(8,minmax(0,1fr));aspect-ratio:1/1;border-radius:8px;overflow:hidden;user-select:none;touch-action:manipulation}
+.sq{position:relative;display:flex;align-items:center;justify-content:center;cursor:pointer;min-width:0;min-height:0;overflow:hidden}
 .sq.l{background:#f0d9b5}.sq.d{background:#b58863}
 .sq.last{box-shadow:inset 0 0 0 100px rgba(255,215,0,.35)}
 .sq.sel{box-shadow:inset 0 0 0 100px rgba(20,130,255,.42)}
 .sq.tgt::after{content:"";position:absolute;width:28%;height:28%;border-radius:50%;background:rgba(0,0,0,.28)}
 .sq.hint{outline:3px solid var(--accent,#1a73e8);outline-offset:-3px}
-.sq img{width:92%;height:92%;pointer-events:none}
+.sq img{position:absolute;left:4%;top:4%;width:92%;height:92%;pointer-events:none}
+.sq.dragsrc img{opacity:.25}
+#palette{flex:none;width:48px;display:flex;flex-direction:column;gap:3px;contain:size;align-self:stretch}
+#palette button{width:100%;flex:1 1 0;overflow:hidden;padding:2px!important;border-radius:8px!important;background:#b9a183!important;border:2px solid transparent!important;display:flex;align-items:center;justify-content:center;touch-action:none;cursor:grab;min-height:0}
+#palette button img{width:100%;height:100%;object-fit:contain;pointer-events:none}
+#palette button.on{border-color:var(--accent,#1a73e8)!important;background:#f4d774!important}
+#palette button.erase{font-size:1.2rem!important;color:#7a1f14!important}
+@media (max-width:760px){#palette button{aspect-ratio:1/1}}
+#an.building #board,#an.building .sq{touch-action:none}
+#an.building .sq{cursor:grab}
+#ghost{position:fixed;z-index:60;pointer-events:none;display:none;filter:drop-shadow(0 5px 7px rgba(0,0,0,.45))}
+#buildBar .row+.row{margin-top:8px}
+#buildBar .row label input{width:auto}
+#buildFen{font-family:ui-monospace,Consolas,monospace;font-size:.78rem}
+#buildMsg{font-weight:600}
+#buildMsg.bad{color:#c0392b}
 .sq .co{position:absolute;font-size:9px;opacity:.7;pointer-events:none}
 .sq .co.f{right:2px;bottom:1px}.sq .co.r{left:2px;top:1px}
 .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:8px 0}
@@ -93,7 +108,7 @@ progress{width:100%;height:8px}
 .tag.i{background:#d89b00}.tag.m{background:#e06a00}.tag.b{background:#c0392b}
 #times{font-variant-numeric:tabular-nums}
 #times b{font-size:1.4rem}
-@media (max-width:760px){#an{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}#sum{grid-template-columns:1fr}main{padding:10px 8px}}
+@media (max-width:760px){.boardrow{flex-wrap:wrap}#palette{contain:none;width:100%;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;max-width:420px;margin:0 auto}#an{grid-template-columns:minmax(0,1fr)}.kpis{grid-template-columns:repeat(2,1fr)}#sum{grid-template-columns:1fr}main{padding:10px 8px}}
 /*ORBITRON-BRAND:START*/
 /* Orbitron Marke: eine Quelle für Duell, Chat und künftige Seiten.
    Werte stammen aus gemini-chat.html (Themes light, dark, neural) und werden von tests/brand-test.js dagegen geprüft.
@@ -166,8 +181,15 @@ html.embed .ob-hide-embed{display:none!important}
 
   <section id="an">
     <div>
-      <div class="boardrow"><div id="evalbar" title="Bewertung aus Sicht von Weiß"><div id="evalfill"></div></div><div id="board" role="grid" aria-label="Analysebrett"></div></div>
-      <div class="row" style="margin-top:8px"><button id="back" type="button">Zug zurück</button><button id="flip" type="button">Drehen</button><button id="reset" type="button">Grundstellung</button><button id="playBest" type="button">Besten Zug spielen</button></div>
+      <div class="boardrow"><div id="evalbar" title="Bewertung aus Sicht von Weiß"><div id="evalfill"></div></div><div id="board" role="grid" aria-label="Analysebrett"></div><div id="palette" aria-label="Figuren zum Aufstellen"></div></div>
+      <div class="row" style="margin-top:8px"><button id="back" type="button">Zug zurück</button><button id="flip" type="button">Drehen</button><button id="reset" type="button">Grundstellung</button><button id="playBest" type="button">Besten Zug spielen</button><button id="build" type="button" aria-pressed="false">Stellung bauen</button></div>
+      <div id="buildBar" class="card hidden" style="margin-top:8px">
+        <p class="note" style="margin:0 0 8px">Zieh Figuren vom Rand aufs Brett, verschiebe sie frei, zieh sie vom Brett, um sie zu entfernen. Oder tippe eine Figur am Rand an und dann die Felder.</p>
+        <div class="row"><label>Am Zug <select id="turnSel"><option value="w">Weiß</option><option value="b">Schwarz</option></select></label><button id="clearB" type="button">Brett leeren</button><button id="startB" type="button">Grundstellung</button><button id="buildDone" type="button" class="primary">Fertig</button></div>
+        <div class="row" id="castles"><span class="note">Rochade:</span><label><input type="checkbox" data-c="K"> Weiß kurz</label><label><input type="checkbox" data-c="Q"> Weiß lang</label><label><input type="checkbox" data-c="k"> Schwarz kurz</label><label><input type="checkbox" data-c="q"> Schwarz lang</label></div>
+        <div class="row"><input id="buildFen" type="text" readonly aria-label="FEN der gebauten Stellung" style="flex:1;min-width:0;width:auto"><button id="copyFen" type="button">FEN kopieren</button></div>
+        <p id="buildMsg" role="status" style="margin:8px 0 0"></p>
+      </div>
       <p id="status" class="note"></p>
     </div>
     <div>
@@ -233,6 +255,7 @@ html.embed .ob-hide-embed{display:none!important}
   </section>
 </main>
 
+<div id="ghost" aria-hidden="true"></div>
 <script src="vendor/chess.js"></script>
 <script src="data.js"></script>
 <script>
@@ -245,7 +268,7 @@ const hasWasm = typeof WebAssembly === 'object';
 
 /* ---------- Engine: ein Arbeiter je Variante, immer nur eine Suche gleichzeitig ---------- */
 class Engine {
-  constructor(kind) { this.kind = kind; this.w = null; this.ready = null; this.busy = null; this.onLine = null; }
+  constructor(kind) { this.kind = kind; this.w = null; this.ready = null; this.busy = null; this.onLine = null; this.gate = Promise.resolve(); }
   start() {
     if (this.ready) return this.ready;
     this.ready = new Promise((res, rej) => {
@@ -262,8 +285,15 @@ class Engine {
   sync() { return new Promise((res) => { this.onLine = (l) => { if (l === 'readyok') { this.onLine = null; res(); } }; this.w.postMessage('isready'); }); }
   // Liefert { best, lines, depth, nps, nodes, time }. lines[i] = { cp, mate, pv, depth } aus Sicht der Seite am Zug.
   async search(fen, o) {
+    const before = this.gate; let open; this.gate = new Promise((r) => { open = r; });
+    await before;
+    let running;
+    try { running = await this.begin(fen, o); } finally { open(); }
+    return running.result;
+  }
+  async begin(fen, o) {
     await this.start();
-    await this.halt();
+    await this.stopNow();
     this.w.postMessage('setoption name MultiPV value ' + (o.multipv || 1));
     if (o.fresh) this.w.postMessage('ucinewgame');
     await this.sync();
@@ -281,12 +311,19 @@ class Engine {
         } else if (l.startsWith('bestmove')) { info.best = l.split(' ')[1]; this.onLine = null; this.busy = null; res(info); }
       };
     });
-    const running = this.busy;
+    const result = this.busy;
     this.w.postMessage('position fen ' + fen);
     this.w.postMessage(o.movetime ? 'go' + (o.depth ? ' depth ' + o.depth : '') + ' movetime ' + o.movetime : 'go infinite');
-    return running;
+    return { result };
   }
-  async halt() { if (this.busy) { const p = this.busy; this.w.postMessage('stop'); await p; } }
+  async halt() { await this.gate; await this.stopNow(); }
+  async stopNow() {
+    if (!this.busy) return;
+    const p = this.busy; this.w.postMessage('stop');
+    const done = await Promise.race([p.then(() => true), new Promise((r) => setTimeout(() => r(false), 3000))]);
+    if (!done) this.restart();
+  }
+  restart() { try { this.w.terminate(); } catch (e) { /* ok */ } this.w = null; this.ready = null; this.busy = null; this.onLine = null; }
 }
 const engines = { wasm: new Engine('wasm'), asm: new Engine('asm') };
 
@@ -307,22 +344,27 @@ const sanOne = (fen, u) => { const g = new Chess(fen), m = u && u !== '(none)' ?
 /* ---------- Analyse ---------- */
 let game = new Chess(), startFen = game.fen(), sel = null, flipped = false, running = true, token = 0, last = null;
 function renderBoard() {
-  const b = $('board'); b.textContent = '';
+  // Die 64 Felder bleiben dieselben Elemente: nur Geändertes wird angefasst. Sonst gehen während der laufenden Analyse Klicks und Züge verloren.
+  const b = $('board'); if (b.children.length !== 64) { b.textContent = ''; for (let i = 0; i < 64; i++) b.appendChild(document.createElement('div')); }
   const hist = game.history({ verbose: true }), lm = hist[hist.length - 1];
   const targets = sel ? game.moves({ square: sel, verbose: true }).map((m) => m.to) : [];
-  const hint = last && last.lines[0] ? last.lines[0].pv[0] : null;
+  const hint = last && last.lines[0] && !drag ? last.lines[0].pv[0] : null;
   for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
-    const f = flipped ? 7 - c : c, rank = flipped ? r + 1 : 8 - r, sq = 'abcdefgh'[f] + rank;
-    const el = document.createElement('div'); el.dataset.sq = sq;
-    el.className = 'sq ' + (((f + 1) + rank) % 2 === 0 ? 'd' : 'l');
-    if (lm && (lm.from === sq || lm.to === sq)) el.classList.add('last');
-    if (sel === sq) el.classList.add('sel');
-    if (targets.includes(sq)) el.classList.add('tgt');
-    if (hint && (hint.slice(0, 2) === sq || hint.slice(2, 4) === sq)) el.classList.add('hint');
-    const p = game.get(sq); if (p) { const im = document.createElement('img'); im.src = 'img/' + p.color + p.type.toUpperCase() + '.png'; im.alt = p.color + p.type; el.appendChild(im); }
-    if (r === 7) { const s = document.createElement('span'); s.className = 'co f'; s.textContent = 'abcdefgh'[f]; el.appendChild(s); }
-    if (c === 0) { const s = document.createElement('span'); s.className = 'co r'; s.textContent = rank; el.appendChild(s); }
-    b.appendChild(el);
+    const f = flipped ? 7 - c : c, rank = flipped ? r + 1 : 8 - r, sq = 'abcdefgh'[f] + rank, el = b.children[r * 8 + c];
+    const cls = ['sq', ((f + 1) + rank) % 2 === 0 ? 'd' : 'l'];
+    if (!build && lm && (lm.from === sq || lm.to === sq)) cls.push('last');
+    if (sel === sq) cls.push('sel');
+    if (targets.includes(sq)) cls.push('tgt');
+    if (hint && (hint.slice(0, 2) === sq || hint.slice(2, 4) === sq)) cls.push('hint');
+    if (drag && drag.moved && drag.from === sq) cls.push('dragsrc');
+    const name = cls.join(' '); if (el.className !== name) el.className = name;
+    el.dataset.sq = sq;
+    const code = pieceAt(sq) || '', file = r === 7 ? 'abcdefgh'[f] : '', num = c === 0 ? String(rank) : '', sig = code + '|' + file + '|' + num;
+    if (el.dataset.sig === sig) continue;
+    el.dataset.sig = sig; el.textContent = '';
+    if (code) { const im = document.createElement('img'); im.src = 'img/' + code + '.png'; im.alt = code; el.appendChild(im); }
+    if (file) { const s = document.createElement('span'); s.className = 'co f'; s.textContent = file; el.appendChild(s); }
+    if (num) { const s = document.createElement('span'); s.className = 'co r'; s.textContent = num; el.appendChild(s); }
   }
 }
 function showInfo(info, fen) {
@@ -335,11 +377,13 @@ function showInfo(info, fen) {
 }
 let paintAt = 0;
 async function analyse() {
+  if ($('an').classList.contains('hidden') || busyCmp || fullBusy) return;
   const mine = ++token, kind = $('engSel').value, eng = engines[kind], fen = game.fen();
   last = null; renderBoard(); $('lines').textContent = '';
   ['kEval', 'kDepth', 'kNps', 'kNodes'].forEach((i) => { $(i).textContent = '–'; });
   await Promise.all(Object.values(engines).map((e) => e.halt()));
   if (mine !== token) return;
+  if (build && buildProblem) { $('status').textContent = 'Keine Analyse: ' + buildProblem; return; }
   if (game.game_over()) { $('status').textContent = game.in_checkmate() ? 'Matt. ' + (game.turn() === 'w' ? 'Schwarz' : 'Weiß') + ' gewinnt.' : 'Remis.'; return; }
   if (!running) { $('status').textContent = 'Analyse angehalten.'; return; }
   $('status').textContent = NAMES[kind] + ' lädt …';
@@ -358,6 +402,7 @@ async function analyse() {
   }
 }
 $('board').addEventListener('click', (e) => {
+  if (build) return;
   const sq = e.target.closest('.sq'); if (!sq) return; const s = sq.dataset.sq;
   if (sel) {
     const m = game.moves({ square: sel, verbose: true }).find((x) => x.to === s);
@@ -367,7 +412,7 @@ $('board').addEventListener('click', (e) => {
 });
 $('back').onclick = () => { if (game.undo()) { sel = null; analyse(); } };
 $('flip').onclick = () => { flipped = !flipped; renderBoard(); };
-$('reset').onclick = () => { game = new Chess(); sel = null; analyse(); };
+$('reset').onclick = () => { game = new Chess(); sel = null; if (build) { readSetup(); applySetup(); } else analyse(); };
 $('playBest').onclick = () => { const u = last && last.lines[0] && last.lines[0].pv[0]; if (u && uciMove(game, u)) { sel = null; analyse(); } };
 $('toggle').onclick = () => { running = !running; $('toggle').textContent = running ? 'Analyse anhalten' : 'Analyse starten'; if (running) analyse(); else { token++; Object.values(engines).forEach((e) => e.halt()); $('status').textContent = 'Analyse angehalten.'; } };
 $('engSel').onchange = analyse; $('mpv').onchange = analyse;
@@ -379,7 +424,118 @@ function loadPosition(text) {
   if (g.board().flat().filter((p) => p && p.type === 'k').length !== 2) return false;
   game = g; sel = null; flipped = g.turn() === 'b' && !g.history().length; return true;
 }
-$('load').onclick = () => { if (loadPosition($('pos').value)) { $('loadErr').textContent = ''; analyse(); } else $('loadErr').textContent = 'Das ist weder eine gültige FEN noch eine lesbare PGN.'; };
+$('load').onclick = () => { if (loadPosition($('pos').value)) { $('loadErr').textContent = ''; if (build) { readSetup(); applySetup(); } else analyse(); } else $('loadErr').textContent = 'Das ist weder eine gültige FEN noch eine lesbare PGN.'; };
+
+/* ---------- Stellung bauen: Figuren vom Rand aufs Brett ziehen oder antippen ---------- */
+let build = false, setup = {}, tool = null, drag = null, buildProblem = '', buildTimer = 0;
+const FILE = 'abcdefgh';
+function pieceAt(sq) { if (build) return setup[sq] || null; const p = game.get(sq); return p ? p.color + p.type.toUpperCase() : null; }
+function readSetup() {
+  setup = {}; for (let r = 1; r <= 8; r++) for (let f = 0; f < 8; f++) { const p = game.get(FILE[f] + r); if (p) setup[FILE[f] + r] = p.color + p.type.toUpperCase(); }
+  const parts = game.fen().split(' '); $('turnSel').value = parts[1];
+  document.querySelectorAll('#castles input').forEach((c) => { c.checked = parts[2].includes(c.dataset.c); });
+}
+const HOME = { K: ['e1', 'wK', 'h1', 'wR'], Q: ['e1', 'wK', 'a1', 'wR'], k: ['e8', 'bK', 'h8', 'bR'], q: ['e8', 'bK', 'a8', 'bR'] };
+function setupFen() {
+  const rows = [];
+  for (let r = 8; r >= 1; r--) { let row = '', n = 0; for (let f = 0; f < 8; f++) { const c = setup[FILE[f] + r]; if (!c) { n++; continue; } if (n) { row += n; n = 0; } row += c[0] === 'w' ? c[1] : c[1].toLowerCase(); } rows.push(row + (n || '')); }
+  let castle = ''; document.querySelectorAll('#castles input').forEach((c) => { const h = HOME[c.dataset.c], possible = setup[h[0]] === h[1] && setup[h[2]] === h[3]; c.disabled = !possible; if (possible && c.checked) castle += c.dataset.c; });
+  return rows.join('/') + ' ' + $('turnSel').value + ' ' + (castle || '-') + ' - 0 1';
+}
+function problemOf(fen) {
+  const list = Object.entries(setup);
+  for (const [c, name] of [['w', 'Weiß'], ['b', 'Schwarz']]) {
+    const mine = list.filter(([, p]) => p[0] === c);
+    const kings = mine.filter(([, p]) => p[1] === 'K').length;
+    if (kings === 0) return name + ' braucht einen König.';
+    if (kings > 1) return name + ' darf nur einen König haben.';
+    if (mine.length > 16) return name + ' hat mehr als 16 Figuren.';
+    if (mine.filter(([, p]) => p[1] === 'P').length > 8) return name + ' hat mehr als 8 Bauern.';
+  }
+  if (list.some(([sq, p]) => p[1] === 'P' && (sq[1] === '1' || sq[1] === '8'))) return 'Bauern dürfen nicht auf der ersten oder achten Reihe stehen.';
+  const parts = fen.split(' '); parts[1] = parts[1] === 'w' ? 'b' : 'w';
+  const other = new Chess();
+  if (!other.load(parts.join(' '))) return 'Diese Stellung ist nicht möglich.';
+  if (other.in_check()) return (parts[1] === 'w' ? 'Weiß' : 'Schwarz') + ' steht im Schach, ist aber nicht am Zug.';
+  if (!new Chess().load(fen)) return 'Diese Stellung ist nicht möglich.';
+  return '';
+}
+function applySetup() {
+  const fen = setupFen(); buildProblem = problemOf(fen);
+  $('buildFen').value = fen;
+  const msg = $('buildMsg'); msg.textContent = buildProblem || 'Gültige Stellung, wird analysiert.'; msg.className = buildProblem ? 'bad' : '';
+  token++; last = null; sel = null; clearTimeout(buildTimer);
+  if (!buildProblem) game = new Chess(fen);
+  renderBoard(); $('lines').textContent = ''; ['kEval', 'kDepth', 'kNps', 'kNodes'].forEach((i) => { $(i).textContent = '–'; }); $('evalfill').style.height = '50%';
+  buildTimer = setTimeout(analyse, 250);
+}
+function setBuild(on) {
+  if (on === build) return;
+  if (on) { readSetup(); build = true; } else { build = false; buildProblem = ''; tool = null; paintTools(); }
+  $('an').classList.toggle('building', build); $('buildBar').classList.toggle('hidden', !build);
+  $('build').setAttribute('aria-pressed', String(build)); $('build').textContent = build ? 'Bauen beenden' : 'Stellung bauen';
+  $('back').disabled = build; $('playBest').disabled = build;
+  if (build) applySetup(); else analyse();
+}
+function paintTools() { document.querySelectorAll('#palette button').forEach((b) => b.classList.toggle('on', b.dataset.piece === tool)); }
+(function () {
+  const pal = $('palette');
+  ['bK', 'bQ', 'bR', 'bB', 'bN', 'bP', 'erase', 'wP', 'wN', 'wB', 'wR', 'wQ', 'wK'].forEach((code) => {
+    const b = document.createElement('button'); b.type = 'button'; b.dataset.piece = code;
+    const NAME = { K: 'König', Q: 'Dame', R: 'Turm', B: 'Läufer', N: 'Springer', P: 'Bauer' };
+    if (code === 'erase') { b.className = 'erase'; b.textContent = '✕'; b.title = 'Radierer: Figur entfernen'; }
+    else { const im = document.createElement('img'); im.src = 'img/' + code + '.png'; im.alt = ''; b.appendChild(im); b.title = (code[0] === 'w' ? 'Weiß: ' : 'Schwarz: ') + NAME[code[1]]; }
+    b.setAttribute('aria-label', b.title); pal.appendChild(b);
+  });
+})();
+// Feld aus der Lage auf dem Brett berechnen: unabhängig davon, ob das Brett gerade neu gezeichnet wird
+const squareAt = (x, y) => {
+  const r = $('board').getBoundingClientRect(); if (x < r.left || x >= r.right || y < r.top || y >= r.bottom) return null;
+  const c = Math.min(7, Math.floor((x - r.left) / r.width * 8)), row = Math.min(7, Math.floor((y - r.top) / r.height * 8));
+  return FILE[flipped ? 7 - c : c] + (flipped ? row + 1 : 8 - row);
+};
+function startDrag(e, piece, from) { drag = { piece, from, x: e.clientX, y: e.clientY, moved: false, id: e.pointerId }; e.preventDefault(); }
+$('palette').addEventListener('pointerdown', (e) => { const b = e.target.closest('button'); if (!b || e.button > 0) return; startDrag(e, b.dataset.piece, null); });
+$('board').addEventListener('pointerdown', (e) => { if (!build || e.button > 0) return; const q = e.target.closest('.sq'); if (!q) return; startDrag(e, setup[q.dataset.sq] || null, q.dataset.sq); });
+window.addEventListener('pointermove', (e) => {
+  if (!drag || e.pointerId !== drag.id) return;
+  if (!drag.moved) {
+    if (Math.hypot(e.clientX - drag.x, e.clientY - drag.y) < 7 || !drag.piece || drag.piece === 'erase') return;
+    drag.moved = true;
+    const g = $('ghost'), size = Math.round($('board').getBoundingClientRect().width / 8);
+    g.textContent = ''; const im = document.createElement('img'); im.src = 'img/' + drag.piece + '.png'; im.style.width = im.style.height = '100%'; g.appendChild(im);
+    g.style.width = g.style.height = size + 'px'; g.style.display = 'block'; if (drag.from) renderBoard();
+  }
+  const g = $('ghost'), w = parseFloat(g.style.width); g.style.left = (e.clientX - w / 2) + 'px'; g.style.top = (e.clientY - w / 2) + 'px'; e.preventDefault();
+});
+function endDrag(e, cancelled) {
+  if (!drag || e.pointerId !== drag.id) return;
+  const d = drag; drag = null; $('ghost').style.display = 'none';
+  if (cancelled) { renderBoard(); return; }
+  const to = squareAt(e.clientX, e.clientY);
+  if (d.moved) {
+    if (!build) setBuild(true);                                     // Figur vom Rand gezogen: damit beginnt das Bauen
+    if (d.from) delete setup[d.from];
+    if (to) setup[to] = d.piece;                                    // außerhalb losgelassen: Figur ist weg
+    applySetup(); return;
+  }
+  // nur angetippt
+  if (!d.from) { if (!build) setBuild(true); tool = tool === d.piece ? null : d.piece; paintTools(); return; }
+  if (!build || to !== d.from) return;
+  if (tool === 'erase') { if (!setup[to]) return; delete setup[to]; }
+  else if (tool) { if (setup[to] === tool) delete setup[to]; else setup[to] = tool; }
+  else return;
+  applySetup();
+}
+window.addEventListener('pointerup', (e) => endDrag(e, false));
+window.addEventListener('pointercancel', (e) => endDrag(e, true));
+$('build').onclick = () => setBuild(!build);
+$('buildDone').onclick = () => setBuild(false);
+$('turnSel').onchange = applySetup;
+$('castles').addEventListener('change', applySetup);
+$('clearB').onclick = () => { setup = {}; applySetup(); };
+$('startB').onclick = () => { game = new Chess(); readSetup(); applySetup(); };
+$('copyFen').onclick = () => { const i = $('buildFen'); const fallback = () => { i.select(); document.execCommand('copy'); }; if (navigator.clipboard) navigator.clipboard.writeText(i.value).catch(fallback); else fallback(); $('copyFen').textContent = 'Kopiert'; setTimeout(() => { $('copyFen').textContent = 'FEN kopieren'; }, 1500); };
 
 /* ---------- Vergleich ---------- */
 let abort = false, results = [], busyCmp = false;
@@ -409,7 +565,7 @@ function addRow(i, r) {
   cell((r.asm.ok ? '✓ ' : '✗ ') + sanOne(r.pos.f, r.asm.best), r.asm.ok ? 'good' : 'bad'); cell(r.asm.depth);
   cell((r.wasm.ok ? '✓ ' : '✗ ') + sanOne(r.pos.f, r.wasm.best), r.wasm.ok ? 'good' : 'bad'); cell(r.wasm.depth);
   cell(r.asm.evalTxt + ' / ' + r.wasm.evalTxt);
-  tr.onclick = () => { if (busyCmp) return; loadPosition(r.pos.f); tab('an'); };
+  tr.onclick = () => { if (busyCmp) return; setBuild(false); loadPosition(r.pos.f); tab('an'); };
   $('rows').appendChild(tr);
 }
 async function runCompare() {
@@ -497,7 +653,7 @@ function drawGraph() {
   g.strokeStyle = '#8a8a8a'; g.setLineDash([4, 4]); g.beginPath(); g.moveTo(0, H / 2); g.lineTo(W, H / 2); g.stroke(); g.setLineDash([]);
   fullResult.rev.rows.forEach((r) => { if (!r.tag) return; g.beginPath(); g.arc(x(r.ply), y(r.after), 4.5, 0, 7); g.fillStyle = { i: '#d89b00', m: '#e06a00', b: '#c0392b' }[r.tag]; g.fill(); });
 }
-function openPosition(fen) { if (fullBusy) return; loadPosition(fen); tab('an'); }
+function openPosition(fen) { if (fullBusy) return; setBuild(false); loadPosition(fen); tab('an'); }
 $('graph').addEventListener('click', (e) => { if (!fullResult) return; const r = e.currentTarget.getBoundingClientRect(), n = fullResult.evals.length; const i = Math.max(0, Math.min(n - 1, Math.round((e.clientX - r.left - 6) / (r.width - 12) * (n - 1)))); openPosition(fullResult.game.positions[i]); });
 function showReport() {
   const { game, rev } = fullResult; $('report').classList.remove('hidden');
@@ -567,6 +723,7 @@ window.addEventListener('resize', drawGraph);
 new MutationObserver(drawGraph).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
 function tab(which) {
+  clearTimeout(buildTimer);
   ['an', 'full', 'cmp'].forEach((id) => $(id).classList.toggle('hidden', which !== id));
   $('tabAn').classList.toggle('on', which === 'an'); $('tabFull').classList.toggle('on', which === 'full'); $('tabCmp').classList.toggle('on', which === 'cmp');
   if (which === 'an') analyse(); else { token++; if (!busyCmp) Object.values(engines).forEach((e) => e.halt()); if (which === 'full') drawGraph(); }
@@ -577,7 +734,7 @@ $('tabCmp').onclick = () => tab('cmp');
 // Im Hintergrund nicht weiterrechnen (Akku, Lüfter)
 document.addEventListener('visibilitychange', () => { if (busyCmp || fullBusy || $('an').classList.contains('hidden')) return; if (document.hidden) { token++; Object.values(engines).forEach((e) => e.halt()); } else analyse(); });
 
-window.__lab = { full: () => fullResult && { runs: fullResult.runs.map((r) => ({ kind: r.kind, workers: r.workers, ms: r.ms, depths: r.evals.map((e) => e.depth), best: r.evals.map((e) => e.best) })), rows: fullResult.rev.rows.map((r) => ({ ply: r.ply, san: r.san, tag: r.tag, best: r.best, ev: evalText(r.after) })), w: fullResult.rev.w, b: fullResult.rev.b }, fullBusy: () => fullBusy, state: () => ({ fen: game.fen(), engine: $('engSel').value, running, depth: last ? last.depth : 0, nps: last ? last.nps : 0, best: last && last.lines[0] ? last.lines[0].pv[0] : null, lines: last ? last.lines.filter(Boolean).length : 0, busyCmp, loadMs: { asm: engines.asm.loadMs, wasm: engines.wasm.loadMs } }), results: () => results, csv: csvText, hasWasm };
+window.__lab = { build: () => ({ on: build, setup: Object.assign({}, setup), problem: buildProblem, tool }), full: () => fullResult && { runs: fullResult.runs.map((r) => ({ kind: r.kind, workers: r.workers, ms: r.ms, depths: r.evals.map((e) => e.depth), best: r.evals.map((e) => e.best) })), rows: fullResult.rev.rows.map((r) => ({ ply: r.ply, san: r.san, tag: r.tag, best: r.best, ev: evalText(r.after) })), w: fullResult.rev.w, b: fullResult.rev.b }, fullBusy: () => fullBusy, state: () => ({ fen: game.fen(), engine: $('engSel').value, running, depth: last ? last.depth : 0, nps: last ? last.nps : 0, best: last && last.lines[0] ? last.lines[0].pv[0] : null, lines: last ? last.lines.filter(Boolean).length : 0, busyCmp, loadMs: { asm: engines.asm.loadMs, wasm: engines.wasm.loadMs } }), results: () => results, csv: csvText, hasWasm };
 if (!hasWasm) $('engSel').value = 'asm';
 analyse();
 })();

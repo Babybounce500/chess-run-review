@@ -10,6 +10,7 @@ Dann http://127.0.0.1:8091 im Browser öffnen (Strg+C beendet den Server). Ein D
 
 ## Reiter
 - **Analyse:** Brett, laufende Analyse (1, 3 oder 5 Linien), alte und neue Engine umschaltbar, FEN oder PGN laden.
+- **Stellung bauen:** Figuren vom Rand aufs Brett ziehen (Maus oder Finger), frei verschieben, vom Brett ziehen zum Entfernen; oder Figur antippen und Felder antippen, Radierer. Am Zug, Rochaderechte, FEN kopieren. Ungültige Stellungen werden erklärt, gültige sofort analysiert.
 - **Gesamtanalyse:** ganze Partie, jede Stellung einzeln. Profil „Wie Orbitron heute“ entspricht der Vollanalyse im Orbitron-Chat (Tiefe 14, höchstens 2,5 s, ein Arbeiter bei „Alt“). Parallele Arbeiter, Bewertungsverlauf, Urteile (Ungenau ab 0,1, Fehler ab 0,2, Patzer ab 0,3 Verlust an Gewinnchance, Skala wie Lichess), angenäherte Genauigkeit, Ergebnis als JSON mit den Feldnamen der Orbitron-Vollanalyse.
 - **Vergleich:** Mattaufgaben und eigene Patzer, beide Engines mit gleicher Zeit, CSV.
 
