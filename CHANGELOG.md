@@ -1,5 +1,8 @@
 # Änderungsprotokoll
 
+## 2026-11-26 (Partie-Coach entfernt)
+- Der Reiter **Partie-Coach** und der Link „Zu Batch Review“ sind entfernt; beide führten auf eine Seite, die nie veröffentlicht war.
+
 ## 2026-11-26 (Neural Chess mit Sidebar, bessere Bilderkennung)
 - **Neural Chess aufgeräumt:** Brett, fünf Knöpfe und Status. Alles Weitere in einer ausklappbaren Sidebar („Mehr“) mit einzeln aufklappbaren Rubriken; am Handy als Einschub.
 - **Stellung aus Bild:** Brett wird pixelgenau ausgeschnitten, Zugpfeile zählen nicht mehr als Figuren, gelernte Vorlagen beginnen neu.
