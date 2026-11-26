@@ -1,5 +1,10 @@
 # Änderungsprotokoll
 
+## 2026-11-26 (Neural Chess neu gebaut)
+- **Neuer Unterbau:** Regeln aus chess.js, Stockfish als WebAssembly mit Ersatzfassung. Behoben: Absturz im Coach-Modus, alte Züge nach Neustart, fehlendes En passant, Umwandlung, Hänger bei zu frühem Zug, defekte Notlösung, Handy-Layout.
+- **Neon-Optik mit Animationen:** gleitende Züge, Springerbogen, Leuchtspur, Funken beim Schlagen, fallender König beim Matt, Netz im Hintergrund, erzeugte Töne und Musik.
+- Coach bewertet eigene Züge, Tipp-Pfeil, Bewertung aus Sicht von Weiß, sauberes PGN, Übergabe an die Orbitron-Analyse. Eigener Rahmen: Partie bleibt beim Wechseln erhalten, Sperre während einer Duellpartie.
+
 ## 2026-11-26 (Analysebrett: Stellung aus Bild)
 - **Screenshot laden, einfügen (Strg+V) oder ins Fenster ziehen:** das Brett wird erkannt und nachgebaut, unsichere Felder sind markiert und lassen sich korrigieren. Die Engine rechnet erst nach der Bestätigung.
 - Läuft komplett im Browser, auch offline; das Bild verlässt das Gerät nicht. Bestätigte Korrekturen werden lokal als Vorlagen gemerkt (löschbar).

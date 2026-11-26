@@ -660,6 +660,7 @@ html,body,button,input,select,textarea{font-family:var(--neural-font)!important;
     <iframe class="module-frame" id="moduleFrame" title="Chess App" allow="clipboard-write; clipboard-read; fullscreen; screen-wake-lock; camera; microphone; display-capture; autoplay; web-share"></iframe>
     <iframe class="module-frame" id="chatFrame" title="Chat und Anrufe" hidden allow="clipboard-write; clipboard-read; fullscreen; screen-wake-lock; camera; microphone; display-capture; autoplay; web-share"></iframe>
     <iframe class="module-frame" id="labFrame" title="Analysebrett" hidden allow="clipboard-write"></iframe>
+    <iframe class="module-frame" id="neuralFrame" title="Neural Chess" hidden allow="clipboard-write"></iframe>
   </div>
 </div>
 
@@ -2162,16 +2163,17 @@ const isChatUrl=u=>/(^|\/)chat\/index\.html/.test(u||'');
 const isKeepUrl=u=>isDuelUrl(u);
 const LAB_URL='engine/index.html?embed=1';
 const isLabUrl=u=>/(^|\/)engine\/index\.html/.test(u||'');
+const isNeuralUrl=u=>/(^|\/)neural-chess\.html/.test(u||'');
 window.switchChessModule=function(url,title){
   $('moduleTitle').textContent=title;
-  const chat=isChatUrl(url),lab=isLabUrl(url),cf=$('chatFrame'),lf=$('labFrame');
-  // Chat, Analysebrett und Duell haben je einen eigenen Rahmen und behalten beim Wechseln ihren Stand (Verbindung, Anruf, Stellung, Partie)
-  cf.hidden=!chat;lf.hidden=!lab;$('moduleFrame').hidden=chat||lab;
-  if(chat||lab){
-    const own=chat?cf:lf;
+  const chat=isChatUrl(url),lab=isLabUrl(url),neu=isNeuralUrl(url),cf=$('chatFrame'),lf=$('labFrame'),nf=$('neuralFrame');
+  // Chat, Analysebrett, Neural Chess und Duell haben je einen eigenen Rahmen und behalten beim Wechseln ihren Stand (Verbindung, Anruf, Stellung, Partie)
+  cf.hidden=!chat;lf.hidden=!lab;nf.hidden=!neu;$('moduleFrame').hidden=chat||lab||neu;
+  if(chat||lab||neu){
+    const own=chat?cf:lab?lf:nf;
     if(!own.dataset.url){own.src=url;own.dataset.url=url}
     $('moduleDock').classList.add('duel','open');
-    document.querySelectorAll('.module-switcher button').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.module-switcher button').forEach(b=>b.classList.toggle('active',b.dataset.module===url));
     return;
   }
   const f=$('moduleFrame'),duel=isKeepUrl(url);
