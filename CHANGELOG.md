@@ -1,5 +1,8 @@
 # Änderungsprotokoll
 
+## 2026-11-26 (Mobile Chess entfernt)
+- Der Reiter **Mobile Chess** ist entfernt, die alte Adresse leitet auf **Neural Chess** weiter.
+
 ## 2026-11-26 (Chess Center in Neural Chess aufgegangen)
 - Der Reiter **Chess Center** ist entfernt, die alte Adresse leitet auf **Neural Chess** weiter. Alle Funktionen (Farbwahl, Zug zurück, Brett drehen, Bewertung, Zugliste) gibt es dort.
 
