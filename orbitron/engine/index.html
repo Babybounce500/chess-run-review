@@ -547,7 +547,7 @@ function arrowList() {
   return out;
 }
 function drawArrows() {
-  const list = arrowList(), sig = (flipped ? 'f' : '') + list.map((a) => a.rank + a.uci).join();
+  const list = arrowList().filter((a, i, all) => all.findIndex((b) => b.uci === a.uci) === i), sig = (flipped ? 'f' : '') + list.map((a) => a.rank + a.uci).join();
   if (sig === arrowSig) return; arrowSig = sig;
   const svg = $('arrows'); svg.textContent = '';
   const NS = 'http://www.w3.org/2000/svg', xy = (sq) => { const f = sq.charCodeAt(0) - 97, r = +sq[1]; return [(flipped ? 7 - f : f) + 0.5, (flipped ? r - 1 : 8 - r) + 0.5]; };
@@ -965,7 +965,7 @@ function paintShot() {
   const r = shot.cropping && shot.sel ? shot.sel : shot.result && shot.result.rect;
   if (r) { g.strokeStyle = '#e06a00'; g.lineWidth = Math.max(2, cv.width / 220); g.strokeRect(r.x * scale, r.y * scale, r.size * scale, r.size * scale); g.lineWidth = 1; g.strokeStyle = 'rgba(224,106,0,.55)'; for (let k = 1; k < 8; k++) { g.beginPath(); g.moveTo((r.x + k * r.size / 8) * scale, r.y * scale); g.lineTo((r.x + k * r.size / 8) * scale, (r.y + r.size) * scale); g.moveTo(r.x * scale, (r.y + k * r.size / 8) * scale); g.lineTo((r.x + r.size) * scale, (r.y + k * r.size / 8) * scale); g.stroke(); } }
   const found = shot.result ? shot.result.squares.filter((q) => q.code).length : 0;
-  $('imgMsg').textContent = shot.cropping ? 'Zieh im Bild ein Quadrat genau um das Brett (von einer Ecke zur gegenüberliegenden).' : shot.busy ? 'Erkenne das Brett …' : shot.result ? found + ' Figuren erkannt, ' + (shot.unsure.size ? shot.unsure.size + ' Felder unsicher.' : 'nichts als unsicher markiert.') : 'Ich finde kein Brett. Wähle den Ausschnitt selbst.';
+  $('imgMsg').textContent = shot.cropping ? 'Zieh im Bild ein Quadrat genau um das Brett (von einer Ecke zur gegenüberliegenden).' : shot.busy ? 'Erkenne das Brett …' : shot.result ? found + ' Figuren erkannt, ' + (shot.unsure.size === 1 ? '1 Feld unsicher (orange). Korrigieren und bestätigen, dann sitzt dieser Figurenstil.' : shot.unsure.size ? shot.unsure.size + ' Felder unsicher (orange). Korrigieren und bestätigen, dann sitzt dieser Figurenstil.' : 'nichts als unsicher markiert.') : 'Ich finde kein Brett. Wähle den Ausschnitt selbst.';
   $('imgGo').disabled = !shot.result || !!buildProblem || shot.cropping; $('imgBlack').checked = !!shot.black;
   const n = window.BoardVision.learnedCount(); $('imgLearned').textContent = n ? 'Gelernt: ' + n + ' Vorlagen.' : ''; $('imgForget').classList.toggle('hidden', !n);
 }

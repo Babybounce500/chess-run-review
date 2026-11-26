@@ -111,9 +111,10 @@ html.framed header .ob-brand{display:none}
 html.framed header{justify-content:flex-end;margin-bottom:8px}
 #engineChip{font:600 .68rem var(--ob-font);letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--ob-line);border-radius:99px;padding:6px 12px;color:var(--ob-muted);background:rgba(19,10,51,.8)}
 #engineChip.on{color:var(--cyan);border-color:var(--cyan);box-shadow:0 0 14px rgba(0,229,255,.35)}
-.layout{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:18px;align-items:start}
-.stage{min-width:0;width:100%;max-width:min(720px,max(420px,calc(100vh - 235px)));justify-self:center}
-html.framed .stage{max-width:min(720px,max(420px,calc(100vh - 205px)))}
+.layout{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;align-items:start}
+.layout.open{grid-template-columns:minmax(0,1fr) 340px}
+.stage{min-width:0;width:100%;max-width:min(760px,max(420px,calc(100vh - 265px)));justify-self:center}
+html.framed .stage{max-width:min(760px,max(420px,calc(100vh - 235px)))}
 .player{display:flex;align-items:center;gap:10px;min-height:38px;margin:4px 0 4px 26px}
 .avatar{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:var(--ob-input);border:1px solid var(--ob-line);font-size:1.05rem;flex:none}
 .player.turn .avatar{border-color:var(--cyan);box-shadow:0 0 14px rgba(0,229,255,.6)}
@@ -121,10 +122,10 @@ html.framed .stage{max-width:min(720px,max(420px,calc(100vh - 205px)))}
 .taken{display:flex;align-items:center;flex-wrap:wrap;min-width:0;height:22px;overflow:hidden}
 .taken img{width:20px;height:20px;margin-right:-5px;filter:drop-shadow(0 0 3px rgba(0,229,255,.55))}
 .taken b{margin-left:10px;font-size:.8rem;color:var(--lime)}
-.think{margin-left:auto;display:flex;gap:4px;align-items:center;opacity:0;transition:opacity .25s;font:600 .66rem var(--ob-font);color:var(--pink);letter-spacing:.08em}
+.think{margin-left:auto;display:flex;gap:4px;align-items:center;opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s;font:600 .66rem var(--ob-font);color:var(--pink);letter-spacing:.08em}
 .think i{width:6px;height:6px;border-radius:50%;background:var(--pink);box-shadow:0 0 8px var(--pink);animation:pulse 1s ease-in-out infinite}
 .think i:nth-child(2){animation-delay:.15s}.think i:nth-child(3){animation-delay:.3s}
-.player.thinking .think{opacity:1}
+.player.thinking .think{opacity:1;visibility:visible}
 @keyframes pulse{0%,100%{transform:scale(.5);opacity:.35}50%{transform:scale(1.25);opacity:1}}
 .boardrow{display:grid;grid-template-columns:16px minmax(0,1fr);gap:10px}
 #evalbar{position:relative;border-radius:10px;overflow:hidden;background:#150a38;border:1px solid var(--ob-line)}
@@ -189,13 +190,25 @@ html[data-theme] .controls button,html[data-theme] .panel button,html[data-theme
 html[data-theme] button:disabled{opacity:.4;cursor:default;box-shadow:none;border-color:transparent}
 html[data-theme] .controls button:not(:disabled):hover,html[data-theme] .panel button:not(:disabled):hover{transform:translateY(-1px);box-shadow:0 0 14px rgba(0,229,255,.35)}
 html[data-theme] button[aria-pressed=true]{background:linear-gradient(135deg,#0097c4,#7c2ad8);color:#fff;border-color:var(--cyan);box-shadow:0 0 14px rgba(0,229,255,.35)}
+html[data-theme] button.live{border-color:var(--pink);box-shadow:0 0 14px rgba(255,61,242,.5)}
 html[data-theme] button.primary{background:linear-gradient(135deg,var(--cyan),#5ab0ff);color:#00222a}
-.panel{display:flex;flex-direction:column;gap:12px;min-width:0}
+.panel{display:flex;flex-direction:column;gap:10px;min-width:0;animation:slide .3s cubic-bezier(.2,1,.4,1)}
+@keyframes slide{from{transform:translateX(30px);opacity:0}}
+.sidehead{display:flex;justify-content:space-between;align-items:center;font:600 .8rem var(--ob-font);letter-spacing:.14em;text-transform:uppercase;color:var(--cyan);padding:0 4px}
+details.card summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;min-height:26px;font:600 .74rem var(--ob-font);letter-spacing:.12em;text-transform:uppercase;color:var(--cyan)}
+details.card summary::-webkit-details-marker{display:none}
+details.card summary::after{content:"›";font-size:1.35rem;line-height:1;color:var(--ob-muted);transition:transform .2s}
+details.card[open] summary::after{transform:rotate(90deg)}
+details.card[open] summary{margin-bottom:10px}
+.info{display:flex;justify-content:space-between;align-items:baseline;gap:4px 14px;flex-wrap:wrap;margin:10px 0 0 26px}
+#coachCard{margin:8px 0 0 26px}
+#shade{position:fixed;inset:0;z-index:19;background:rgba(5,1,20,.6);animation:fade .25s;display:none}
+.sidehead button{min-width:40px}
 .card{background:rgba(19,10,51,.86);border:1px solid var(--ob-line);border-radius:16px;padding:12px 14px;backdrop-filter:blur(4px)}
 html[data-theme] .card{background:rgba(19,10,51,.86)}
 .card h3{margin:0 0 8px;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan)}
-#status{font:600 1rem var(--ob-font);min-height:1.4em}
-#evalText{color:var(--ob-muted);font-size:.85rem;margin-top:4px}
+#status{font:600 .95rem var(--ob-font);min-height:1.4em}
+#evalText{color:var(--ob-muted);font-size:.85rem}
 .seg{display:flex;gap:6px;flex-wrap:wrap}
 .seg button{flex:1 1 auto}
 .label{font-size:.74rem;color:var(--ob-muted);margin:10px 0 5px}
@@ -214,9 +227,14 @@ select{width:100%;min-height:38px;padding:6px 10px}
 #toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#1f124a;border:1px solid var(--cyan);border-radius:99px;padding:9px 18px;z-index:30;box-shadow:0 0 20px rgba(0,229,255,.4);animation:rise .3s;max-width:92vw;text-align:center}
 #lock{position:fixed;inset:0;z-index:40;background:rgba(8,2,28,.95);display:flex;align-items:center;justify-content:center;padding:24px;text-align:center}
 .hidden{display:none!important}
-@media (max-width:960px){.layout{grid-template-columns:minmax(0,1fr)}.stage,html.framed .stage{max-width:min(640px,calc(100vh - 150px));min-width:min(100%,300px)}.panel{max-width:640px;width:100%;justify-self:center}}
-@media (max-width:520px){.wrap{padding:8px 8px 20px}.boardrow{grid-template-columns:8px minmax(0,1fr);gap:5px}.player,.controls{margin-left:13px}.stage,html.framed .stage{max-width:100%}.controls button{flex:1 1 30%}#engineChip{font-size:.52rem;letter-spacing:.04em;padding:5px 8px;white-space:nowrap}.ob-sub{letter-spacing:.06em}.pname{font-size:.7rem}}
-@media (orientation:landscape) and (max-height:520px){.layout{grid-template-columns:minmax(0,auto) minmax(220px,1fr)}.stage,html.framed .stage{width:calc(100vh - 96px);max-width:56vw;min-width:230px}header{display:none}.wrap{padding:6px 10px}.player{min-height:30px;margin-top:2px;margin-bottom:2px}.avatar{width:26px;height:26px}.controls{grid-column:1/-1}.panel{max-width:none}}
+@media (max-width:960px){.layout,.layout.open{grid-template-columns:minmax(0,1fr)}.stage,html.framed .stage{max-width:min(640px,calc(100vh - 190px));min-width:min(100%,300px)}
+  .panel{position:fixed;top:0;right:0;bottom:0;width:min(360px,90vw);z-index:20;overflow-y:auto;overscroll-behavior:contain;padding:14px 12px 24px;background:#0d0528;border-left:1px solid var(--cyan);box-shadow:-10px 0 40px rgba(0,229,255,.25)}
+  .panel>*{flex:none}#shade:not(.hidden){display:block}}
+@media (max-width:520px){.wrap{padding:8px 8px 20px}.boardrow{grid-template-columns:8px minmax(0,1fr);gap:5px}.player,.controls,.info,#coachCard{margin-left:13px}.stage,html.framed .stage{max-width:100%}.controls button{flex:1 1 30%}#engineChip{font-size:.52rem;letter-spacing:.04em;padding:5px 8px;white-space:nowrap}.ob-sub{letter-spacing:.06em}.pname{font-size:.7rem}}
+@media (orientation:landscape) and (max-height:520px){header{display:none}.wrap{padding:6px 10px}
+  .stage,html.framed .stage{display:grid;grid-template-columns:calc(100vh - 96px) minmax(0,1fr);column-gap:14px;align-content:start;max-width:760px;min-width:0}
+  #pTop,.boardrow,#pBottom{grid-column:1}.controls,.info,#coachCard{grid-column:2;margin-left:0}.controls{grid-row:1/3;align-self:start}.info{grid-row:3}#coachCard{grid-row:4}.controls button{flex:1 1 40%}
+  .player{min-height:30px;margin-top:2px;margin-bottom:2px}.avatar{width:26px;height:26px}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001s!important;transition-duration:.001s!important}}
 </style>
 </head>
@@ -244,28 +262,33 @@ select{width:100%;min-height:38px;padding:6px 10px}
         <button id="undoB" type="button">↶ Zurück</button>
         <button id="hintB" type="button">💡 Tipp</button>
         <button id="coachB" type="button" aria-pressed="false">🧠 Coach</button>
-        <button id="botB" type="button" aria-pressed="false">🤖 Bot gegen Bot</button>
-        <button id="flipB" type="button">⇅ Drehen</button>
+        <button id="menuB" type="button" aria-expanded="false" aria-controls="side">☰ Mehr</button>
       </div>
+      <div class="info" aria-live="polite"><div id="status">Bereit</div><div id="evalText">Bewertung: –</div></div>
+      <div class="card hidden" id="coachCard" aria-live="polite"><h3>Neural Coach</h3><p id="coachText"></p></div>
     </div>
-    <aside class="panel">
-      <div class="card" aria-live="polite"><div id="status">Bereit</div><div id="evalText">Bewertung: –</div></div>
-      <div class="card" id="coachCard"><h3>Neural Coach</h3><p id="coachText">Schalte den Coach ein, dann bewerte ich jeden deiner Züge.</p></div>
-      <div class="card"><h3>Gegner</h3>
+    <div id="shade" class="hidden"></div>
+    <aside class="panel hidden" id="side" aria-label="Menü">
+      <div class="sidehead"><span>Menü</span><button id="sideClose" type="button" aria-label="Menü schließen">✕</button></div>
+      <details class="card" data-sec="foe"><summary>Gegner &amp; Farbe</summary>
         <div class="seg" id="levels"></div>
         <div class="label">Du spielst</div>
         <div class="seg" id="colors"><button type="button" data-color="w">♔ Weiß</button><button type="button" data-color="b">♚ Schwarz</button></div>
         <p class="note">Farbe wechseln startet eine neue Partie. Die Stufen sind Engine-Einstellungen, keine gemessenen Wertungszahlen.</p>
-      </div>
-      <div class="card"><h3>Bewertungsverlauf</h3><canvas id="chart" aria-label="Bewertung über die Partie, oben gut für Weiß"></canvas></div>
-      <div class="card"><h3>Züge</h3><div id="moves"></div></div>
-      <div class="card"><h3>Partie</h3><div class="row"><button id="copyB" type="button">PGN kopieren</button><button id="pgnB" type="button">PGN laden ⤓</button><button id="analyseB" type="button">In Orbitron analysieren</button></div></div>
-      <div class="card"><h3>Aussehen &amp; Klang</h3>
+      </details>
+      <details class="card" data-sec="moves"><summary>Züge</summary><div id="moves"></div></details>
+      <details class="card" data-sec="chart"><summary>Bewertungsverlauf</summary><canvas id="chart" aria-label="Bewertung über die Partie, oben gut für Weiß"></canvas></details>
+      <details class="card" data-sec="game"><summary>Partie</summary>
+        <div class="seg"><button id="botB" type="button" aria-pressed="false">🤖 Bot gegen Bot</button><button id="flipB" type="button">⇅ Brett drehen</button></div>
+        <div class="label">Weitergeben</div>
+        <div class="row"><button id="copyB" type="button">PGN kopieren</button><button id="pgnB" type="button">PGN laden ⤓</button><button id="analyseB" type="button">In Orbitron analysieren</button></div>
+      </details>
+      <details class="card" data-sec="look"><summary>Aussehen &amp; Klang</summary>
         <div class="seg"><button id="soundB" type="button" aria-pressed="true">🔊 Töne</button><button id="musicB" type="button" aria-pressed="false">🎵 Musik</button></div>
         <div class="label">Figuren</div><select id="setSel" aria-label="Figurensatz"><option value="flat">Orbitron Flat</option><option value="klassisch">Klassisch</option></select>
         <div class="label">Brett</div><select id="boardSel" aria-label="Brett"><option value="neon">Neon</option><option value="wood">Holz</option></select>
         <p class="note">Stockfish rechnet in deinem Browser. Nur gegen den Computer und zum Üben, nie während einer laufenden Partie gegen Menschen.</p>
-      </div>
+      </details>
     </aside>
   </div>
 </div>
@@ -548,9 +571,10 @@ function judge() {
 }
 const TAGS = { ok: ['★', 'j-ok', 'Bester Zug'], good: ['✓', 'j-ok', 'Guter Zug'], in: ['?!', 'j-in', 'Ungenau'], mi: ['?', 'j-mi', 'Fehler'], bl: ['??', 'j-bl', 'Patzer'] };
 function renderCoach() {
-  const card = $('coachCard'), t = $('coachText'); card.className = 'card';
-  if (bot) { t.textContent = 'Bot gegen Bot: Lehn dich zurück und schau zu.'; return; }
-  if (!coach) { t.textContent = 'Schalte den Coach ein, dann bewerte ich jeden deiner Züge.'; return; }
+  const card = $('coachCard'), t = $('coachText'), tip = hintMove && hintMove.fen === g.fen();
+  if (!coach && tip) return;                                   // der Tipp bleibt stehen, bis gezogen wird
+  card.className = 'card' + (coach && !bot ? '' : ' hidden');
+  if (!coach || bot) return;
   const hist = g.history({ verbose: true }); let i = hist.length - 1; while (i >= 0 && hist[i].color !== me) i--;
   if (i < 0) { t.textContent = 'Coach ist an. Mach deinen Zug.'; return; }
   const n = notes[i]; if (!n || n.uci !== uci(hist[i])) { t.textContent = 'Ich rechne deinen Zug ' + nice(hist[i].san) + ' durch …'; return; }
@@ -634,6 +658,7 @@ function refresh() {
   $('over').classList.toggle('hidden', !r || overSeen || !overReady); if (r) { $('overTitle').textContent = r.title; $('overText').textContent = r.text; }
   $('undoB').disabled = !g.history().length; $('hintB').disabled = !humanTurn();
   $('coachB').setAttribute('aria-pressed', coach); $('botB').setAttribute('aria-pressed', bot); $('botB').textContent = bot ? '⏹ Bot stoppen' : '🤖 Bot gegen Bot';
+  $('menuB').classList.toggle('live', bot);
   document.querySelectorAll('#levels button').forEach((b, i) => b.setAttribute('aria-pressed', i === level));
   document.querySelectorAll('#colors button').forEach((b) => b.setAttribute('aria-pressed', b.dataset.color === me));
   $('copyB').disabled = $('pgnB').disabled = $('analyseB').disabled = $('overAnalyse').disabled = !g.history().length;
@@ -693,19 +718,19 @@ function analyse() {
   location.href = 'gemini-chat.html#/analyse-duell';
 }
 LEVELS.forEach((L, i) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = L.name; b.onclick = () => { if (level === i) return; level = i; if (thinking) cancel(); engineError = false; save(); refresh(); pump(); toast('Gegner: ' + L.name); }; $('levels').appendChild(b); });
-document.querySelectorAll('#colors button').forEach((b) => { b.onclick = () => { if (me === b.dataset.color) return; me = b.dataset.color; flipped = me === 'b'; bot = false; newGame(); }; });
+document.querySelectorAll('#colors button').forEach((b) => { b.onclick = () => { if (me === b.dataset.color) return; me = b.dataset.color; flipped = me === 'b'; bot = false; newGame(); if (narrow()) menu(false); }; });
 $('newB').onclick = $('overNew').onclick = () => { bot = false; newGame(); };
 $('overClose').onclick = () => { overSeen = true; refresh(); };
 $('undoB').onclick = undo;
 $('coachB').onclick = () => { coach = !coach; save(); refresh(); fens().slice(-9).forEach((f) => evaluate(f)); judge(); };
 $('hintB').onclick = async () => {
-  if (!humanTurn()) return; const fen = g.fen(), mine = gen; $('coachText').textContent = 'Ich suche einen Tipp …';
+  if (!humanTurn()) return; const fen = g.fen(), mine = gen; $('coachCard').className = 'card'; $('coachText').textContent = 'Ich suche einen Tipp …';
   const e = known(fen) || await evaluate(fen);
   if (mine !== gen || g.fen() !== fen) return;
   if (!e || !e.best) { toast('Gerade kein Tipp möglich.'); renderCoach(); return; }
   hintMove = { fen, uci: e.best }; drawHint(); $('coachCard').className = 'card good'; $('coachText').textContent = 'Tipp: ' + sanOf(fen, e.best) + ' (grüner Pfeil).';
 };
-$('botB').onclick = () => { if (bot) { bot = false; cancel(); refresh(); pump(); return; } cancel(); bot = true; if (g.game_over()) { newGame(); } else { refresh(); pump(); } };
+$('botB').onclick = () => { if (narrow() && !bot) menu(false); if (bot) { bot = false; cancel(); refresh(); pump(); return; } cancel(); bot = true; if (g.game_over()) { newGame(); } else { refresh(); pump(); } };
 $('flipB').onclick = () => { flipped = !flipped; sel = null; $('marks').textContent = ''; renderSquares(); syncPieces(); save(); refresh(); };
 $('promoCancel').onclick = () => { $('promo').classList.add('hidden'); };
 $('soundB').onclick = () => { soundOn = !soundOn; $('soundB').setAttribute('aria-pressed', soundOn); save(); sound('move'); };
@@ -725,13 +750,34 @@ setInterval(wake, 700);
 document.addEventListener('visibilitychange', wake);
 addEventListener('resize', () => drawChart());
 
+/* ---------- Sidebar: nur zeigen, was gerade gebraucht wird ---------- */
+const UI_STORE = 'orbitron_neural_ui';
+let side = { open: false, sec: ['foe'] };
+try { const v = JSON.parse(localStorage.getItem(UI_STORE) || 'null'); if (v && Array.isArray(v.sec)) side = { open: !!v.open, sec: v.sec }; } catch (e) { /* Standard */ }
+const narrow = () => matchMedia('(max-width: 960px)').matches;
+const saveSide = () => { try { localStorage.setItem(UI_STORE, JSON.stringify(side)); } catch (e) { /* ok */ } };
+function menu(open, quiet) {
+  side.open = open; $('side').classList.toggle('hidden', !open); $('shade').classList.toggle('hidden', !open);
+  document.querySelector('.layout').classList.toggle('open', open); $('menuB').setAttribute('aria-expanded', open);
+  saveSide(); drawChart(); $('moves').scrollTop = $('moves').scrollHeight;
+  if (!quiet) (open ? $('sideClose') : $('menuB')).focus({ preventScroll: true });
+}
+document.querySelectorAll('#side details').forEach((d) => {
+  d.open = side.sec.includes(d.dataset.sec);
+  d.addEventListener('toggle', () => { side.sec = [...document.querySelectorAll('#side details[open]')].map((x) => x.dataset.sec); saveSide(); if (d.open) { drawChart(); $('moves').scrollTop = $('moves').scrollHeight; } });
+});
+$('menuB').onclick = () => menu(!side.open);
+$('sideClose').onclick = $('shade').onclick = () => menu(false);
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && side.open) menu(false); });
+menu(side.open && !narrow(), true);                            // am Handy beginnt die Seite immer mit dem Brett
+
 /* ---------- Start ---------- */
 restore();
 $('setSel').value = set; $('boardSel').value = boardStyle; $('boardbox').classList.toggle('wood', boardStyle === 'wood'); $('soundB').setAttribute('aria-pressed', soundOn);
 syncPieces(!g.history().length); overSeen = g.game_over(); refresh(); wake();
 engine('bot').start().then(() => chip(true)).catch(() => { /* ask() versucht den Rückfall */ });
 fens().reverse().slice(0, coach ? 9 : 30).forEach((f) => evaluate(f));    // die aktuelle Stellung zuerst
-window.__neural = { state: () => ({ fen: g.fen(), history: g.history(), me, level, coach, bot, flipped, thinking, locked, over: g.game_over(), kind, engineError, sel, notes, pgn: pgn() }), load: (fen) => { cancel(); bot = false; g = new Chess(fen); notes = {}; syncPieces(); save(); refresh(); evaluate(g.fen()); pump(); }, pieces: () => [...pieces].map(([sq, el]) => sq + ':' + el.dataset.code).sort(), expected: () => Object.entries(position()).map(([s, c]) => s + ':' + c).sort() };
+window.__neural = { menu: (open, all) => { if (all) document.querySelectorAll('#side details').forEach((d) => { d.open = true; }); menu(open, true); }, state: () => ({ fen: g.fen(), history: g.history(), me, level, coach, bot, flipped, thinking, locked, over: g.game_over(), kind, engineError, sel, notes, pgn: pgn() }), load: (fen) => { cancel(); bot = false; g = new Chess(fen); notes = {}; syncPieces(); save(); refresh(); evaluate(g.fen()); pump(); }, pieces: () => [...pieces].map(([sq, el]) => sq + ':' + el.dataset.code).sort(), expected: () => Object.entries(position()).map(([s, c]) => s + ':' + c).sort() };
 </script>
 </body>
 </html>

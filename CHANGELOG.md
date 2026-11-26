@@ -1,5 +1,9 @@
 # Änderungsprotokoll
 
+## 2026-11-26 (Neural Chess mit Sidebar, bessere Bilderkennung)
+- **Neural Chess aufgeräumt:** Brett, fünf Knöpfe und Status. Alles Weitere in einer ausklappbaren Sidebar („Mehr“) mit einzeln aufklappbaren Rubriken; am Handy als Einschub.
+- **Stellung aus Bild:** Brett wird pixelgenau ausgeschnitten, Zugpfeile zählen nicht mehr als Figuren, gelernte Vorlagen beginnen neu.
+
 ## 2026-11-26 (Neural Chess neu gebaut)
 - **Neuer Unterbau:** Regeln aus chess.js, Stockfish als WebAssembly mit Ersatzfassung. Behoben: Absturz im Coach-Modus, alte Züge nach Neustart, fehlendes En passant, Umwandlung, Hänger bei zu frühem Zug, defekte Notlösung, Handy-Layout.
 - **Neon-Optik mit Animationen:** gleitende Züge, Springerbogen, Leuchtspur, Funken beim Schlagen, fallender König beim Matt, Netz im Hintergrund, erzeugte Töne und Musik.

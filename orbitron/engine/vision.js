@@ -6,7 +6,7 @@
  */
 (function () {
   'use strict';
-  const N = 40, M = 20, G = 10, STORE = 'orbitron_lab_vision_v1', MAXLEARN = 240;
+  const N = 40, M = 20, G = 10, STORE = 'orbitron_lab_vision_v2', MAXLEARN = 240;
   const canvas = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
   const ctx2 = (c) => c.getContext('2d', { willReadFrequently: true });
   const med = (a) => { const s = a.slice().sort((x, y) => x - y), n = s.length; return n % 2 ? s[n >> 1] : (s[n / 2 - 1] + s[n / 2]) / 2; };
@@ -56,7 +56,26 @@
     }
     const f = fine || { x0: best.x0, y0: best.y0, s: best.s, c: checker(best.x0, best.y0, best.s) };
     if ((f.c.inl || 0) < 40) return null;
-    return { x: f.x0 / scale, y: f.y0 / scale, size: 8 * f.s / scale, inliers: f.c.inl };
+    return Object.assign(align(src, { x: f.x0 / scale, y: f.y0 / scale, size: 8 * f.s / scale }), { inliers: f.c.inl });
+  }
+  // Pixelgenau nachrichten (volle Auflösung, nur der Brettbereich): eine Feldgrenze ist eine Kante, die fast über das ganze Brett läuft.
+  // Schon 3 Pixel Versatz ziehen einen Streifen vom Nachbarfeld in jedes Feld und verderben die Figurenform.
+  function align(src, r) {
+    const pad = Math.ceil(r.size / 40) + 4, ox = Math.floor(r.x) - pad, oy = Math.floor(r.y) - pad, W = Math.ceil(r.size) + 2 * pad;
+    const c = canvas(W, W), g = ctx2(c); g.drawImage(src, -ox, -oy);
+    const d = g.getImageData(0, 0, W, W).data, V = new Float32Array(W), H = new Float32Array(W);
+    const diff = (i, j) => Math.abs(d[i] - d[j]) + Math.abs(d[i + 1] - d[j + 1]) + Math.abs(d[i + 2] - d[j + 2]);
+    const from = pad + 2, to = W - pad - 2;
+    for (let k = 1; k < W; k++) { let a = 0, b = 0; for (let m = from; m < to; m++) { if (diff((m * W + k) * 4, (m * W + k - 1) * 4) > 24) a++; if (diff((k * W + m) * 4, ((k - 1) * W + m) * 4) > 24) b++; } V[k] = a / (to - from); H[k] = b / (to - from); }
+    const at = (A, v) => { const i = Math.floor(v), q = v - i; return (A[i] || 0) * (1 - q) + (A[i + 1] || 0) * q; };
+    const sizes = []; for (let s = r.size - 8; s <= r.size + 8; s += 0.5) sizes.push(s);
+    let best = null;
+    for (const size of sizes) {
+      const one = (A, start) => { let top = null; for (let o = start - pad + 1; o <= start + pad - 1; o += 0.5) { let v = 0; for (let k = 0; k <= 8; k++) v += at(A, o + k * size / 8) * (k === 0 || k === 8 ? 0.5 : 1); v -= Math.abs(o - start) * 0.002; if (!top || v > top.v) top = { v, o }; } return top; };
+      const x = one(V, r.x - ox), y = one(H, r.y - oy), v = x.v + y.v - Math.abs(size - r.size) * 0.002;
+      if (!best || v > best.v) best = { v, x: x.o + ox, y: y.o + oy, size };
+    }
+    return best && best.v > 5 ? { x: best.x, y: best.y, size: best.size } : r;
   }
 
   /* ---------- 2. Ein Feld lesen ---------- */
@@ -85,6 +104,8 @@
     let area = 0, x0 = N, x1 = -1, y0 = N, y1 = -1; for (let i = 0; i < n; i++) if (mask[i]) { area++; const x = i % N, y = (i / N) | 0; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
     const bw = x1 - x0 + 1, bh = y1 - y0 + 1;
     if (area < n * 0.09 || bh < N * 0.4 || bw < N * 0.2) return null;                // leer
+    if ((bh >= N - 3 && bw < N * 0.4) || (bw >= N - 3 && bh < N * 0.4)) return null;  // Pfeil quer durchs Feld
+    if ((bw < N * 0.3 && (y0 <= 1 || y1 >= N - 2)) || (bh < N * 0.3 && (x0 <= 1 || x1 >= N - 2))) return null;  // Anfang oder Ende eines Pfeils
     // Farbe: Helligkeit im Inneren der Figur
     const inner = []; for (let i = N + 1; i < n - N - 1; i++) if (mask[i] && mask[i - 1] && mask[i + 1] && mask[i - N] && mask[i + N] && mask[i - 2] && mask[i + 2]) inner.push(lum[i]);
     const light = med(inner.length > 20 ? inner : [...lum].filter((_, i) => mask[i]));
@@ -118,7 +139,7 @@
 
   function classify(f, list) {
     const best = {};
-    for (const t of list) { if (t.code[0] !== f.color) continue; let v = compare(f, t); if (t.own) v *= 0.72; if (!(t.code in best) || v < best[t.code].v) best[t.code] = { v, own: t.own }; }
+    for (const t of list) { if (t.code[0] !== f.color) continue; let v = compare(f, t); if (t.own && v < 0.45) v *= 0.6; if (!(t.code in best) || v < best[t.code].v) best[t.code] = { v, own: t.own }; }
     const order = Object.entries(best).sort((a, b) => a[1].v - b[1].v);
     if (!order.length) return null;
     const [code, top] = order[0], second = order[1] ? order[1][1].v : 9;
@@ -126,7 +147,7 @@
   }
   function cells(src, rect) {
     const out = [], s = rect.size / 8;
-    for (let r = 0; r < 8; r++) for (let f = 0; f < 8; f++) { const c = canvas(N, N), g = ctx2(c); g.imageSmoothingQuality = 'high'; g.drawImage(src, rect.x + (f + 0.015) * s, rect.y + (r + 0.015) * s, s * 0.97, s * 0.97, 0, 0, N, N); out.push(features(c)); }
+    for (let r = 0; r < 8; r++) for (let f = 0; f < 8; f++) { const c = canvas(N, N), g = ctx2(c); g.imageSmoothingQuality = 'high'; g.drawImage(src, rect.x + (f + 0.025) * s, rect.y + (r + 0.025) * s, s * 0.95, s * 0.95, 0, 0, N, N); out.push(features(c)); }
     return out;
   }
   // Ergebnis in Bildschirm-Reihenfolge (oben links zuerst). rect fehlt: Brett selbst suchen.
