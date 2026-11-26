@@ -1,5 +1,9 @@
 # Änderungsprotokoll
 
+## 2026-11-26 (Engine-Labor zum Testen)
+- Neue eigenständige Testseite `engine/`: Stockfish 10 als WebAssembly gegen die bisherige Fassung, Live-Analyse, schnelle Gesamtanalyse mit parallelen Arbeitern und Fehlerurteilen, Vergleich an Matt- und Patzer-Stellungen. Orbitron ist unverändert.
+
+
 ## 2026-11-26 (PWA-Feinschliff)
 - App-Symbole als PNG (192, 512, maskable), Schnellzugriffe auf Duell, Chat und Training, deutsche Beschreibung.
 - Stockfish und die anderen mitgelieferten Bibliotheken kommen sofort aus dem Speicher, auch bei schwachem Netz.
