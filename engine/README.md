@@ -11,6 +11,7 @@ Dann http://127.0.0.1:8091 im Browser öffnen (Strg+C beendet den Server). Ein D
 ## Reiter
 - **Analyse:** Brett, laufende Analyse (1, 3 oder 5 Linien), alte und neue Engine umschaltbar, FEN oder PGN laden.
 - **Stellung bauen:** Figuren vom Rand aufs Brett ziehen (Maus oder Finger), frei verschieben, vom Brett ziehen zum Entfernen; oder Figur antippen und Felder antippen, Radierer. Am Zug, Rochaderechte, FEN kopieren. Ungültige Stellungen werden erklärt, gültige sofort analysiert.
+- **Stellung aus Bild:** „Aus Bild“, <kbd>Strg</kbd>+<kbd>V</kbd> oder Datei ins Fenster ziehen. Das Brett wird gesucht und nachgebaut, unsichere Felder sind orange. Blickrichtung umschaltbar, Ausschnitt notfalls von Hand wählen. Die Engine rechnet erst nach der Bestätigung. Alles bleibt im Browser; bestätigte Korrekturen werden dort als Vorlagen gemerkt (löschbar). Für Bildschirmfotos digitaler Bretter, nicht für Fotos echter Bretter. Am Zug und Rochaderechte sieht man einem Bild nicht an: prüfen. Code: vision.js.
 - **Gesamtanalyse:** ganze Partie, jede Stellung einzeln. Profil „Wie Orbitron heute“ entspricht der Vollanalyse im Orbitron-Chat (Tiefe 14, höchstens 2,5 s, ein Arbeiter bei „Alt“). Parallele Arbeiter, Bewertungsverlauf, Urteile (Ungenau ab 0,1, Fehler ab 0,2, Patzer ab 0,3 Verlust an Gewinnchance, Skala wie Lichess), angenäherte Genauigkeit, Ergebnis als JSON mit den Feldnamen der Orbitron-Vollanalyse.
 - **Vergleich:** Mattaufgaben und eigene Patzer, beide Engines mit gleicher Zeit, CSV.
 
@@ -24,7 +25,7 @@ Morphy, Pariser Oper (34 Stellungen), Profil „Wie Orbitron heute“: alt 62,6 
 - Diese Stockfish-Fassung reagiert auf „Stopp“ erst nach der laufenden Tiefe. Dauert das länger als 150 ms, springt eine vorgeladene zweite Engine ein.
 
 ## In Orbitron
-Reiter „Analysebrett“ (auch `#/analysebrett`, Befehl `/engine`). Eigener Rahmen: Stellung bleibt beim Wechseln, die laufende Analyse pausiert, sobald das Fenster zu ist. Läuft im selben Orbitron-Fenster eine Duellpartie, ist das Analysebrett gesperrt (eine zweite, getrennt geöffnete Seite kann das nicht erkennen). Laufende Analyse höchstens 60 s je Stellung. Kopie nach Orbitron: index.html, data.js, img/, vendor/ nach `engine/`.
+Reiter „Analysebrett“ (auch `#/analysebrett`, Befehl `/engine`). Eigener Rahmen: Stellung bleibt beim Wechseln, die laufende Analyse pausiert, sobald das Fenster zu ist. Läuft im selben Orbitron-Fenster eine Duellpartie, ist das Analysebrett gesperrt (eine zweite, getrennt geöffnete Seite kann das nicht erkennen). Laufende Analyse höchstens 60 s je Stellung. Kopie nach Orbitron: index.html, data.js, vision.js, img/, vendor/ nach `engine/`.
 
 ## Neu aufbauen und testen
 ```

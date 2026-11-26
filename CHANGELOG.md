@@ -1,5 +1,10 @@
 # Änderungsprotokoll
 
+## 2026-11-26 (Analysebrett: Stellung aus Bild)
+- **Screenshot laden, einfügen (Strg+V) oder ins Fenster ziehen:** das Brett wird erkannt und nachgebaut, unsichere Felder sind markiert und lassen sich korrigieren. Die Engine rechnet erst nach der Bestätigung.
+- Läuft komplett im Browser, auch offline; das Bild verlässt das Gerät nicht. Bestätigte Korrekturen werden lokal als Vorlagen gemerkt (löschbar).
+- Für Bildschirmfotos digitaler Bretter. Fremde Figurenstile brauchen anfangs Korrekturen; Fotos echter Bretter werden nicht unterstützt.
+
 ## 2026-11-26 (Analysebrett: Pfeile, Varianten, Erklärungen)
 - **Vorschlagspfeile** für die besten Züge, **Varianten durchklicken** und abspielen, Zugliste mit Vor und Zurück, **Urteil zum eigenen Zug**, Erklärung in Worten, Wendepunkte nach der Gesamtanalyse, deutsche Notation, Kurzanleitung und Tasten.
 - Stellungswechsel reagiert jetzt typisch in unter 0,4 s (vorher bis 3 s): eine vorgeladene zweite Engine springt ein.
