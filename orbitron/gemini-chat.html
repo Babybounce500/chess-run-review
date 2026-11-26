@@ -528,7 +528,6 @@ html,body,button,input,select,textarea{font-family:var(--neural-font)!important;
         <button class="nav-item nav-chat" id="navChat" type="button" onclick="openOnlineChat()" title="Chat, Anrufe und Dateien direkt zwischen Browsern, ohne Server"><i class="bi bi-chat-dots-fill"></i><span class="chess-nav-label">Chat &amp; Anrufe</span><span class="nav-badge" id="navChatBadge">NEU</span></button>
         <button class="nav-item" id="navEngine" type="button" onclick="openEngineLab()" title="Stellungen bauen, ganze Partien schnell analysieren (Stockfish läuft im Browser)"><i class="bi bi-grid-3x3-gap-fill"></i><span class="chess-nav-label">Analysebrett</span><span class="nav-badge" id="navEngineBadge">NEU</span></button>
         <button class="nav-item" onclick="document.getElementById('fileInput').click()"><i class="bi bi-image"></i><span class="chess-nav-label">Screenshot prüfen</span></button>
-        <button class="nav-item" onclick="openChessModule('chess-center.html','Chess Center')"><i class="bi bi-bullseye"></i><span class="chess-nav-label">Chess Center</span></button>
         <button class="nav-item" onclick="openChessModule('neural-chess.html','Neural Chess')"><i class="bi bi-cpu"></i><span class="chess-nav-label">Neural Chess</span></button>
         <button class="nav-item" onclick="openChessModule('mobile-chess.html','Mobile Chess')"><i class="bi bi-controller"></i><span class="chess-nav-label">Mobile Chess</span></button>
         <button class="nav-item" onclick="OrbitronGame.openSetup('stockfish')"><i class="bi bi-joystick"></i><span class="chess-nav-label">Partie spielen</span></button>
@@ -649,7 +648,6 @@ html,body,button,input,select,textarea{font-family:var(--neural-font)!important;
       <button onclick="closeChessModule()" title="Zurück zu Orbitron Chess"><i class="bi bi-arrow-left"></i> Orbitron</button>
       <strong id="moduleTitle">Chess App</strong>
       <div class="module-switcher" aria-label="Chess-App wechseln">
-        <button data-module="chess-center.html" onclick="switchChessModule('chess-center.html','Chess Center')">Center</button>
         <button data-module="neural-chess.html" onclick="switchChessModule('neural-chess.html','Neural Chess')">Neural</button>
         <button data-module="neural-chess-mobile.html" onclick="switchChessModule('neural-chess-mobile.html','Neural Mobile')">Mobile</button>
         <button data-module="chess-puzzles.html" onclick="switchChessModule('chess-puzzles.html','Puzzles')">Puzzles</button>
