@@ -41,7 +41,9 @@ try {
   await p.keyboard.press('Digit3'); await frames(p); ok('Taste 3 wählt das Mittelfeld', (await inp(p)).rod === 2);
   await p.keyboard.press('KeyE'); await frames(p, 4); const e1 = (await inp(p)).rod; await p.keyboard.press('KeyQ'); await frames(p, 4); await p.keyboard.press('KeyQ'); await frames(p, 4);
   ok('Q und E wechseln die Stange', e1 === 3 && (await inp(p)).rod === 1, [e1, (await inp(p)).rod]);
-  let g = (await inp(p)).global; let y0 = await rodY(p, g);
+  let g = (await inp(p)).global;
+  await p.keyboard.down('ArrowUp'); await sleep(420); await p.keyboard.up('ArrowUp'); await sleep(250);      // erst weg vom Anschlag
+  let y0 = await rodY(p, g);
   await p.keyboard.down('ArrowDown'); await sleep(260); await p.keyboard.up('ArrowDown'); await sleep(250); const y1 = await rodY(p, g);
   await p.keyboard.down('KeyW'); await sleep(420); await p.keyboard.up('KeyW'); await sleep(250); const y2 = await rodY(p, g);
   ok('Pfeil und WASD schieben die Stange', y1 > y0 + 0.5 && y2 < y1 - 0.8, [y0, y1, y2]);
