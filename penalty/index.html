@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a0b2a">
+<meta name="description" content="Cage Penalty: Elfmeterschießen gegen den Computer oder gegen Freunde, direkt im Browser.">
+<title>Cage Penalty</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="stage"></div>
+<canvas id="swipe" aria-hidden="true"></canvas>
+<p id="boot">Cage Penalty lädt …</p>
+<div id="fatal" class="sheet" hidden><div class="card"><h2>3D wird nicht unterstützt</h2><p>Dieser Browser kann die Grafik nicht darstellen (WebGL fehlt oder ist abgeschaltet).</p></div></div>
+
+<header id="hud" hidden>
+  <div class="score">
+    <div class="side" id="side0"><span class="nm" id="name0">Du</span><span class="dots" id="dots0"></span></div>
+    <div class="mid"><b><span id="goals0">0</span><i>:</i><span id="goals1">0</span></b><small id="round">Schuss 1/5</small></div>
+    <div class="side right" id="side1"><span class="nm" id="name1">Computer</span><span class="dots" id="dots1"></span></div>
+  </div>
+  <div class="tools">
+    <span id="conn"></span><span id="timer"></span>
+    <button id="btnChat" type="button" aria-label="Chat" hidden>💬<b id="badge" hidden>0</b></button>
+    <button id="btnSound" type="button" aria-label="Ton">🔊</button>
+    <button id="btnPause" type="button" aria-label="Pause">⏸</button>
+  </div>
+</header>
+
+<div id="banner" hidden role="status"></div>
+<div id="powerBox" hidden data-zone="soft" aria-hidden="true"><div class="zone"></div><div id="powerFill"></div><span>Kraft</span></div>
+<p id="hint" hidden></p>
+<p id="toast" hidden></p>
+
+<section id="menu" class="sheet">
+  <div class="card">
+    <h1><span>CAGE</span><em>PENALTY</em></h1>
+    <p class="sub">Fünf Schüsse. Du schießt und du hältst.</p>
+    <label for="nameIn">Spitzname</label>
+    <input id="nameIn" type="text" maxlength="16" autocomplete="off" placeholder="Dein Name">
+    <div class="seg" role="group" aria-label="Schwierigkeit">
+      <button type="button" data-level="easy">Leicht</button><button type="button" data-level="normal">Normal</button><button type="button" data-level="hard">Schwer</button>
+    </div>
+    <button id="btnSolo" class="primary" type="button">⚽ Gegen den Computer</button>
+    <button id="btnHost" class="friend" type="button">👥 Freund herausfordern</button>
+    <div class="row"><button id="btnJoinLink" class="ghost" type="button">Link einfügen</button><button id="menuSound" class="ghost" type="button">Ton: an</button></div>
+    <div id="pasteBox" hidden><input id="pasteIn" type="text" autocomplete="off" placeholder="Einladungslink hier einfügen" aria-label="Einladungslink"><button id="pasteGo" class="primary" type="button">Öffnen</button></div>
+    <details><summary>So wird gespielt</summary>
+      <p><b>Schießen:</b> zum Tor wischen. Die Richtung zielt, das Tempo ist die Kraft (grün ist genau, rot streut), ein Bogen gibt Effet. Tastatur: Pfeile zielen, Leertaste halten und loslassen.</p>
+      <p><b>Halten:</b> aufs Tor tippen, dorthin springst du. Gegen den Computer zählt auch der Zeitpunkt. Online legen beide verdeckt fest. Tastatur: Q W E oben, A S D unten.</p>
+      <p><b>Gamepad:</b> linker Stick zielt, A halten und loslassen.</p>
+    </details>
+  </div>
+</section>
+
+<section id="lobby" class="sheet" hidden>
+  <div class="card">
+    <h2>Gegen einen Freund</h2>
+    <div id="hostBox">
+      <label for="link">1. Diesen Link verschicken</label>
+      <div class="row"><input id="link" type="text" readonly placeholder="Link wird erzeugt …"><button id="copyLink" type="button">Kopieren</button><button id="shareLink" type="button" hidden>Teilen</button></div>
+      <label for="answerIn">2. Antwort-Code deines Freundes hier einfügen</label>
+      <textarea id="answerIn" rows="3" placeholder="Dein Freund bekommt nach dem Beitreten einen Code"></textarea>
+      <button id="connectBtn" class="primary" type="button">Verbinden</button>
+    </div>
+    <div id="guestBox" hidden>
+      <p id="inviter"></p>
+      <button id="joinBtn" class="primary" type="button">Annehmen</button>
+      <div id="answerBox" hidden>
+        <label for="answerOut">Diesen Code zurückschicken</label>
+        <textarea id="answerOut" rows="3" readonly></textarea>
+        <button id="copyAnswer" type="button">Code kopieren</button>
+        <p class="note">Sobald dein Freund ihn eingefügt hat, geht es los. Lass diese Seite offen.</p>
+      </div>
+    </div>
+    <p id="lobbyErr" class="err" role="alert"></p>
+    <p class="note">Die Verbindung läuft direkt zwischen euren Browsern, ohne Spielserver. Kein Betrugsschutz: nur mit Leuten spielen, denen du vertraust.</p>
+    <button id="lobbyBack" class="ghost" type="button">Zurück</button>
+  </div>
+</section>
+
+<section id="pause" class="sheet dim" hidden><div class="card small"><h2>Pause</h2><p class="note" id="pauseNote"></p><button id="btnResume" class="primary" type="button">Weiter</button><button id="btnQuit" class="ghost" type="button">Ins Menü</button></div></section>
+<section id="end" class="sheet dim" hidden><div class="card small"><h2 id="endTitle"></h2><p id="endScore"></p><p class="note" id="endRecord"></p><button id="btnAgain" class="primary" type="button">Noch einmal</button><button id="btnMenu" class="ghost" type="button">Ins Menü</button></div></section>
+<section id="lost" class="sheet dim" hidden><div class="card small"><h2>Verbindung beendet</h2><p id="lostText"></p><button id="lostMenu" class="primary" type="button">Ins Menü</button></div></section>
+
+<aside id="chat" hidden aria-label="Chat">
+  <div class="head"><b>Chat</b><span><button id="chatMute" type="button" aria-pressed="false">Stumm</button><button id="chatClose" type="button" aria-label="Chat schließen">✕</button></span></div>
+  <div id="chatList" aria-live="polite"></div>
+  <div class="quick"><button type="button" data-q="👍">👍</button><button type="button" data-q="GG">GG</button><button type="button" data-q="Stark gehalten!">Stark gehalten!</button><button type="button" data-q="Revanche?">Revanche?</button></div>
+  <form id="chatForm" autocomplete="off"><input id="chatIn" type="text" maxlength="200" placeholder="Nachricht …" aria-label="Nachricht"><button id="chatSend" type="submit">Senden</button></form>
+</aside>
+
+<noscript><p>Dieses Spiel braucht JavaScript.</p></noscript>
+<script type="module" src="src/main.js"></script>
+</body>
+</html>

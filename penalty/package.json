@@ -1,0 +1,16 @@
+{
+  "name": "monolith-penalty",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Cage Penalty: Elfmeterschießen gegen den Computer oder gegen Freunde",
+  "scripts": {
+    "start": "node server.js",
+    "update:sw": "node tools/update-sw.mjs",
+    "test": "node tests/sim-test.mjs && node tests/input-test.mjs && node tools/update-sw.mjs --check",
+    "test:browser": "node tests/browser-test.mjs",
+    "test:online": "node tests/online-test.mjs"
+  },
+  "devDependencies": { "puppeteer-core": "^25.18.1" },
+  "engines": { "node": ">=20" }
+}
