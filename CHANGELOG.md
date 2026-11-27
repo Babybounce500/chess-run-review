@@ -1,5 +1,8 @@
 # Änderungsprotokoll
 
+## 2026-11-27 (Sportspiele)
+- Neu: **Neon Kicker** (`kicker/`), **Blacktop Hoops** (`streetball/`) und **Neon Gridiron** (`gridiron/`), jeweils gegen den Computer oder online gegen Freunde.
+
 ## 2026-11-27 (Cage Penalty)
 - Neues Spiel im Ordner `penalty/`: Elfmeterschießen gegen den Computer oder online gegen Freunde (unabhängig von Orbitron).
 
