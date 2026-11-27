@@ -153,3 +153,40 @@ body[data-punch=buttons] #actions{max-width:56%;gap:8px}
 @media (orientation:landscape) and (max-height:520px){#bars{top:calc(68px + var(--safe-t));width:min(640px,calc(100vw - 150px))}#hud .score{width:min(340px,50vw)}.hp{height:11px;margin-top:1px}.sta{height:6px;margin-top:2px}.fbar .who{font-size:.72rem}#punchZone{top:calc(106px + var(--safe-t));width:50%}#actions{max-width:36%}#touch .act[data-act=block]{width:78px;height:78px;min-height:78px}#touch .act[data-act=duck],#touch .act[data-act=body]{width:58px;height:58px;min-height:58px;font-size:.6rem}body[data-punch=buttons] #touch .act{width:52px;height:52px;min-height:52px;font-size:.56rem}body.has-touch #hint{top:auto;bottom:calc(4px + var(--safe-b))}#getup{top:62%;padding:6px 14px}#getup small{display:none}#count{top:34%}}
 @media (min-width:1200px){#bars{top:calc(144px + var(--safe-t));width:1040px}.hp{height:20px}.sta{height:10px}.fbar .who{font-size:1.05rem}}
 @media (prefers-reduced-motion:reduce){#count.pop,#punchLabel.show,.fbar.low .hp{animation:none}}
+
+/* ===== Phase 2: Übertragung ===== */
+body.broadcast #touch,body.broadcast #punchZone,body.broadcast #hint{display:none!important}
+#lower{position:fixed;z-index:12;left:calc(16px + var(--safe-l));bottom:calc(84px + var(--safe-b));max-width:min(520px,calc(100vw - 32px));padding:10px 22px 12px 18px;background:linear-gradient(90deg,rgba(8,10,28,.95),rgba(8,10,28,.75));border-left:8px solid var(--c);transform:skewX(-8deg);animation:slidein .45s cubic-bezier(.2,1.2,.4,1)}
+#lower[data-team="0"]{--c:var(--team0)}#lower[data-team="1"]{--c:var(--team1)}
+#lower b{display:block;font-size:clamp(1.5rem,6vw,2.6rem);font-style:italic;font-weight:900;text-transform:uppercase;line-height:1.05}
+#lower span{display:block;color:var(--c);font-weight:800}#lower small{color:#aab2dd}
+@keyframes slidein{from{translate:-110% 0;opacity:0}to{translate:0 0;opacity:1}}
+#tale,#panel{position:fixed;z-index:12;left:50%;transform:translateX(-50%);width:min(560px,calc(100vw - 20px));padding:10px 14px 12px;border-radius:14px;background:rgba(8,10,28,.92);border:1px solid #323a78;text-align:center}
+#tale{bottom:calc(76px + var(--safe-b))}
+#panel{bottom:calc(14px + var(--safe-b));max-height:calc(100dvh - 150px);overflow:auto}
+#panel.decision{bottom:auto;top:50%;transform:translate(-50%,-50%)}
+#tale h3,#panel h3{margin:0 0 6px;font-style:italic;letter-spacing:.06em;text-transform:uppercase;font-size:1rem;color:#ffd34d}
+#tale table,#panel table,#fightCard table{width:100%;border-collapse:collapse;font-size:.88rem;font-variant-numeric:tabular-nums}
+#tale td,#tale th,#panel td,#panel th,#fightCard td,#fightCard th{padding:3px 4px}
+#tale th,.stats th{color:#aab2dd;font-weight:600;font-size:.75rem;text-transform:uppercase}
+.stats .c0,#tale .c0{text-align:right;width:37%;font-weight:700}.stats .c1,#tale .c1{text-align:left;width:37%;font-weight:700}
+.head .c0,td.c0{color:var(--team0)}.head .c1,td.c1{color:var(--team1)}
+#tale tr:not(.head) td,.stats tr:not(.head) td{color:#f3f5ff}
+.cards{margin-top:8px;border-top:1px solid #323a78}.cards th{color:#aab2dd;font-size:.72rem}.cards .sum{font-weight:900}.cards tr.hidden td{opacity:.35}.cards tr.shown{animation:cardin .35s}
+@keyframes cardin{from{background:#ffd34d55}to{background:transparent}}
+#panel .note{margin:4px 0 0;font-size:.72rem;color:#aab2dd}
+#replay{position:fixed;inset:0;z-index:8;pointer-events:none}
+#replay i{position:absolute;left:0;right:0;height:7vh;background:#000;animation:bars .3s}#replay i:first-child{top:0}#replay i:nth-child(2){bottom:0}
+@keyframes bars{from{height:0}}
+#replay b{position:absolute;left:calc(14px + var(--safe-l));top:calc(max(7vh,66px) + 10px);padding:4px 12px;background:#d92d45;font-style:italic;letter-spacing:.1em;transform:skewX(-8deg)}
+body.broadcast #banner{top:22%}
+#ticker{position:fixed;z-index:10;left:50%;bottom:calc(52px + var(--safe-b));transform:translateX(-50%);max-width:calc(100vw - 24px);width:max-content;padding:5px 14px;background:rgba(8,10,28,.85);border-bottom:3px solid #ffd34d;font-style:italic;font-weight:800;font-size:.95rem;text-align:center;pointer-events:none}
+#ticker.in{animation:tick .3s}@keyframes tick{from{opacity:0;translate:0 10px}}
+body.has-touch #ticker{bottom:auto;top:calc(190px + var(--safe-t));font-size:.82rem}
+#btnSkipShow{position:fixed;z-index:13;right:calc(14px + var(--safe-r));bottom:calc(14px + var(--safe-b));background:rgba(8,10,28,.9)}
+#fightCard{margin:4px 0}#fightCard table{font-size:.8rem}#fightCard .note{display:none}
+#end .card{max-height:calc(100dvh - 24px);overflow:auto;width:min(430px,100%)}
+@media (max-width:520px){#lower{bottom:calc(76px + var(--safe-b))}#tale table,#panel table{font-size:.76rem}#tale td,#tale th,#panel td,#panel th{padding:2px 3px}.stats th,#tale th{font-size:.62rem}}
+@media (orientation:landscape) and (max-height:520px){#panel{bottom:6px;max-height:calc(100dvh - 12px);display:grid;grid-template-columns:1fr 1fr;gap:0 14px;width:min(820px,calc(100vw - 16px));align-items:start}#panel[hidden]{display:none}#panel h3{grid-column:1/-1}#panel.decision{display:block;width:min(520px,calc(100vw - 16px))}#panel.decision[hidden]{display:none}#panel .note{grid-column:1/-1}#panel table{font-size:.74rem}#panel td,#panel th{padding:1px 3px}.cards{margin-top:0;border-top:0}#tale{bottom:8px}#tale table{font-size:.74rem}#tale td,#tale th{padding:0 3px}#tale h3{margin-bottom:2px}#btnSkipShow{bottom:auto;top:calc(8px + var(--safe-t));min-height:40px}#lower{bottom:calc(12px + var(--safe-b))}body.has-touch #ticker{top:calc(104px + var(--safe-t))}body.broadcast #hud .tools{visibility:hidden}}
+@media (prefers-reduced-motion:reduce){#lower,#replay i,.cards tr.shown,#ticker.in{animation:none}}
+#lower[hidden],#tale[hidden],#panel[hidden],#replay[hidden],#ticker[hidden],#btnSkipShow[hidden]{display:none!important}

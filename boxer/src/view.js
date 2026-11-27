@@ -101,11 +101,28 @@ export function createView(container, opts = {}) {
   const bodies = new THREE.InstancedMesh(bodyGeo, new THREE.MeshLambertMaterial(), CROWD), heads = new THREE.InstancedMesh(headGeo, new THREE.MeshLambertMaterial(), CROWD), seats = [];
   { let s = 11; const r = () => (s = (s * 16807) % 2147483647) / 2147483647; const M = new THREE.Matrix4(), c = new THREE.Color();
     for (let i = 0; i < CROWD; i++) { const row = i % 5, a = (i / CROWD) * Math.PI * 2 * 5.03 + row, rad = 5.2 + row * 1.05 + r() * 0.35, x = Math.cos(a) * rad, z = Math.sin(a) * rad, y = -0.55 + row * 0.46;
-      seats.push({ x, y, z, p: r() * 7 });
+      const aisle = Math.abs(x) < 1.25;                       // Gang für den Einmarsch frei lassen
+      if (!aisle) seats.push({ i, x, y, z, p: r() * 7 });
       M.makeTranslation(x, y, z); bodies.setMatrixAt(i, M); c.setHSL(r(), 0.32, 0.045 + r() * 0.06); bodies.setColorAt(i, c);
-      M.makeTranslation(x, y + 0.45, z); heads.setMatrixAt(i, M); c.setHSL(0.07, 0.35, 0.06 + r() * 0.09); heads.setColorAt(i, c); } }
+      M.makeTranslation(x, y + 0.45, z); heads.setMatrixAt(i, M); c.setHSL(0.07, 0.35, 0.06 + r() * 0.09); heads.setColorAt(i, c);
+      if (aisle) { M.makeScale(0, 0, 0); bodies.setMatrixAt(i, M); heads.setMatrixAt(i, M); } } }
   scene.add(bodies, heads);
   const ground = new THREE.Mesh(new THREE.CircleGeometry(14, 48), new THREE.MeshLambertMaterial({ color: 0x0b0d1e })); ground.rotation.x = -Math.PI / 2; ground.position.y = -0.9; scene.add(ground);
+  const softTex = canvasTexture(128, 128, (g) => { const q = g.createRadialGradient(64, 64, 4, 64, 64, 62); q.addColorStop(0, 'rgba(255,255,255,.9)'); q.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = q; g.fillRect(0, 0, 128, 128); });
+  const ramps = [0, 1].map((i) => {
+    const dir = i === 0 ? 1 : -1, col = i === 0 ? 0xff4d5e : 0x3d8bff, g = new THREE.Group(); scene.add(g);
+    const walk = new THREE.Mesh(new THREE.BoxGeometry(1.7, 0.4, 7.4), new THREE.MeshStandardMaterial({ color: 0x10132c, roughness: 0.5, metalness: 0.3 })); walk.position.set(0, -0.23, dir * (HALF + 3.9)); walk.receiveShadow = true; g.add(walk);
+    const glow = new THREE.MeshBasicMaterial({ color: col });
+    for (const x of [-0.8, 0.8]) { const strip = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.03, 7.4), glow); strip.position.set(x, -0.01, dir * (HALF + 3.9)); g.add(strip); }
+    const z = dir * (HALF + 7.5);
+    for (const x of [-1.1, 1.1]) { const post = new THREE.Mesh(new THREE.BoxGeometry(0.22, 3.1, 0.22), glow); post.position.set(x, 1.4, z); g.add(post); }
+    const top = new THREE.Mesh(new THREE.BoxGeometry(2.42, 0.22, 0.22), glow); top.position.set(0, 2.95, z); g.add(top);
+    const fog = [];
+    for (let k = 0; k < 14; k++) { const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: softTex, color: col, transparent: true, opacity: 0.16, depthWrite: false, blending: THREE.AdditiveBlending })); s.userData = { x: ((k * 37) % 17) / 17 * 2.6 - 1.3, z: z - dir * (((k * 53) % 23) / 23 * 4.5), p: k * 0.9 }; s.scale.setScalar(0.9 + (k % 5) * 0.25); g.add(s); fog.push(s); }
+    const lamp = new THREE.PointLight(col, 0, 9, 1.6); lamp.position.set(0, 2.4, z - dir * 1.2); g.add(lamp);
+    return { fog, lamp };
+  });
+  let excitement = 0, bounced = false;
   // Scheinwerferkegel und Blitzlichter
   const coneMat = new THREE.MeshBasicMaterial({ color: 0x8fb4ff, transparent: true, opacity: 0.045, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide });
   for (const [x, z] of [[-3.4, -3.4], [3.4, -3.4], [-3.4, 3.4], [3.4, 3.4]]) { const cone = new THREE.Mesh(new THREE.ConeGeometry(1.5, 6.5, 20, 1, true), coneMat); cone.position.set(x * 0.72, 3.4, z * 0.72); cone.lookAt(x * 1.9, 9, z * 1.9); cone.rotateX(Math.PI / 2); scene.add(cone); const lamp = new THREE.Mesh(new THREE.SphereGeometry(0.16, 10, 8), new THREE.MeshBasicMaterial({ color: 0xfff4d8 })); lamp.position.set(x * 1.35, 5.6, z * 1.35); scene.add(lamp); }
@@ -186,13 +203,22 @@ export function createView(container, opts = {}) {
     const lift = (k) => (Math.abs(f.step) > 0.1 ? Math.max(0, Math.sin(a.phase + k)) * 0.09 : 0);
     const foot = [V(-0.2 + f.lean * 0.04, 0.07 + lift(0), 0.3 + lunge * 0.6), V(0.22 + f.lean * 0.04, 0.07 + lift(Math.PI), -0.27 + lunge * 0.05)];
     const joints = { pelvis, chest, head, sh, hands, foot, twist, hipSide: [V(pelvis.x - 0.13, pelvis.y - 0.02, pelvis.z), V(pelvis.x + 0.13, pelvis.y - 0.02, pelvis.z)] };
+    if (a.walk) {                                                  // Einmarsch: aufrecht gehen, am Ende die Arme heben
+      const w = a.walk, ph = w.dist * 4.1, up = w.raise;
+      foot[0].set(-0.17, 0.07 + Math.max(0, Math.sin(ph)) * 0.13 * w.moving, Math.cos(ph) * 0.3 * w.moving);
+      foot[1].set(0.17, 0.07 + Math.max(0, -Math.sin(ph)) * 0.13 * w.moving, -Math.cos(ph) * 0.3 * w.moving);
+      pelvis.set(0, 0.99 - Math.abs(Math.sin(ph)) * 0.025 * w.moving, 0); chest.set(0, pelvis.y + 0.38, 0.03); head.set(0, chest.y + 0.33, 0.05);
+      sh[0].set(-0.26, chest.y + 0.12, 0.02); sh[1].set(0.26, chest.y + 0.12, 0.02);
+      hands[0].set(-0.4, 0.95, -Math.cos(ph) * 0.28 * w.moving + 0.05).lerp(V(-0.45, 2.22, 0.08), up); hands[1].set(0.4, 0.95, Math.cos(ph) * 0.28 * w.moving + 0.05).lerp(V(0.45, 2.22, 0.08), up);
+      joints.hipSide = [V(-0.13, pelvis.y - 0.02, 0), V(0.13, pelvis.y - 0.02, 0)];
+    }
     // Jubel, Pause, Sturz
     const over = s.phase === 'over', downed = (s.phase === 'down' && s.down.who === i) || (over && (s.how === 'ko' || s.how === 'tko') && s.win !== i);
     const fallTo = downed ? (s.phase === 'down' && !s.down.tko ? 1 - 0.55 * clamp(s.down.hits / s.down.need, 0, 1) : 1) : 0;
     a.fall = damp(a.fall, fallTo, fallTo > a.fall ? 5.5 : 4, dt);
     a.cheer = damp(a.cheer, (over && s.win === i) || (s.phase === 'down' && s.down.who !== i && s.down.tko) ? 1 : 0, 4, dt);
     a.rest = damp(a.rest, s.phase === 'rest' ? 1 : 0, 3, dt);
-    a.away = damp(a.away, s.phase === 'down' && s.down.who !== i ? 0.75 : 0, 3, dt);
+    if (!a.walk) a.away = damp(a.away, s.phase === 'down' && s.down.who !== i ? 0.75 : 0, 3, dt);
     if (a.rest > 0.01) { hands[0].lerp(V(-0.34, 0.92, 0.08), a.rest); hands[1].lerp(V(0.34, 0.92, 0.08), a.rest); chest.z += 0.08 * a.rest; head.y -= 0.04 * a.rest; }
     if (a.cheer > 0.01) { const j = Math.abs(Math.sin(time * 5)) * 0.1 * a.cheer; hands[0].lerp(V(-0.42, 2.18, 0.05), a.cheer); hands[1].lerp(V(0.42, 2.18, 0.05), a.cheer); for (const p of [pelvis, chest, head, ...sh, ...hands]) p.y += j; }
     return joints;
@@ -237,7 +263,20 @@ export function createView(container, opts = {}) {
 
   /* Kamera */
   const cam = { mode: 'shoulder', pos: V(0, 2, 3), look: V(0, 1.4, 0), shake: 0, time: 0, ready: false };
-  function cameraGoal(s, me) {
+  function cameraGoal(s, me, d) {
+    if (d && s) {
+      const portrait = camera.aspect < 0.9, gap = s.gap;
+      if (d.mode === 'walk') {                                    // vor dem Einlaufenden her
+        const dir = d.who === 0 ? 1 : -1, z = dir * (gap / 2 + anim[d.who].away), side = Math.sin(d.u * 2.2) * 0.55;
+        return { pos: V(side * dir, 1.35 + d.u * 0.5, z - dir * (portrait ? 3.5 : 2.7)), look: V(0, 1.22, z), fov: portrait ? 58 : 42, rate: 5 };
+      }
+      if (d.mode === 'faceoff') { const a = 1.25 + d.u * 0.7, r = portrait ? 5.2 : 3.4; return { pos: V(Math.sin(a) * r, 1.45 + d.u * 0.25, Math.cos(a) * r), look: V(0, portrait ? 1.05 : 1.2, 0), fov: portrait ? 56 : 38, rate: 4 }; }
+      if (d.mode === 'replay') {
+        const dir = d.who === 0 ? 1 : -1, mine = (x, y, z) => V(x * dir, y, dir * (gap / 2 - z));
+        if (d.angle === 0) { const r = portrait ? 5.4 : 2.7; return { pos: V(dir * r, 1.5, dir * (0.35 - d.u * 0.5)), look: V(0, 1.28, -dir * 0.2), fov: portrait ? 52 : 36, rate: 6 }; }
+        return { pos: mine(portrait ? -1.5 : -1.25, 0.85 + d.u * 0.35, -0.5), look: mine(0.05, 1.42, gap * 0.95), fov: portrait ? 58 : 38, rate: 6 };
+      }
+    }
     const portrait = camera.aspect < 0.9, gap = s ? s.gap : 1.7, dir = me === 0 ? 1 : -1;
     const mine = (x, y, z) => (me === 0 ? V(x, y, gap / 2 - z) : V(-x, y, -gap / 2 + z));
     if (!s) return { pos: V(Math.sin(cam.time * 0.12) * 5.2, 2.5, Math.cos(cam.time * 0.12) * 5.2), look: V(0, 1.1, 0), fov: portrait ? 62 : 44, rate: 2 };
@@ -254,12 +293,14 @@ export function createView(container, opts = {}) {
     // Schulterblick: weit genug seitlich, damit der eigene Kämpfer den Gegner nicht verdeckt
     return { pos: mine((portrait ? 1.12 : 1.78) + lean * 0.2, (portrait ? 2.42 : 2.1) - duck * 0.18, (portrait ? -2.05 : -1.2)), look: mine((portrait ? 0.02 : 0.12) + lean * 0.05, portrait ? 1.08 : 1.24, gap * 0.82), fov: portrait ? 60 : 40, rate: 9 };
   }
-  let last = null;
+  let last = null, camKey = '';
   function resize() { const w = container.clientWidth || innerWidth, h = container.clientHeight || innerHeight; renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.75)); renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); cam.ready = false; }
 
   return {
     resize,
-    reset() { for (const a of anim) Object.assign(a, { phase: 0, fall: 0, gap: 0, cheer: 0, rest: 0, away: 0 }); cam.ready = false; cam.shake = 0; starLife = 0; pLife.fill(0); },
+    reset() { for (const a of anim) Object.assign(a, { phase: 0, fall: 0, gap: 0, cheer: 0, rest: 0, away: 0, walk: null }); cam.ready = false; cam.shake = 0; starLife = 0; pLife.fill(0); excitement = 0; },
+    resetPose() { for (const a of anim) Object.assign(a, { fall: 0, cheer: 0, rest: 0, away: 0, gap: 0 }); },
+    excite(v) { excitement = Math.min(1, Math.max(excitement, v)); },
     setCamera(m) { cam.mode = m; cam.ready = false; },
     camera: () => cam.mode,
     event(e, s) {
@@ -274,16 +315,30 @@ export function createView(container, opts = {}) {
     frame(dt, s, o = {}) {
       cam.time += dt; const me = o.me || 0;
       if (s) last = s;
+      const dd = o.director || null, shot = dd ? dd.mode + (dd.who || 0) + (dd.angle || 0) : '';
+      if (shot !== camKey) { camKey = shot; cam.ready = false; }             // Schnitt zwischen den Einstellungen
+      for (let i = 0; i < 2; i++) {
+        const a = anim[i]; a.walk = null;
+        if (dd && dd.mode === 'walk') { const moving = i === dd.who && dd.u < 0.78 ? 1 : 0, prog = i === dd.who ? smooth(Math.min(1, dd.u / 0.8)) : dd.who === 0 ? 1 : 0, off = (1 - prog) * 8.6; a.away = off; a.walk = { dist: 8.6 - off, moving, raise: i === dd.who ? smooth((dd.u - 0.76) / 0.14) : 0 }; }
+        fighters[i].group.visible = !(dd && dd.mode === 'walk' && dd.who !== i);          // nur der Einlaufende ist zu sehen, sonst verstellt der andere die Kamera
+      }
+      ramps.forEach((r, i) => { const on = dd && dd.mode === 'walk' && dd.who === i ? 1 : dd && (dd.mode === 'walk' || dd.mode === 'faceoff') ? 0.35 : 0.12; r.lamp.intensity = damp(r.lamp.intensity, on * 22, 4, dt); for (const f of r.fog) { f.position.set(f.userData.x + Math.sin(cam.time * 0.5 + f.userData.p) * 0.25, 0.45 + Math.sin(cam.time * 0.8 + f.userData.p) * 0.15, f.userData.z); f.material.opacity = 0.04 + on * 0.16; } });
+      excitement = Math.max(0, excitement - dt * 0.4);
+      if (excitement > 0.03 || bounced) {                                // das Publikum springt auf
+        bounced = excitement > 0.03; const M = new THREE.Matrix4();
+        for (const q of seats) { const j = bounced ? Math.max(0, Math.sin(cam.time * 9 + q.p * 3)) * 0.28 * excitement * (q.p > 2 ? 1 : 0.4) + excitement * (q.p > 4.5 ? 0.22 : 0) : 0; M.makeTranslation(q.x, q.y + j, q.z); bodies.setMatrixAt(q.i, M); M.makeTranslation(q.x, q.y + 0.45 + j, q.z); heads.setMatrixAt(q.i, M); }
+        bodies.instanceMatrix.needsUpdate = true; heads.instanceMatrix.needsUpdate = true;
+      }
       const shown = s || { phase: 'intro', round: 1, pt: 0, gap: 1.7, f: [0, 1].map(() => ({ lean: 0, duck: 0, step: 0, guard: 0, low: 0, st: 100, stun: 0, hurt: 0, hx: 0, act: null })), down: null };
-      fpv = cam.mode === 'first' && s && (s.phase === 'fight' || s.phase === 'intro') ? me : -1;
+      fpv = !dd && cam.mode === 'first' && s && (s.phase === 'fight' || s.phase === 'intro') ? me : -1;
       for (let i = 0; i < 2; i++) draw(i, shown, pose(i, shown, dt, cam.time));
-      const g = cameraGoal(s, me);
+      const g = cameraGoal(s, me, dd);
       if (!cam.ready) { cam.pos.copy(g.pos); cam.look.copy(g.look); cam.ready = true; }
       const k = 1 - Math.exp(-g.rate * dt); cam.pos.lerp(g.pos, k); cam.look.lerp(g.look, k);
       if (Math.abs(camera.fov - g.fov) > 0.05) { camera.fov = damp(camera.fov, g.fov, 6, dt); camera.updateProjectionMatrix(); }
       cam.shake = Math.max(0, cam.shake - dt * 0.55); const sh = opts.reducedMotion ? 0 : cam.shake;
       camera.position.set(cam.pos.x + Math.sin(cam.time * 91) * sh, cam.pos.y + Math.sin(cam.time * 117) * sh, cam.pos.z); camera.lookAt(cam.look);
-      const first = cam.mode === 'first' && s && (s.phase === 'fight' || s.phase === 'intro');
+      const first = !dd && cam.mode === 'first' && s && (s.phase === 'fight' || s.phase === 'intro');
       for (let i = 0; i < 2; i++) { const P = fighters[i].parts, hide = first && i === me; for (const key of ['head', 'neck', 'chest', 'pecL', 'pecR', 'abs', 'hips', 'belt', 'shoulderL', 'shoulderR']) P[key].visible = !hide; }
       // Seile zwischen Kamera und Ring ausblenden, damit sie die Sicht nicht zerschneiden
       for (const [post, pad, x, z] of posts) post.visible = pad.visible = Math.hypot(camera.position.x - x, camera.position.z - z) > 2.6;      // Pfosten dicht vor der Linse ausblenden
@@ -297,7 +352,7 @@ export function createView(container, opts = {}) {
     },
     info() {
       const p = (v) => { const q = v.clone().project(camera), r = renderer.domElement.getBoundingClientRect(); return { x: r.left + ((q.x + 1) / 2) * r.width, y: r.top + ((1 - q.y) / 2) * r.height }; };
-      const out = { calls: renderer.info.render.calls, tris: renderer.info.render.triangles, camera: cam.mode, fov: camera.fov };
+      const out = { calls: renderer.info.render.calls, tris: renderer.info.render.triangles, camera: cam.mode, fov: camera.fov, shot: camKey, excitement: +excitement.toFixed(2), z: fighters.map((f) => (f.chestW ? +f.chestW.z.toFixed(2) : 0)), shown: fighters.map((f) => f.group.visible) };
       if (fighters[0].head) { out.heads = [p(fighters[0].head), p(fighters[1].head)]; out.gloves = [0, 1].map((i) => ['gloveL', 'gloveR'].map((k) => { const w = fighters[i].parts[k].position; return [+w.x.toFixed(3), +w.y.toFixed(3), +w.z.toFixed(3)]; })); out.headW = [0, 1].map((i) => fighters[i].head.toArray().map((v) => +v.toFixed(3))); out.falls = anim.map((a) => +a.fall.toFixed(2)); }
       return out;
     }

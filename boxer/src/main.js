@@ -9,6 +9,7 @@ import { createView, CORNER } from './view.js';
 import { createPunchPad } from './punchpad.js';
 import { createHud } from './hud.js';
 import { SOUNDS } from './sounds.js';
+import { createShow, RIVALS } from './show.js';
 
 const qs = new URLSearchParams(location.search);
 const SPEED = Math.min(10, Math.max(0.1, Number(qs.get('speed')) || 1));          // nur für Tests
@@ -42,9 +43,20 @@ const shell = createShell({
   <p>Die große Zahl oben zählt die Niederschläge.</p>
   <p><b>So gewinnst du:</b> Ausweichen und sofort kontern macht viel Schaden. Deckung im letzten Moment ist eine Parade. Wildes Schlagen macht müde. Seitschritt hilft gegen gerade Schläge, Ducken gegen Haken, der Uppercut bestraft das Ducken.</p>`,
   onSolo: ({ seed, level }) => { begin(); rt.solo(seed, level); }, onOnline: ({ role, seed }) => { begin(); rt.online(role, seed); },
-  onMenu: () => { rt.stop(); view.reset(); }, onLost: () => rt.stop()
+  onMenu: () => { rt.stop(); show.stop(); view.reset(); }, onLost: () => { rt.stop(); show.stop(); }
 });
-function begin() { view.reset(); queue.length = 0; slow = 0; tap = false; layout(); }
+const show = createShow({ view, audio, shell, onSkip: () => { told = false; } });
+let showOn = true; try { showOn = localStorage.getItem('shadowboxer_show') !== '0'; } catch (e) { /* ok */ }
+if (qs.get('show') === '0') showOn = false;
+show.setEnabled(showOn);
+function begin() {
+  view.reset(); queue.length = 0; slow = 0; tap = false; layout();
+  // der Gegner bekommt Namen und Gesicht
+  const level = shell.state.level, names = shell.state.names;
+  if (shell.state.mode === 'solo') { names[1] = (RIVALS[level] || RIVALS.normal).name; document.getElementById('name1').textContent = names[1]; }
+  let w = 0, l = 0; for (const k of ['easy', 'normal', 'hard']) { try { const r = JSON.parse(shell.store.get('cpu_' + k, '')); w += r.w || 0; l += r.l || 0; } catch (e) { /* neu */ } }
+  show.reset(level, names, w + ' – ' + l); document.getElementById('fightCard').textContent = ''; carded = false;
+}
 
 function readInput() {
   const c = controls.read(), i = { x: c.x, y: c.y, block: c.block || tap, duck: c.duck, body: c.body, side: lastSide };
@@ -56,7 +68,7 @@ function readInput() {
 
 function onEvent(e, s) {
   const me = shell.state.me, solo = rt.mode() === 'solo';
-  view.event(e, s);
+  view.event(e, s); show.event(e, s);
   if (e.type === 'swing') audio.play('whoosh');
   else if (e.type === 'hit') {
     audio.play(e.body ? 'bodyshot' : 'thud', e.p);
@@ -75,10 +87,12 @@ function onEvent(e, s) {
   else if (e.type === 'getup') audio.play(e.ok ? 'tick' : 'miss');
   else if (e.type === 'up') { audio.play('cheer'); shell.banner(e.side === me ? 'DU STEHST!' : 'WIEDER OBEN', e.side === me ? 'good' : '', 1000); }
   else if (e.type === 'bell') audio.play('bell', e.end ? 3 : 1);
-  else if (e.type === 'over') { audio.play('bell', 3); audio.play('cheer'); const how = { ko: 'K. O.!', tko: 'TECHNISCHER K. O.' }[e.how] || 'NACH PUNKTEN'; shell.banner(how, '', 2200); }
+  else if (e.type === 'over') { audio.play('bell', 3); audio.play('cheer'); const how = { ko: 'K. O.!', tko: 'TECHNISCHER K. O.' }[e.how] || 'NACH PUNKTEN'; shell.banner(how, '', 1600); }
 }
 rt = createRealtime({ shell, sim, readInput, onEvent });
 
+const fightCard = document.createElement('div'); fightCard.id = 'fightCard'; document.getElementById('endScore').after(fightCard);
+let carded = false;
 // Ergebnistext: Art des Sieges und Punktzettel
 function verdict(s) {
   const me = shell.state.me, names = shell.state.names, st = s.f[me].stats;
@@ -99,6 +113,13 @@ const modeBtn = document.createElement('button'); modeBtn.type = 'button'; modeB
 const modeLabel = () => { modeBtn.textContent = 'Schlagen am Handy: ' + (swipe ? 'Wischen' : 'Knöpfe'); };
 modeBtn.onclick = () => { swipe = !swipe; try { localStorage.setItem('shadowboxer_swipe', swipe ? '1' : '0'); } catch (e) { /* ok */ } modeLabel(); layout(); };
 document.querySelector('#menu details').before(modeBtn); modeLabel();
+const showBtn = document.createElement('button'); showBtn.type = 'button'; showBtn.id = 'btnShow'; showBtn.className = 'ghost';
+const showLabel = () => { showBtn.textContent = 'TV-Übertragung: ' + (show.enabled() ? 'an' : 'aus'); };
+showBtn.onclick = () => { show.setEnabled(!show.enabled()); try { localStorage.setItem('shadowboxer_show', show.enabled() ? '1' : '0'); } catch (e) { /* ok */ } showLabel(); };
+modeBtn.after(showBtn); showLabel();
+document.getElementById('btnSkipShow').onclick = () => show.skip();
+// Enter oder Leertaste überspringen Einmarsch und Wiederholung
+addEventListener('keydown', (e) => { if ((e.code === 'Enter' || e.code === 'Space') && !e.repeat && (show.info().walk !== null || show.info().replay) && shell.state.screen === 'play') { e.preventDefault(); show.skip(); } });
 function layout() { for (const k of TYPES) controls.showButton(k, !swipe); document.body.dataset.punch = swipe ? 'swipe' : 'buttons'; }
 layout();
 
@@ -107,25 +128,29 @@ addEventListener('resize', () => view.resize()); view.resize();
 function loop(now) {
   const real = Math.min(0.1, Math.max(0, (now - last) / 1000)); last = now; frames++;
   const playing = shell.state.screen === 'play';
-  controls.setEnabled(playing); pad.setEnabled(playing && swipe);
+  const dir = show.update(shell.paused() ? 0 : real * Math.min(SPEED, 4), rt.state(), playing);
+  // während Einmarsch und Wiederholung stört keine Steuerung
+  controls.setEnabled(playing && !dir.busy); pad.setEnabled(playing && swipe && !dir.busy);
+  document.body.classList.toggle('broadcast', !!dir.busy);
   if (slow > 0) slow -= real;
   const rate = slow > 0 && rt.mode() === 'solo' ? slowScale : 1;
-  const s = rt.update(real * SPEED * rate);
+  const s = rt.update(dir.hold ? 0 : real * SPEED * rate);
   const live = rt.state();
   if (live) {
     shell.setSub(live.phase === 'rest' ? 'Pause' : 'Runde ' + live.round + '/' + MATCH.rounds + ' · ' + Math.floor(Math.ceil(live.clock) / 60) + ':' + String(Math.ceil(live.clock) % 60).padStart(2, '0'));
-    if (live.phase === 'intro' && live.pt < 0.2 && playing && !told) { told = true; shell.banner('RUNDE ' + live.round, 'role', 1700); } else if (live.phase !== 'intro') told = false;
-    if (shell.state.over) { const e = document.getElementById('endScore'), t = verdict(live); if (e.textContent !== t) e.textContent = t; }
+    if (!dir.hold && live.phase === 'intro' && live.pt < 0.2 && playing && !told) { told = true; shell.banner(live.round === MATCH.rounds ? 'LETZTE RUNDE' : 'RUNDE ' + live.round, 'role', 1700); } else if (live.phase !== 'intro') told = false;
+    if (shell.state.over) { const e = document.getElementById('endScore'), t = verdict(live); if (e.textContent !== t) e.textContent = t; if (!carded) { carded = true; show.resultSheet(fightCard, live); } }
   }
-  view.frame(shell.paused() ? 0 : real * Math.min(SPEED, 3) * rate, s, { me: shell.state.me });
-  hud.update(real, s, shell.state.me, shell.state.names, shell.state.screen === 'play' || shell.state.screen === 'pause');
+  const rep = dir.view && dir.view.mode === 'replay' ? dir.view : null;
+  view.frame(shell.paused() ? 0 : rep ? rep.dt : real * Math.min(SPEED, 3) * rate, rep ? rep.state : s, { me: shell.state.me, director: dir.view });
+  hud.update(real, s, shell.state.me, shell.state.names, (shell.state.screen === 'play' || shell.state.screen === 'pause') && !dir.busy);
   requestAnimationFrame(loop);
 }
 requestAnimationFrame(loop);
 shell.start();
 window.__game = {
   shell: () => shell.snapshot(), sim: () => rt.state(), controls: () => controls.read(), sounds: () => audio.log.slice(), net: () => shell.net,
-  view: () => Object.assign(view.info(), { frames, swipe }),
+  view: () => Object.assign(view.info(), { frames, swipe }), show: () => show.info(),
   // nur für Tests: Zustand gezielt herstellen
   set: (patch) => { const s = rt.state(); if (!s || rt.mode() !== 'solo') return false; if (patch.gap) s.gap = patch.gap; if (patch.clock !== undefined) s.clock = patch.clock; if (patch.hp) patch.hp.forEach((v, i) => { if (v !== null) s.f[i].hp = v; }); if (patch.round) s.round = patch.round; return true; },
   ranges: () => Object.fromEntries(TYPES.map((k) => [k, PUNCH[k].range]))

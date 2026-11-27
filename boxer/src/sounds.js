@@ -9,5 +9,6 @@ export const SOUNDS = {
   count: (n = 1, { tone }) => tone(420 + n * 22, 400 + n * 22, 0.22, 0.14, 'square'),
   floor: (_, { tone, hiss }) => { tone(80, 28, 0.8, 0.35); hiss(300, 0.6, 0.5, 0.22, 'lowpass'); },
   tick: (_, { tone }) => tone(700, 900, 0.1, 0.05, 'triangle'),
-  miss: (_, { tone }) => tone(220, 150, 0.12, 0.12, 'sawtooth')
+  miss: (_, { tone }) => tone(220, 150, 0.12, 0.12, 'sawtooth'),
+  fanfare: (_, { tone, hiss }) => { [[196, 0], [247, 0.16], [294, 0.32], [392, 0.48]].forEach(([f, d]) => { tone(f, f, 0.2, 0.42, 'sawtooth', d); tone(f * 2, f * 2, 0.08, 0.35, 'triangle', d); }); hiss(900, 0.5, 0.2, 0.9, 'bandpass', 0.45, 0.25); }
 };

@@ -16,7 +16,7 @@ async function punched(p, act, kind) {
 }
 try {
   console.log('Desktop und Tastatur');
-  const p = await T.open({ width: 1280, height: 720 }, '?speed=1&nosw');
+  const p = await T.open({ width: 1280, height: 720 }, '?speed=1&nosw&show=0');
   ok('Menü ohne Online-Knöpfe (folgt in Phase 3)', await p.evaluate(() => ['btnHost', 'btnJoinLink'].every((id) => getComputedStyle(document.getElementById(id)).display === 'none')));
   await shot(p, 'menu-desktop');
   await p.click('[data-level="easy"]'); await p.click('#btnSolo');
@@ -37,7 +37,8 @@ try {
   const before = (await view(p)).camera; await p.click('#btnCam'); await sleep(500); const after = await view(p);
   ok('Kamera wechselt (Schulterblick und Ich-Sicht)', before !== after.camera, [before, after.camera]); await shot(p, 'ich-sicht'); await p.keyboard.press('KeyV');
   const t0 = (await sim(p)).t; await p.click('#btnPause'); await sleep(300); const t1 = (await sim(p)).t; await sleep(300); ok('Pause hält an', (await sim(p)).t === t1 && t1 >= t0); await p.click('#btnResume');
-  ok('Anzeige: zwei Balken mit Namen', await p.evaluate(() => !document.getElementById('bars').hidden && [...document.querySelectorAll('.fbar .who b')].map((e) => e.textContent).join() === 'Du,Computer'));
+  const barNames = await p.evaluate(() => (document.getElementById('bars').hidden ? 'verdeckt' : [...document.querySelectorAll('.fbar .who b')].map((e) => e.textContent).join()));
+  ok('Anzeige: zwei Balken mit Namen', /^Du,(Rocco Brandt|Viktor Sand|Ilja Stahl)$/.test(barNames), barNames);
   const s = await sim(p); ok('Wenige Zeichenaufrufe', (await view(p)).calls < 200, (await view(p)).calls);
   const fps = await p.evaluate(() => new Promise((res) => { let n = 0; const t = performance.now(); (function f() { n++; if (performance.now() - t < 2000) requestAnimationFrame(f); else res(n / ((performance.now() - t) / 1000)); })(); }));
   console.log('    Bilder je Sekunde (headless): ' + fps.toFixed(1)); ok('Läuft flüssig (mindestens 40 Bilder/s)', fps >= 40, fps);
@@ -62,7 +63,7 @@ try {
   await p.browserContext().close();
 
   console.log('Ganzer Kampf bis zum Ergebnis');
-  const m = await T.open({ width: 1024, height: 768 }, '?speed=8&nosw');
+  const m = await T.open({ width: 1024, height: 768 }, '?speed=8&nosw&show=0');
   await m.click('[data-level="hard"]'); await m.click('#btnSolo');
   ok('Kampf endet', !!(await until(async () => (await shell(m)).screen === 'end', 120000, 'ende')));
   await sleep(300); const txt = await m.$eval('#endScore', (e) => e.textContent);
@@ -73,7 +74,7 @@ try {
 
   console.log('Handy: Gesten und Bildschirmgrößen');
   for (const [n, w, h] of [['320x568', 320, 568], ['390x844', 390, 844], ['844x390', 844, 390], ['768x1024', 768, 1024], ['1024x768', 1024, 768]]) {
-    const q = await T.open({ width: w, height: h, isMobile: true, hasTouch: true }, '?speed=1&nosw');
+    const q = await T.open({ width: w, height: h, isMobile: true, hasTouch: true }, '?speed=1&nosw&show=0');
     const menu = await q.evaluate(() => { const b = document.getElementById('btnSolo').getBoundingClientRect(), c = document.querySelector('#menu .card').getBoundingClientRect(); return b.bottom <= innerHeight && b.top >= 0 && c.left >= 0 && c.right <= innerWidth + 1; });
     ok(n + ': Menü passt', menu); await q.tap('#btnSolo'); await fighting(q); await sleep(900);
     const g = await q.evaluate(() => { const r = (s) => { const e = document.querySelector(s); if (!e || e.hidden || getComputedStyle(e).display === 'none') return null; const b = e.getBoundingClientRect(); return { l: b.left, t: b.top, r: b.right, b: b.bottom }; };
@@ -94,7 +95,7 @@ try {
     ok(n + ': keine Fehler', !q.errors.length, q.errors); await q.browserContext().close();
   }
   console.log('Knöpfe statt Wischen, und offline');
-  const r = await T.open({ width: 390, height: 844, isMobile: true, hasTouch: true }, '');
+  const r = await T.open({ width: 390, height: 844, isMobile: true, hasTouch: true }, '?show=0');
   await r.tap('#btnSwipe'); await r.tap('#btnSolo'); await fighting(r); await sleep(500);
   ok('Knopfmodus: sieben Knöpfe, keine Wischfläche', await r.evaluate(() => [...document.querySelectorAll('#touch .act')].filter((e) => !e.hidden).length === 7 && document.getElementById('punchZone').hidden));
   const ov = await r.evaluate(() => { const l = [...document.querySelectorAll('#touch .act'), document.getElementById('stickBase')].map((e) => e.getBoundingClientRect()); return l.every((a, i) => a.left >= 0 && a.right <= innerWidth + 0.5 && a.bottom <= innerHeight + 0.5 && l.every((b, j) => i === j || a.right <= b.left + 1 || b.right <= a.left + 1 || a.bottom <= b.top + 1 || b.bottom <= a.top + 1)); });

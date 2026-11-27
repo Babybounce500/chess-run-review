@@ -1,5 +1,5 @@
 // Alle Stellwerte. Zeiten in Sekunden, Längen in Metern.
-export const MATCH = { rounds: 3, roundTime: 60, intro: 2.2, rest: 5, endHold: 2.5 };
+export const MATCH = { rounds: 3, roundTime: 60, intro: 2.2, rest: 9, endHold: 6.5 };   // Pause und Nachlauf lang genug für Wiederholung und Richter
 export const RING = { minGap: 0.78, maxGap: 2.3, startGap: 1.7, stepSpeed: 1.35 };
 
 // wind: Ausholen bis zum Treffer, back: Zurücknehmen danach, range: Reichweite (Abstand), dmg: Schaden, cost: Ausdauer

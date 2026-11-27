@@ -1,5 +1,8 @@
 # Änderungsprotokoll
 
+## 2026-11-27 (Shadow Boxer, Phase 2)
+- Übertragung: Einmarsch mit Nebel, Bauchbinde und Kämpfervergleich, Wiederholungen in Zeitlupe, Rundenstatistik, Punktzettel, Richterspruch, Ergebnisblatt, reagierendes Publikum, Kommentar als Text. Im Menü abschaltbar.
+
 ## 2026-11-27 (Shadow Boxer, Phase 1)
 - Neu im Ordner `boxer/`: Boxkampf gegen den Computer mit vier Schlägen, Deckung, Parade, Ausweichen, Kontern, Ausdauer, Niederschlägen und drei Runden.
 
