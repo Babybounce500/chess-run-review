@@ -1,5 +1,9 @@
 # Änderungsprotokoll
 
+## 2026-11-28 (Eleven Nights und Neon Bay, Phase 1 zum Testen)
+- Eleven Nights (eleven/): Fußball elf gegen elf gegen den Computer.
+- Neon Bay (neonbay/): Stadtviertel zu Fuß und mit dem Auto.
+
 ## 2026-11-27 (Shadow Boxer, Korrekturen nach Gegenprüfung)
 - Richter werten auch geblockte Schläge; starke Computergegner lesen eintöniges Boxen. Entschiedene Kämpfe zählen auch bei vorzeitigem Verlassen. Reaktionszeit am Tastendruck gemessen, jetzt auch im Training. Pause am Kampfende, Trainingshinweise, Gegnertipps und Wiederholung beim Niederschlag korrigiert.
 

@@ -1,0 +1,1 @@
+{ "name": "eleven-nights", "private": true, "type": "module", "scripts": { "start": "node server.js", "update:sw": "node tools/update-sw.mjs", "measure": "node tools/measure.mjs", "test": "node tests/sim-test.mjs && node tests/match-test.mjs && node tests/browser-test.mjs" }, "devDependencies": { "puppeteer-core": "^25.18.1" } }
