@@ -2,7 +2,7 @@
 
 Elfmeterschießen im Browser: gegen den Computer oder gegen einen Freund. Fünf Schüsse je Seite, danach K.-o.-Runde.
 
-**Spielen:** https://babybounce500.github.io/monolith-penalty/
+**Spielen:** https://babybounce500.github.io/chess-run-review/penalty/
 
 ## Bedienung
 
