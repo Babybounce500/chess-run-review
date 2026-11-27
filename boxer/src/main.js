@@ -10,6 +10,7 @@ import { createPunchPad } from './punchpad.js';
 import { createHud } from './hud.js';
 import { SOUNDS } from './sounds.js';
 import { createShow, RIVALS } from './show.js';
+import { createOnline, NET } from './online.js';
 
 const qs = new URLSearchParams(location.search);
 const SPEED = Math.min(10, Math.max(0.1, Number(qs.get('speed')) || 1));          // nur für Tests
@@ -41,10 +42,13 @@ const shell = createShell({
   help: `<p><b>Handy:</b> links der Stick (zur Seite = ausweichen, hoch und runter = Abstand). Rechts auf freier Fläche schlagen: <b>tippen</b> Jab, <b>hoch</b> Cross, <b>zur Seite</b> Haken, <b>runter</b> Uppercut. DECKUNG, DUCKEN und KÖRPER halten.</p>
   <p><b>Tastatur:</b> WASD, Leertaste Deckung, Q ducken, Shift Körper, J Jab, K Cross, L Haken, E Uppercut, V Kamera.</p>
   <p>Die große Zahl oben zählt die Niederschläge.</p>
+  <p><b>Online:</b> beide haben dieselben Werte. Alle Schläge sind etwas langsamer, und der Gastgeber bekommt so viel Verzögerung, wie der Gast durch die Leitung verliert (oben rechts angezeigt). Serie bis zwei Siege.</p>
   <p><b>So gewinnst du:</b> Ausweichen und sofort kontern macht viel Schaden. Deckung im letzten Moment ist eine Parade. Wildes Schlagen macht müde. Seitschritt hilft gegen gerade Schläge, Ducken gegen Haken, der Uppercut bestraft das Ducken.</p>`,
-  onSolo: ({ seed, level }) => { begin(); rt.solo(seed, level); }, onOnline: ({ role, seed }) => { begin(); rt.online(role, seed); },
-  onMenu: () => { rt.stop(); show.stop(); view.reset(); }, onLost: () => { rt.stop(); show.stop(); }
+  onSolo: ({ seed, level }) => { begin(); rt.solo(seed, level); },
+  onOnline: ({ role, seed }) => { online.reset(); begin(); rt.online(role, seed); rt.state().pace = NET.pace; },
+  onMenu: () => { rt.stop(); show.stop(); online.stop(); view.reset(); }, onLost: () => { rt.stop(); show.stop(); online.stop(); }
 });
+const online = createOnline({ shell, testLag: qs.has('test') ? Math.min(500, Number(qs.get('netlag')) || 0) : 0 });
 const show = createShow({ view, audio, shell, onSkip: () => { told = false; } });
 let showOn = true; try { showOn = localStorage.getItem('shadowboxer_show') !== '0'; } catch (e) { /* ok */ }
 if (qs.get('show') === '0') showOn = false;
@@ -54,16 +58,25 @@ function begin() {
   // der Gegner bekommt Namen und Gesicht
   const level = shell.state.level, names = shell.state.names;
   if (shell.state.mode === 'solo') { names[1] = (RIVALS[level] || RIVALS.normal).name; document.getElementById('name1').textContent = names[1]; }
-  let w = 0, l = 0; for (const k of ['easy', 'normal', 'hard']) { try { const r = JSON.parse(shell.store.get('cpu_' + k, '')); w += r.w || 0; l += r.l || 0; } catch (e) { /* neu */ } }
-  show.reset(level, names, w + ' – ' + l); document.getElementById('fightCard').textContent = ''; carded = false;
+  const record = (key) => { try { const r = JSON.parse(shell.store.get(key, '')); return { w: r.w || 0, l: r.l || 0 }; } catch (e) { return { w: 0, l: 0 }; } };
+  let w = 0, l = 0, duel = null;
+  if (shell.state.mode === 'online') {                    // Bilanz gegeneinander, aus beiden Blickwinkeln
+    const me = shell.state.me, r = record('friend_' + names[1 - me].toLowerCase());
+    duel = []; duel[me] = r.w + ' – ' + r.l; duel[1 - me] = r.l + ' – ' + r.w;
+  } else for (const k of ['easy', 'normal', 'hard']) { const r = record('cpu_' + k); w += r.w; l += r.l; }
+  show.reset(level, names, w + ' – ' + l, duel); document.getElementById('fightCard').textContent = ''; carded = false; pressAt = 0; wasBlock = false;
 }
+let pressAt = 0, wasBlock = false;
 
 function readInput() {
   const c = controls.read(), i = { x: c.x, y: c.y, block: c.block || tap, duck: c.duck, body: c.body, side: lastSide };
   tap = false;
   for (const k of TYPES) i[k] = c[k];
   const p = queue.shift(); if (p) { i[p.k] = true; lastSide = i.side = p.side; } else if (c.hook) i.side = lastSide = -1;
-  return i;
+  if (shell.state.mode !== 'online') return i;
+  // online merken wir, welchen Augenblick man beim Drücken der Deckung gesehen hat
+  const s = rt.state(); if (i.block && !wasBlock) pressAt = s ? s.t : 0; wasBlock = i.block; i.at = i.block ? pressAt : 0;
+  return shell.state.role === 'host' ? online.own(i) : i;
 }
 
 function onEvent(e, s) {
@@ -89,7 +102,7 @@ function onEvent(e, s) {
   else if (e.type === 'bell') audio.play('bell', e.end ? 3 : 1);
   else if (e.type === 'over') { audio.play('bell', 3); audio.play('cheer'); const how = { ko: 'K. O.!', tko: 'TECHNISCHER K. O.' }[e.how] || 'NACH PUNKTEN'; shell.banner(how, '', 1600); }
 }
-rt = createRealtime({ shell, sim, readInput, onEvent });
+rt = createRealtime({ shell: online.link, sim, readInput, onEvent, delay: NET.delay, sendEvery: NET.sendEvery });
 
 const fightCard = document.createElement('div'); fightCard.id = 'fightCard'; document.getElementById('endScore').after(fightCard);
 let carded = false;
@@ -98,7 +111,8 @@ function verdict(s) {
   const me = shell.state.me, names = shell.state.names, st = s.f[me].stats;
   const how = s.how === 'ko' ? 'K. o. in Runde ' + s.round : s.how === 'tko' ? 'Technischer K. o. in Runde ' + s.round : 'Punktentscheidung (' + s.how + ')';
   const cards = s.how === 'ko' || s.how === 'tko' ? '' : '\nRichter: ' + totals(s).map((c) => c[me] + ':' + c[1 - me]).join(' · ');
-  return how + cards + '\nDeine Treffer: ' + st.landed + ' von ' + st.thrown + ' · Konter: ' + st.counters + ' · Paraden: ' + st.parries;
+  const series = shell.state.mode === 'online' ? '\n' + online.seriesText(names) : '';
+  return how + cards + '\nDeine Treffer: ' + st.landed + ' von ' + st.thrown + ' · Konter: ' + st.counters + ' · Paraden: ' + st.parries + series;
 }
 
 /* ---------- Oberfläche ---------- */
@@ -119,7 +133,7 @@ showBtn.onclick = () => { show.setEnabled(!show.enabled()); try { localStorage.s
 modeBtn.after(showBtn); showLabel();
 document.getElementById('btnSkipShow').onclick = () => show.skip();
 // Enter oder Leertaste überspringen Einmarsch und Wiederholung
-addEventListener('keydown', (e) => { if ((e.code === 'Enter' || e.code === 'Space') && !e.repeat && (show.info().walk !== null || show.info().replay) && shell.state.screen === 'play') { e.preventDefault(); show.skip(); } });
+addEventListener('keydown', (e) => { if ((e.code === 'Enter' || e.code === 'Space') && !e.repeat && !/INPUT|TEXTAREA|BUTTON/.test(e.target.tagName) && (show.info().walk !== null || show.info().replay) && shell.state.screen === 'play') { e.preventDefault(); show.skip(); } });
 function layout() { for (const k of TYPES) controls.showButton(k, !swipe); document.body.dataset.punch = swipe ? 'swipe' : 'buttons'; }
 layout();
 
@@ -132,14 +146,19 @@ function loop(now) {
   // während Einmarsch und Wiederholung stört keine Steuerung
   controls.setEnabled(playing && !dir.busy); pad.setEnabled(playing && swipe && !dir.busy);
   document.body.classList.toggle('broadcast', !!dir.busy);
+  const gate = online.update(real, show.info().walk !== null);
   if (slow > 0) slow -= real;
   const rate = slow > 0 && rt.mode() === 'solo' ? slowScale : 1;
-  const s = rt.update(dir.hold ? 0 : real * SPEED * rate);
+  // der Gast rechnet nichts selbst, bei ihm läuft die Zeit immer weiter
+  const s = rt.update(rt.mode() === 'guest' ? real : dir.hold || gate.waiting ? 0 : real * SPEED * rate);
   const live = rt.state();
   if (live) {
-    shell.setSub(live.phase === 'rest' ? 'Pause' : 'Runde ' + live.round + '/' + MATCH.rounds + ' · ' + Math.floor(Math.ceil(live.clock) / 60) + ':' + String(Math.ceil(live.clock) % 60).padStart(2, '0'));
-    if (!dir.hold && live.phase === 'intro' && live.pt < 0.2 && playing && !told) { told = true; shell.banner(live.round === MATCH.rounds ? 'LETZTE RUNDE' : 'RUNDE ' + live.round, 'role', 1700); } else if (live.phase !== 'intro') told = false;
-    if (shell.state.over) { const e = document.getElementById('endScore'), t = verdict(live); if (e.textContent !== t) e.textContent = t; if (!carded) { carded = true; show.resultSheet(fightCard, live); } }
+    shell.setSub(live.phase === 'rest' ? 'Pause' : 'Runde ' + live.round + '/' + MATCH.rounds + ' · ' + Math.floor(Math.ceil(live.clock) / 60) + ':' + String(Math.ceil(live.clock) % 60).padStart(2, '0') + online.status());
+    if (!dir.hold && !gate.waiting && live.phase === 'intro' && live.pt < 0.2 && playing && !told) { told = true; shell.banner(live.round === MATCH.rounds ? 'LETZTE RUNDE' : 'RUNDE ' + live.round, 'role', 1700); } else if (live.phase !== 'intro') told = false;
+    if (shell.state.over) {
+      if (!carded) { carded = true; if (shell.state.mode === 'online') online.result(live.win); show.resultSheet(fightCard, live); }
+      const e = document.getElementById('endScore'), t = verdict(live); if (e.textContent !== t) e.textContent = t;
+    }
   }
   const rep = dir.view && dir.view.mode === 'replay' ? dir.view : null;
   view.frame(shell.paused() ? 0 : rep ? rep.dt : real * Math.min(SPEED, 3) * rate, rep ? rep.state : s, { me: shell.state.me, director: dir.view });
@@ -150,8 +169,8 @@ requestAnimationFrame(loop);
 shell.start();
 window.__game = {
   shell: () => shell.snapshot(), sim: () => rt.state(), controls: () => controls.read(), sounds: () => audio.log.slice(), net: () => shell.net,
-  view: () => Object.assign(view.info(), { frames, swipe }), show: () => show.info(),
+  view: () => Object.assign(view.info(), { frames, swipe }), show: () => show.info(), online: () => online.info(),
   // nur für Tests: Zustand gezielt herstellen
-  set: (patch) => { const s = rt.state(); if (!s || rt.mode() !== 'solo') return false; if (patch.gap) s.gap = patch.gap; if (patch.clock !== undefined) s.clock = patch.clock; if (patch.hp) patch.hp.forEach((v, i) => { if (v !== null) s.f[i].hp = v; }); if (patch.round) s.round = patch.round; return true; },
+  set: (patch) => { const s = rt.state(); if (!s || (rt.mode() !== 'solo' && !(rt.mode() === 'host' && qs.has('test')))) return false; if (patch.gap) s.gap = patch.gap; if (patch.clock !== undefined) s.clock = patch.clock; if (patch.hp) patch.hp.forEach((v, i) => { if (v !== null) s.f[i].hp = v; }); if (patch.round) s.round = patch.round; return true; },
   ranges: () => Object.fromEntries(TYPES.map((k) => [k, PUNCH[k].range]))
 };

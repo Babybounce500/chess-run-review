@@ -16,7 +16,7 @@ const SEND_EVERY = 3, DELAY = 0.1, STALE = 0.6;
 // Ereignisse (Töne, Effekte): fortlaufend nummeriert, die letzten 12 bleiben im Zustand
 export function emit(state, type, data) { state.eventId = (state.eventId || 0) + 1; (state.events || (state.events = [])).push(Object.assign({ id: state.eventId, type }, data)); if (state.events.length > 12) state.events.shift(); }
 
-export function createRealtime({ shell, sim, readInput, onEvent }) {
+export function createRealtime({ shell, sim, readInput, onEvent, delay = DELAY, sendEvery = SEND_EVERY }) {
   let mode = 'off', state = null, prev = null, level = 'normal', acc = 0, tick = 0, seen = 0, ended = false;
   let remote = null, remoteQueue = [], remoteAge = 0;                       // Gastgeber
   let buffer = [], clock = null, sendT = 0, lastSent = '', silent = 0;      // Gast
@@ -56,8 +56,8 @@ export function createRealtime({ shell, sim, readInput, onEvent }) {
         const w = sim.winner(buffer[buffer.length - 1].s);
         if ((w === null || w === undefined) && (silent += dt) > 2) { silent = -1; shell.toast('Warte auf den Gastgeber …'); }
         const newest = (buffer[buffer.length - 1].n * STEP);
-        if (clock === null || Math.abs(newest - DELAY - clock) > 0.4) clock = newest - DELAY;
-        else clock += dt + (newest - DELAY - clock) * Math.min(1, dt * 2);           // sanft nachführen
+        if (clock === null || Math.abs(newest - delay - clock) > 0.4) clock = newest - delay;
+        else clock += dt + (newest - delay - clock) * Math.min(1, dt * 2);           // sanft nachführen
         let a = buffer[0], b = buffer[0];
         for (let i = 0; i < buffer.length; i++) { if (buffer[i].n * STEP <= clock) { a = buffer[i]; b = buffer[i + 1] || buffer[i]; } }
         const span = (b.n - a.n) * STEP, t = span > 0 ? Math.max(0, Math.min(1, (clock - a.n * STEP) / span)) : 1;
@@ -77,7 +77,7 @@ export function createRealtime({ shell, sim, readInput, onEvent }) {
         else { remoteAge += STEP; if (remoteQueue.length) remote = remoteQueue.shift(); if (remoteAge > STALE) remote = neutral(); other = remote; }
         sim.step(state, [mine, other], STEP); tick++;
         events(state);
-        if (mode === 'host' && (tick % SEND_EVERY === 0 || sim.winner(state) !== null)) shell.send({ t: 's', n: tick, s: sim.pack(state) });
+        if (mode === 'host' && (tick % sendEvery === 0 || sim.winner(state) !== null)) shell.send({ t: 's', n: tick, s: sim.pack(state) });
       }
       const sc = sim.score(state); shell.setScore(sc[0], sc[1]); finish(state);
       // Gastgeber wiederholt den Endstand kurz, damit er sicher ankommt

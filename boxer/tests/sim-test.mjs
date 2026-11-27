@@ -88,6 +88,29 @@ ok('Blindes Hämmern bringt einen kaum hoch', s.phase === 'down' && s.down.hits 
 s = scene(1.1); s.f[1].downs = 2; s.f[1].roundDowns = 2; s.f[1].hp = 20; run(s, 0.4, (x, t) => inp({ cross: t < 0.02 })); run(s, DOWN.tick * 3.5);
 ok('Dritter Niederschlag in der Runde: technischer K. o.', s.phase === 'over' && s.how === 'tko' && s.win === 0, [s.how, s.win]);
 
+console.log('Online-Ausgleich');
+// Der Zuschauer sieht die Marke "late" Sekunden zu spät und drückt, wenn sie bei ihm im Feld steht
+function lateGetup(late, compensate) {
+  const q = floored(); const seen = [];
+  for (let t = 0; t < 9.5 && q.phase === 'down'; t += DT) {
+    const D = q.down; seen.push({ t: q.t, m: D.m, zone: D.zone });
+    const v = seen[Math.max(0, seen.length - 1 - Math.round(late / DT))];
+    const hit = D.lock <= 0 && Math.abs(v.m - v.zone) < 0.03 && v.zone === D.zone && !q.f[1].prev.block;
+    sim.step(q, [N(), inp({ block: hit, at: hit && compensate ? v.t : 0 })], DT);
+  }
+  return q;
+}
+ok('0,25 s Verzögerung ohne Ausgleich: man kommt nicht hoch', lateGetup(0.25, false).phase !== 'fight');
+ok('0,25 s Verzögerung mit Ausgleich: man steht auf', lateGetup(0.25, true).phase === 'fight');
+ok('Zurückgerechnet wird nur bis zur Obergrenze', lateGetup(0.8, true).phase !== 'fight' && DOWN.rewind === 0.45);
+ok('Unsinnige Zeitangaben werden begrenzt', sim.cleanInput({ at: -5 }).at === 0 && sim.cleanInput({ at: 'x' }).at === 0 && sim.cleanInput({ at: 1e12 }).at === 1e5);
+const slow = scene(1.2); slow.pace = 1.25; run(slow, PUNCH.cross.wind + 0.02, (x, t) => inp({ cross: t < 0.02 }));
+const quick = scene(1.2); run(quick, PUNCH.cross.wind + 0.02, (x, t) => inp({ cross: t < 0.02 }));
+ok('Online-Tempo: derselbe Schlag trifft später', quick.f[1].hp < 100 && slow.f[1].hp === 100, [quick.f[1].hp, slow.f[1].hp]);
+run(slow, 0.2); ok('und trifft dann doch', slow.f[1].hp < 100);
+const packed = scene(1.2); packed.pace = 1.25; run(packed, 0.05, (x, t) => inp({ jab: t < 0.02 }));
+ok('Der Gast sieht dasselbe Tempo', Math.abs(sim.unpack(JSON.parse(JSON.stringify(sim.pack(packed)))).f[0].act.slow - 1.25) < 0.01);
+
 console.log('Runden und Richter');
 s = sim.create(3); run(s, MATCH.intro + 0.1); ok('Nach der Einleitung läutet es', s.phase === 'fight' && types(s).includes('bell'));
 run(s, MATCH.roundTime + 0.2); ok('Rundenende: Pause und drei Punktzettel', s.phase === 'rest' && s.cards.length === 1 && s.cards[0].length === 3);

@@ -36,6 +36,7 @@ function cleanInput(i) {
   i = i || {};
   const o = { x: clamp(num(i.x), -1, 1), y: clamp(num(i.y), -1, 1), block: !!i.block, duck: !!i.duck, body: !!i.body, side: i.side === -1 ? -1 : 1 };
   for (const k of TYPES) o[k] = !!i[k];
+  o.at = clamp(num(i.at), 0, 1e5);                       // Spielzeit, die man beim Drücken der Deckung gesehen hat
   return o;
 }
 
@@ -47,7 +48,7 @@ const busy = (p) => !!p.act || p.stun > 0;
 function startPunch(s, who, k, body, side) {
   const p = s.f[who], d = PUNCH[k];
   if (p.st < 1) { emit(s, 'gassed', { side: who }); return; }
-  const slow = tired(p) ? FIGHT.tiredSlow : 1, weak = tired(p);
+  const slow = (tired(p) ? FIGHT.tiredSlow : 1) * (s.pace || 1), weak = tired(p);
   const hand = k === 'jab' ? -1 : k === 'hook' ? side : 1;          // -1 Führhand (links), 1 Schlaghand
   p.act = { k, t: 0, hand, body: body ? 1 : 0, done: 0, miss: 0, slow, weak: weak ? 1 : 0 };
   p.st = Math.max(0, p.st - d.cost); p.rest = FIGHT.regenDelay; p.stats.thrown++;
@@ -158,9 +159,13 @@ function stepDown(s, inputs, dt) {
   D.m += D.dir * DOWN.speed[D.level] * dt;
   if (D.m > 1) { D.m = 2 - D.m; D.dir = -1; } else if (D.m < 0) { D.m = -D.m; D.dir = 1; }
   D.lock = Math.max(0, D.lock - dt);
+  // Wer verzögert zuschaut, wird an der Marke gemessen, die beim Drücken zu sehen war
+  let mark = D.m;
+  const late = inputs[who].at > 0 ? clamp(s.t - inputs[who].at, 0, DOWN.rewind) : 0;
+  if (late > 0) { let u = (D.dir > 0 ? D.m : 2 - D.m) - DOWN.speed[D.level] * late; u = ((u % 2) + 2) % 2; mark = u <= 1 ? u : 2 - u; }
   const a = s.f[1 - who]; if (a.act) { a.act.t += dt; if (a.act.t >= windOf(a.act) + backOf(a.act)) a.act = null; }      // der Schlagarm kommt zurück
   if (press && !D.tko && D.lock <= 0) {
-    if (Math.abs(D.m - D.zone) <= DOWN.width[D.level] / 2) { D.hits++; D.zone = 0.15 + rnd(s) * 0.7; emit(s, 'getup', { side: who, ok: 1 }); D.lock = 0.18; }
+    if (Math.abs(mark - D.zone) <= DOWN.width[D.level] / 2) { D.hits++; D.zone = 0.15 + rnd(s) * 0.7; emit(s, 'getup', { side: who, ok: 1 }); D.lock = 0.18; }
     else { D.hits = Math.max(0, D.hits - 1); D.lock = 0.4; emit(s, 'getup', { side: who, ok: 0 }); }
   }
   s.pt += dt;

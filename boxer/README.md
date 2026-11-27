@@ -1,6 +1,6 @@
 # Shadow Boxer: Title Night
 
-Boxen im Browser. **Stand: Phase 2** (Kampfgefühl und Übertragung, gegen den Computer).
+Boxen im Browser. **Stand: Phase 3** (Kampfgefühl, Übertragung, Online-Duell).
 
 ## Regeln
 Drei Runden zu 60 Sekunden. Sieg durch K. o., technischen K. o. (drei Niederschläge in einer Runde) oder nach Punkten (drei Richter).
@@ -35,17 +35,28 @@ Statt Wischen lassen sich im Menü Schlagknöpfe einstellen.
 - Publikum springt bei großen Szenen auf, Kommentar als Text.
 - Überspringen: Knopf, Enter oder Leertaste. Ganz abschalten: Menü, „TV-Übertragung“.
 
+## Online-Duell
+1. „Freund herausfordern“, den Link verschicken.
+2. Der Freund öffnet ihn, tippt „Annehmen“ und schickt den Antwort-Code zurück.
+3. Code einfügen, „Verbinden“.
+
+- Beide haben dieselben Werte. Serie bis zwei Siege, Revanche, Bilanz gegeneinander, Chat.
+- Der Kampf beginnt, wenn beide den Einmarsch gesehen oder übersprungen haben (höchstens 20 Sekunden Warten).
+- **Fairness:** Alle Schläge sind online ein Viertel langsamer. Der Gastgeber bekommt seine eigenen Eingaben um Laufzeit plus 70 ms verzögert (höchstens 220 ms). Beim Aufstehen zählt die Marke, die man beim Drücken gesehen hat (bis 450 ms zurück). Der Ping steht beim Rundenstand.
+- Der Gastgeber rechnet den Kampf: Seine App muss im Vordergrund bleiben. Kein Betrugsschutz.
+
 ## Entwickeln
 ```
 npm start                 # http://localhost:5000
 node tests/sim-test.mjs
 npm install && node tests/browser-test.mjs     # braucht Chrome (Variable CHROME)
 node tests/show-test.mjs                       # Übertragung
+node tests/online-test.mjs                     # zwei Browser, auch mit künstlicher Verzögerung
 npm run update:sw         # nach Änderungen
 ```
-Stellwerte in `src/config.js`, Logik in `src/sim.js`, Szene in `src/view.js`, Gestenfläche in `src/punchpad.js`, Anzeige in `src/hud.js`, Übertragung in `src/show.js`, Baukasten in `src/kit/`.
+Stellwerte in `src/config.js`, Logik in `src/sim.js`, Szene in `src/view.js`, Gestenfläche in `src/punchpad.js`, Anzeige in `src/hud.js`, Übertragung in `src/show.js`, Online-Regeln in `src/online.js`, Baukasten in `src/kit/`.
 
 ## Geplant
-3 Online-Duell · 4 Karriere, Rangstufen, Training.
+4 Karriere, Rangstufen, Training.
 
 three.js 0.160.0 (MIT) unter `vendor/`.

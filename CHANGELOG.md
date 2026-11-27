@@ -1,5 +1,8 @@
 # Änderungsprotokoll
 
+## 2026-11-27 (Shadow Boxer, Phase 3)
+- Online-Duell per Einladungslink: gemeinsamer Start, Serie bis zwei Siege, Revanche, Chat, Ping-Anzeige. Ausgleich für den Gastgeber, langsamere Schläge online, faires Aufstehen trotz Verzögerung.
+
 ## 2026-11-27 (Shadow Boxer, Phase 2)
 - Übertragung: Einmarsch mit Nebel, Bauchbinde und Kämpfervergleich, Wiederholungen in Zeitlupe, Rundenstatistik, Punktzettel, Richterspruch, Ergebnisblatt, reagierendes Publikum, Kommentar als Text. Im Menü abschaltbar.
 

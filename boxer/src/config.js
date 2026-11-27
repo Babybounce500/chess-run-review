@@ -31,6 +31,7 @@ export const DOWN = {
   count: 10, tick: 0.95,
   need: [3, 4, 5],                                                  // nötige Treffer im Zeitfenster je Niederschlag
   width: [0.30, 0.24, 0.19], speed: [0.95, 1.15, 1.35],
+  rewind: 0.45,                                                     // online: so weit wird höchstens zurückgerechnet
   hp: [42, 32, 22], tko: 3                                          // dritter Niederschlag in einer Runde: Abbruch
 };
 export const CPU = {

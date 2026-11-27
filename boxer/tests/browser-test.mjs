@@ -17,7 +17,7 @@ async function punched(p, act, kind) {
 try {
   console.log('Desktop und Tastatur');
   const p = await T.open({ width: 1280, height: 720 }, '?speed=1&nosw&show=0');
-  ok('Menü ohne Online-Knöpfe (folgt in Phase 3)', await p.evaluate(() => ['btnHost', 'btnJoinLink'].every((id) => getComputedStyle(document.getElementById(id)).display === 'none')));
+  ok('Menü mit Online-Knöpfen', await p.evaluate(() => ['btnHost', 'btnJoinLink'].every((id) => getComputedStyle(document.getElementById(id)).display !== 'none')));
   await shot(p, 'menu-desktop');
   await p.click('[data-level="easy"]'); await p.click('#btnSolo');
   ok('Runde 1 beginnt', !!(await fighting(p)));

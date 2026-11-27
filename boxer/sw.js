@@ -1,8 +1,8 @@
 /* Offline-Speicher. Netz zuerst, damit Updates sofort ankommen; ohne Netz (oder nach 4 s) die gespeicherte Fassung.
    VERSION und SHELL werden von tools/update-sw.mjs geschrieben. */
 const PREFIX = 'shadowboxer-';
-const VERSION = PREFIX + '2c5116531c';
-const SHELL = ["./","icons/icon-192.png","icons/icon-512.png","icons/icon-maskable.png","index.html","manifest.webmanifest","src/config.js","src/hud.js","src/kit/audio.js","src/kit/controls.js","src/kit/net.js","src/kit/realtime.js","src/kit/shell.js","src/main.js","src/punchpad.js","src/show.js","src/sim.js","src/sounds.js","src/view.js","style.css","vendor/three.module.js"];
+const VERSION = PREFIX + '72579051f7';
+const SHELL = ["./","icons/icon-192.png","icons/icon-512.png","icons/icon-maskable.png","index.html","manifest.webmanifest","src/config.js","src/hud.js","src/kit/audio.js","src/kit/controls.js","src/kit/net.js","src/kit/realtime.js","src/kit/shell.js","src/main.js","src/online.js","src/punchpad.js","src/show.js","src/sim.js","src/sounds.js","src/view.js","style.css","vendor/three.module.js"];
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(VERSION).then((c) => c.addAll(SHELL.map((u) => new Request(u, { cache: 'reload' })))).then(() => self.skipWaiting()));
 });

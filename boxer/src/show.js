@@ -44,14 +44,14 @@ export function createShow({ view, audio, shell, onSkip }) {
 
   function say(kind, id) { const list = LINES[kind]; if (!list) return; const now = performance.now(); if (now - lastLine < 1700 && !['down', 'counter', 'up'].includes(kind)) return; lastLine = now; ticker.textContent = list[id % list.length]; ticker.hidden = false; ticker.classList.remove('in'); void ticker.offsetWidth; ticker.classList.add('in'); tickerT = 2.4; }
 
-  function taleOfTape(names, record) {
+  function taleOfTape(names) {
     const [a, b] = profiles, t = tale.querySelector('table'); t.textContent = '';
-    const rows = [[names[0], '', names[1]], [a.nick, 'Kampfname', b.nick], [record, 'Bilanz', b.record], [a.height + ' cm', 'Größe', b.height + ' cm'], [a.reach + ' cm', 'Reichweite', b.reach + ' cm'], [a.weight + ' kg', 'Gewicht', b.weight + ' kg']];
+    const rows = [[names[0], '', names[1]], [a.nick, 'Kampfname', b.nick], [a.record, 'Bilanz', b.record], [a.height + ' cm', 'Größe', b.height + ' cm'], [a.reach + ' cm', 'Reichweite', b.reach + ' cm'], [a.weight + ' kg', 'Gewicht', b.weight + ' kg']];
     rows.forEach((r, i) => { const tr = add(t, 'tr', i ? '' : 'head'); add(tr, 'td', 'c0', r[0]); add(tr, 'th', '', r[1]); add(tr, 'td', 'c1', r[2]); });
   }
-  function bind(i, names, record) {
+  function bind(i, names) {
     const p = profiles[i];
-    lower.dataset.team = String(i); lower.querySelector('b').textContent = names[i]; lower.querySelector('span').textContent = (i === 0 ? 'Rote Ecke' : 'Blaue Ecke') + ' · ' + p.nick; lower.querySelector('small').textContent = p.height + ' cm · ' + p.weight + ' kg · Bilanz ' + (i === 0 ? record : p.record);
+    lower.dataset.team = String(i); lower.querySelector('b').textContent = names[i]; lower.querySelector('span').textContent = (i === 0 ? 'Rote Ecke' : 'Blaue Ecke') + ' · ' + p.nick; lower.querySelector('small').textContent = p.height + ' cm · ' + p.weight + ' kg · Bilanz ' + p.record;
   }
 
   /* ---------- Tabellen ---------- */
@@ -108,10 +108,12 @@ export function createShow({ view, audio, shell, onSkip }) {
 
   return {
     enabled: () => on, setEnabled(v) { on = !!v; if (!on) { walk = null; stopReplay(); hideAll(); } },
-    reset(level, names, record) {
+    // duel = Bilanzen beider Seiten beim Online-Kampf; sonst zählt der Computergegner
+    reset(level, names, record, duel) {
       hideAll(); stopReplay(); frames = []; pending = []; best = null; ko = null; start = null; phase = ''; round = 0; tickerT = 0;
-      const rival = RIVALS[level] || RIVALS.normal; profiles = [Object.assign({ record }, HERO), rival];
-      walk = on ? { t: 0, stage: -1, names, record } : null;
+      // online haben beide dieselben Werte
+      profiles = duel ? duel.map((r) => Object.assign({}, HERO, { nick: '„Herausforderer“', record: r })) : [Object.assign({}, HERO, { record }), RIVALS[level] || RIVALS.normal];
+      walk = on ? { t: 0, stage: -1, names } : null;
     },
     stop() { walk = null; stopReplay(); hideAll(); frames = []; pending = []; },
     skip() { if (walk) { walk = null; for (const e of [lower, tale, skip]) e.hidden = true; view.resetPose(); if (onSkip) onSkip(); } else stopReplay(); },
@@ -135,7 +137,7 @@ export function createShow({ view, audio, shell, onSkip }) {
         walk.t += dt; const t = walk.t, total = WALK.each * 2 + WALK.face;
         if (t >= total) { this.skip(); return { hold: false, view: null, busy: false }; }
         const stage = t < WALK.each ? 0 : t < WALK.each * 2 ? 1 : 2;
-        if (stage !== walk.stage) { walk.stage = stage; if (stage < 2) { bind(stage === 0 ? 1 : 0, walk.names, walk.record); audio.play('fanfare'); } else { taleOfTape(walk.names, walk.record); audio.play('bell', 1); } view.excite(stage === 2 ? 0.6 : 0.8); }
+        if (stage !== walk.stage) { walk.stage = stage; if (stage < 2) { bind(stage === 0 ? 1 : 0, walk.names); audio.play('fanfare'); } else { taleOfTape(walk.names); audio.play('bell', 1); } view.excite(stage === 2 ? 0.6 : 0.8); }
         const u = stage === 0 ? t / WALK.each : stage === 1 ? (t - WALK.each) / WALK.each : (t - WALK.each * 2) / WALK.face;
         show(skip, true); show(lower, stage < 2 && u > 0.18); show(tale, stage === 2); view.excite(0.25);
         return { hold: true, busy: true, view: stage < 2 ? { mode: 'walk', who: stage === 0 ? 1 : 0, u } : { mode: 'faceoff', u } };

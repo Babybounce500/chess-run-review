@@ -18,7 +18,7 @@ export function createHud() {
       if (!s || !show) { this.hide(); return; }
       bars.hidden = false;
       for (let k = 0; k < 2; k++) {
-        const i = k === 0 ? me : 1 - me, f = s.f[i], box = q('.f' + k);                       // links immer ich
+        const i = k, f = s.f[i], box = q('.f' + k);                       // links die rote Ecke, wie im Spielstand oben
         box.dataset.team = String(i);
         text(q('.who b', box), names[i]);
         text(q('.kd', box), '●'.repeat(f.downs));

@@ -102,8 +102,8 @@ body.has-touch #hint{bottom:auto;top:calc(128px + var(--safe-t))}
 /* ===== Shadow Boxer ===== */
 :root{--team0:#ff4d5e;--team1:#3d8bff}
 body{background:#05060f}
-/* Phase 1: nur gegen den Computer. Das Online-Duell folgt in Phase 3. */
-#btnHost,#btnJoinLink,#pasteBox{display:none!important}
+/* Online-Duell: Ping und Ausgleich klein unter den Knöpfen, */
+#conn[data-s=open]{display:none}
 h1 em{color:#ff4d5e;text-shadow:0 0 28px rgba(255,77,94,.6)}
 #menu .row>#menuSound{flex:1}
 #endScore{white-space:pre-line;line-height:1.6}
@@ -113,13 +113,13 @@ h1 em{color:#ff4d5e;text-shadow:0 0 28px rgba(255,77,94,.6)}
 .fbar{min-width:0}.fbar.f1{text-align:right}
 .fbar .who{display:flex;gap:8px;align-items:baseline;font-weight:900;font-style:italic;letter-spacing:.04em;text-transform:uppercase;font-size:.9rem;text-shadow:0 2px 4px #000}
 .fbar.f1 .who{flex-direction:row-reverse}.fbar .who b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.fbar .kd{color:#ffd34d;font-size:.7rem}
-.fbar[data-team="0"]{--c:var(--team0)}.fbar[data-team="1"]{--c:var(--team1)}
+.fbar[data-team="0"]{--c:var(--team0);--c2:#ffb08a}.fbar[data-team="1"]{--c:var(--team1);--c2:#9fd0ff}
 .hp,.sta{position:relative;overflow:hidden;background:rgba(8,10,28,.85);border:1px solid rgba(255,255,255,.22);transform:skewX(-14deg)}
 .fbar.f1 .hp,.fbar.f1 .sta{transform:skewX(14deg)}
 .hp{height:16px;margin-top:3px}.sta{height:8px;margin-top:4px;width:78%}.fbar.f1 .sta{margin-left:auto}
 .hp i,.sta i{position:absolute;top:0;bottom:0;left:0}
 .fbar.f1 .hp i,.fbar.f1 .sta .now{left:auto;right:0}
-.hp .lag{background:#fff;opacity:.75}.hp .now{background:linear-gradient(90deg,var(--c),#ffb08a)}.fbar.f1 .hp .now{background:linear-gradient(270deg,var(--c),#9fd0ff)}
+.hp .lag{background:#fff;opacity:.75}.hp .now{background:linear-gradient(90deg,var(--c),var(--c2))}.fbar.f1 .hp .now{background:linear-gradient(270deg,var(--c),var(--c2))}
 .sta .now{background:#ffd34d}.sta .cap{left:auto;right:0;background:repeating-linear-gradient(45deg,#4a1420,#4a1420 3px,#200a12 3px,#200a12 6px)}.fbar.f1 .sta .cap{right:auto;left:0}
 .fbar.low .hp{animation:pulse .7s infinite alternate}.fbar.tired .sta .now{background:#ff7a30}
 @keyframes pulse{from{border-color:rgba(255,255,255,.2)}to{border-color:#ff4d5e;box-shadow:0 0 12px #ff4d5e}}
