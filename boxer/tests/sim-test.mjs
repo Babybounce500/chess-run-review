@@ -1,6 +1,7 @@
 // Kampflogik ohne Browser:  node tests/sim-test.mjs
 import { sim, windOf, totals } from '../src/sim.js';
 import { PUNCH, FIGHT, MATCH, DOWN, RING } from '../src/config.js';
+import { applyFight, tierOf } from '../src/rank.js';
 let pass = 0, fail = 0;
 const ok = (n, c, x) => { if (c) { pass++; console.log('  ok   ' + n); } else { fail++; console.log('  FAIL ' + n + (x !== undefined ? '  -> ' + JSON.stringify(x) : '')); } };
 const DT = 1 / 60, N = () => sim.cleanInput({});
@@ -141,5 +142,37 @@ ok('Trefferquote glaubwürdig (15 bis 70 %)', same.acc > 0.15 && same.acc < 0.7,
 ok('Es gibt Niederschläge, aber nicht nur', same.ko >= 2 && same.ko <= 34, same.ko);
 const d1 = bout('hard', 'easy', 5), d2 = bout('hard', 'easy', 5);
 ok('Gleicher Startwert: gleicher Kampf', JSON.stringify(sim.pack(d1)) === JSON.stringify(sim.pack(d2)));
+console.log('Training');
+{
+  const q = scene(1.2); q.drill = { mode: 'free', k: 'jab' }; q.f[1].hp = 12; run(q, 0.5, (x, t) => inp({ cross: t < 0.02 }));
+  ok('Im Training geht niemand zu Boden', q.phase === 'fight' && q.f[1].hp >= 12, [q.phase, q.f[1].hp]);
+  run(q, 8); ok('Lebenspunkte erholen sich, die Uhr steht', q.f[1].hp === 100 && q.clock === MATCH.roundTime);
+  run(q, 200, N, (x) => sim.cleanInput(sim.cpu(x, 1, 'train', DT))); ok('Kein Rundenende, Partner im freien Training harmlos', q.phase === 'fight' && q.f[0].hp === 100 && q.f[1].stats.thrown === 0);
+  for (const k of ['jab', 'cross', 'hook', 'upper']) {
+    const d = sim.create(5); d.phase = 'fight'; d.drill = { mode: 'parry', k };
+    run(d, 20, N, (x) => sim.cleanInput(sim.cpu(x, 1, 'train', DT)));
+    ok('Übungspartner schlägt regelmäßig ' + PUNCH[k].name + ' in Reichweite', d.f[1].stats.thrown >= 6 && d.f[1].stats.thrown <= 14 && d.f[0].stats.thrown === 0 && d.f[1].stats.landed >= d.f[1].stats.thrown - 1, [d.f[1].stats.thrown, d.f[1].stats.landed]);
+  }
+  const p = scene(1.2); run(p, 0.5, (x, t) => inp({ jab: t < 0.02 }), (x, t) => inp({ block: t > 0.08 }));
+  const e = p.events.find((v) => v.type === 'parry'); ok('Parade meldet, wie früh gedrückt wurde', !!e && e.gt >= 0 && e.gt <= 150, e);
+}
+console.log('Karriere');
+{
+  const vs = (a, b, n = 120) => { let w = 0; for (let i = 1; i <= n; i++) { const q = i % 2 ? bout(a, b, i * 31) : bout(b, a, i * 31), mine = i % 2 ? 0 : 1; w += q.win === mine ? 1 : q.win < 0 ? 0.5 : 0; } return w / n; };
+  const ladder = ['k1', 'k2', 'k3', 'k4', 'k5'].map((k) => +vs(k, 'normal').toFixed(2)); console.log('    gegen den normalen Computer: ' + ladder.join(' · '));
+  ok('Der erste Gegner ist der leichteste, der Champion der stärkste', ladder.every((v, i) => i === 0 || v > ladder[0]) && ladder.every((v, i) => i === 4 || v < ladder[4]), ladder);
+  ok('Die Mitte liegt dazwischen', ladder[1] < ladder[2] + 0.02 && Math.min(ladder[2], ladder[3]) > ladder[0] + 0.1, ladder);
+}
+console.log('Rang');
+{
+  let r = applyFight(0, 'normal', 'win', false); ok('Sieg bringt Punkte, K. o. mehr', r.gain === 25 && applyFight(0, 'normal', 'win', true).gain === 30);
+  ok('Niederlage kostet, nie unter null', applyFight(100, 'hard', 'loss').points === 88 && applyFight(5, 'hard', 'loss').points === 0);
+  ok('Stufen von Bronze bis Champion', tierOf(0).name === 'Bronze' && tierOf(100).name === 'Silber' && tierOf(999).name === 'Diamant' && tierOf(1000).name === 'Champion' && tierOf(1000).next === null);
+  ok('Aufstieg wird gemeldet', applyFight(90, 'normal', 'win').up === 1 && applyFight(105, 'normal', 'loss').up === -1);
+  r = applyFight(245, 'easy', 'win', true); ok('An leichten Gegnern endet das Sammeln', r.points === 250 && r.capped && applyFight(600, 'easy', 'win').gain === 0);
+  ok('Starke Gegner zählen immer', applyFight(1200, 'k5', 'win').gain > 0 && applyFight(1200, 'online', 'win').gain > 0);
+  ok('Training und Unbekanntes zählen nicht', applyFight(50, 'train', 'win').points === 50);
+}
+
 console.log(`\n${pass} bestanden, ${fail} fehlgeschlagen`);
 process.exit(fail ? 1 : 0);

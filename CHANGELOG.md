@@ -1,5 +1,8 @@
 # Änderungsprotokoll
 
+## 2026-11-27 (Shadow Boxer, Phase 4)
+- Karriere mit fünf Gegnern bis zum Titel, Rangstufen von Bronze bis Champion, Training mit sichtbaren Zeitfenstern, schnellste Reaktion und Höhepunkt-Wiederholung nach dem Kampf.
+
 ## 2026-11-27 (Shadow Boxer, Phase 3)
 - Online-Duell per Einladungslink: gemeinsamer Start, Serie bis zwei Siege, Revanche, Chat, Ping-Anzeige. Ausgleich für den Gastgeber, langsamere Schläge online, faires Aufstehen trotz Verzögerung.
 

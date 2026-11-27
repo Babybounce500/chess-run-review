@@ -190,3 +190,32 @@ body.has-touch #ticker{bottom:auto;top:calc(190px + var(--safe-t));font-size:.82
 @media (orientation:landscape) and (max-height:520px){#panel{bottom:6px;max-height:calc(100dvh - 12px);display:grid;grid-template-columns:1fr 1fr;gap:0 14px;width:min(820px,calc(100vw - 16px));align-items:start}#panel[hidden]{display:none}#panel h3{grid-column:1/-1}#panel.decision{display:block;width:min(520px,calc(100vw - 16px))}#panel.decision[hidden]{display:none}#panel .note{grid-column:1/-1}#panel table{font-size:.74rem}#panel td,#panel th{padding:1px 3px}.cards{margin-top:0;border-top:0}#tale{bottom:8px}#tale table{font-size:.74rem}#tale td,#tale th{padding:0 3px}#tale h3{margin-bottom:2px}#btnSkipShow{bottom:auto;top:calc(8px + var(--safe-t));min-height:40px}#lower{bottom:calc(12px + var(--safe-b))}body.has-touch #ticker{top:calc(104px + var(--safe-t))}body.broadcast #hud .tools{visibility:hidden}}
 @media (prefers-reduced-motion:reduce){#lower,#replay i,.cards tr.shown,#ticker.in{animation:none}}
 #lower[hidden],#tale[hidden],#panel[hidden],#replay[hidden],#ticker[hidden],#btnSkipShow[hidden]{display:none!important}
+
+/* ===== Phase 4: Karriere, Rang, Training ===== */
+#rankBadge{margin:-4px 0 2px;padding:5px 10px 8px;border-radius:10px;font-weight:800;font-size:.85rem;text-align:center;background:linear-gradient(90deg,#ffd34d var(--share,0%),#323a78 var(--share,0%)) bottom/100% 4px no-repeat,rgba(255,255,255,.05)}
+.row.modes button{flex:1}
+#career .card{width:min(520px,100%);max-height:calc(100dvh - 24px);overflow:auto}
+#careerList{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+#careerList li{display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.04)}
+#careerList li.open{border-color:#ffd34d}#careerList li.locked{opacity:.55}
+#careerList li div{flex:1;min-width:0;display:flex;flex-direction:column;text-align:left}
+#careerList li b{font-style:italic;text-transform:uppercase}#careerList li span{font-size:.78rem;color:#ffd34d}#careerList li small{font-size:.74rem;color:#aab2dd}
+#careerList li button{flex:none;width:auto;min-width:104px;margin:0;padding:8px 10px;font-size:.85rem}
+#rankLine{white-space:pre-line;font-weight:800;color:#ffd34d;margin:4px 0;font-size:.9rem}
+body.highlight #end{visibility:hidden}
+body.highlight #hud,body.highlight #bars{visibility:hidden}
+#train{position:fixed;z-index:9;left:50%;bottom:calc(8px + var(--safe-b));transform:translateX(-50%);width:min(440px,calc(100vw - 20px));padding:8px 10px;border-radius:14px;background:rgba(8,10,28,.9);border:1px solid #323a78;text-align:center}
+#train .row{display:flex;gap:5px;justify-content:center;flex-wrap:wrap}
+#train button{flex:1 1 0;width:auto;min-width:0;min-height:36px;margin:0;padding:4px 4px;font-size:.76rem;background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:9px}
+#train button[aria-pressed=true]{background:#ffd34d;color:#101228}
+#train #trainPunch,#train #trainSlow{border-color:#ffd34d}
+#train button[hidden]{display:none}
+#trainBar{position:relative;height:14px;margin-top:8px;border-radius:7px;background:#1b1f4a;overflow:hidden}
+#trainBar[hidden],#trainCounter[hidden]{display:none}
+#trainBar i{position:absolute;top:0;bottom:0}#trainBar .zone{background:#2ee59d}#trainBar .mark{width:4px;margin-left:-2px;background:#fff;box-shadow:0 0 8px #fff}#trainBar .press{width:4px;margin-left:-2px;background:#ffd34d}#trainBar .press[hidden]{display:none}
+#trainCounter{position:relative;height:16px;margin-top:5px;border-radius:8px;background:#1b1f4a;overflow:hidden}#trainCounter i{position:absolute;left:0;top:0;bottom:0;background:#ff8a30}#trainCounter span{position:relative;font-size:.68rem;font-weight:800;line-height:16px;display:block}
+#trainMsg{margin:5px 0 0;font-weight:800;font-size:.82rem;min-height:1.2em}#trainMsg.good{color:#2ee59d}#trainMsg.warn{color:#ffd34d}#trainMsg.bad{color:#ff6a7a}
+#trainStats{margin:2px 0 0;font-size:.7rem;color:#aab2dd;font-variant-numeric:tabular-nums}
+body.has-touch #train{bottom:calc(212px + var(--safe-b));padding:5px 8px}body.has-touch #train button{min-height:32px}body.has-touch #trainMsg{margin-top:3px;font-size:.74rem}
+@media (max-height:700px) and (orientation:portrait){body.has-touch #train{bottom:calc(196px + var(--safe-b))}body.has-touch #train button{min-height:28px;font-size:.66rem}body.has-touch #trainStats{display:none}body.has-touch #trainBar{margin-top:4px;height:11px}body.has-touch #trainCounter{margin-top:3px;height:12px}body.has-touch #trainCounter span{line-height:12px;font-size:.6rem}body.has-touch #trainMsg{font-size:.66rem;line-height:1.2}}
+@media (orientation:landscape) and (max-height:520px){body.has-touch #train{bottom:calc(6px + var(--safe-b));width:min(360px,calc(100vw - 470px));min-width:250px;padding:5px 7px}body.has-touch #train button{min-height:30px;font-size:.68rem}body.has-touch #trainStats{display:none}body.has-touch #trainMsg{font-size:.72rem}}

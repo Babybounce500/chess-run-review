@@ -76,7 +76,7 @@ function land(s, who) {
   const rightHeight = !!d.low === !!act.body;
   if (guarding && rightHeight && d.gt <= FIGHT.parryWindow && P.line !== 'upper') {
     a.stun = FIGHT.parryStun; a.act.miss = 1; a.combo = 0; d.counter = FIGHT.counterWindow + 0.2; d.stats.parries++;
-    emit(s, 'parry', { side: foe, k: act.k });
+    emit(s, 'parry', { side: foe, k: act.k, gt: Math.round(d.gt * 1000) });
     return;
   }
   if (guarding && !(P.line === 'upper' && !act.body && !rightHeight)) {
@@ -84,7 +84,7 @@ function land(s, who) {
     const through = dmg * share * (P.line === 'upper' ? 1.6 : 1);
     d.st = Math.max(0, d.st - dmg * FIGHT.guardCost); d.rest = FIGHT.regenDelay; d.hp = Math.max(1, d.hp - through * 0.6);
     if (d.st <= 0) { d.stun = 0.5; d.guard = 0; emit(s, 'break', { side: foe }); }
-    a.combo = 0; emit(s, 'block', { side: foe, k: act.k, body: act.body });
+    a.combo = 0; emit(s, 'block', { side: foe, k: act.k, body: act.body, gt: Math.round(Math.min(d.gt, 9) * 1000) });
     return;
   }
   // Sauberer Treffer
@@ -101,7 +101,8 @@ function land(s, who) {
   a.stats.landed++; a.round.landed++; a.stats.damage += dmg; a.round.damage += dmg; if (act.k !== 'jab') a.stats.power++;
   emit(s, 'hit', { side: who, k: act.k, body: act.body, p: Math.round(dmg * 10) / 10, counter: counter ? 1 : 0, combo: a.combo, hand: act.hand });
   const chin = act.body ? BODY.chin : 1;
-  if (d.hp <= 0 || (d.hp < FIGHT.rockedHp * chin && dmg >= FIGHT.downHit)) knockdown(s, foe);
+  if (s.drill) d.hp = Math.max(25, d.hp);
+  else if (d.hp <= 0 || (d.hp < FIGHT.rockedHp * chin && dmg >= FIGHT.downHit)) knockdown(s, foe);
 }
 
 function knockdown(s, who) {
@@ -190,6 +191,7 @@ function step(s, inputs, dt) {
   if (s.phase === 'down') { for (const p of s.f) { p.hurt = Math.max(0, p.hurt - dt); p.lean = approach(p.lean, 0, 4 * dt); p.duck = approach(p.duck, 0, 4 * dt); } stepDown(s, inputs, dt); return remember(); }
 
   s.pt += dt; s.clock = Math.max(0, s.clock - dt);
+  if (s.drill) { s.clock = MATCH.roundTime; for (const p of s.f) if (p.hurt <= 0) { p.hp = Math.min(FIGHT.hp, p.hp + 30 * dt); p.max = FIGHT.stamina; } s.f[1].st = s.f[1].max; }
   // 1  Haltung, Beine, Deckung
   let move = 0;
   for (let i = 0; i < 2; i++) {
@@ -234,6 +236,7 @@ function step(s, inputs, dt) {
 /* ---------- Computergegner ---------- */
 // Sieht nur, was auch ein Mensch sieht, und erst nach seiner Reaktionszeit.
 function cpu(s, side, level, dt) {
+  if (level === 'train') return dummy(s, side, dt);
   const L = CPU[level] || CPU.normal, me = s.f[side], foe = s.f[1 - side];
   const b = s.bot[side] || (s.bot[side] = { rng: (s.rng ^ (side + 1) * 7919) % 2147483646 + 1, def: null, see: 0, next: 0.8, plan: [], press: 0, hold: 0, getupAt: -1, seen: -1 });
   const out = { x: 0, y: 0, block: false, duck: false, body: false, side: 1 };
@@ -259,14 +262,14 @@ function cpu(s, side, level, dt) {
     const k = foe.act.k, body = foe.act.body, line = PUNCH[k].line;
     if (!b.def.smart) { out.block = true; out.body = b.def.roll < 0.3; }
     else if (body) { out.block = true; out.body = true; }
-    else if (line === 'hook') { if (b.def.roll < 0.55) out.duck = true; else out.block = true; }
+    else if (line === 'hook') { if (b.def.roll < (L.duck ?? 0.55)) out.duck = true; else out.block = true; }
     else if (line === 'upper') { if (b.def.roll < 0.7) out.x = b.def.side; else out.block = true; }
-    else { if (b.def.roll < 0.4) out.x = b.def.side; else out.block = true; }
+    else { if (b.def.roll < (L.slip ?? 0.4)) out.x = b.def.side; else out.block = true; }
     return out;
   }
   // Beine: Arbeitsabstand, bei Müdigkeit oder angeschlagen Abstand
   const worn = me.st < L.keep || me.hp < 22;
-  const want = worn ? 2.0 : 1.28 + (me.hp < foe.hp ? 0.12 : 0);
+  const want = worn ? 2.0 : (L.want ?? 1.28) + (me.hp < foe.hp ? 0.12 : 0);
   out.y = s.gap > want + 0.1 ? -1 : s.gap < want - 0.2 ? 1 : 0;
   // Konter
   if (me.counter > 0 && !me.act && R() < L.counter * dt * 9) b.plan = [s.gap < 1.3 ? 'hook' : 'cross'];
@@ -274,10 +277,10 @@ function cpu(s, side, level, dt) {
   if (!b.plan.length && b.next <= 0 && !worn) {
     b.next = (0.35 + R() * 1.3) / L.rate;
     const open = foe.stun > 0 || (foe.act && foe.act.done);
-    const pool = s.gap <= PUNCH.upper.range ? ['jab', 'hook', 'upper', 'hook', 'cross'] : s.gap <= PUNCH.hook.range ? ['jab', 'cross', 'hook', 'jab'] : ['jab', 'jab', 'cross'];
+    const pool = s.gap <= PUNCH.upper.range ? L.near || ['jab', 'hook', 'upper', 'hook', 'cross'] : s.gap <= PUNCH.hook.range ? L.mid || ['jab', 'cross', 'hook', 'jab'] : L.far || ['jab', 'jab', 'cross'];
     const first = open ? pool[pool.length - 2] : pool[Math.floor(R() * pool.length)];
     b.plan = [first]; if (R() < L.combo) b.plan.push(first === 'jab' ? 'cross' : 'jab'); if (R() < L.combo * 0.5) b.plan.push('hook');
-    b.bodyPlan = foe.guard && !foe.low && R() < L.smart ? 1 : R() < 0.18 ? 1 : 0;
+    b.bodyPlan = foe.guard && !foe.low && R() < L.smart ? 1 : R() < (L.body ?? 0.18) ? 1 : 0;
   }
   if (b.plan.length) {
     const k = b.plan[0];
@@ -286,7 +289,23 @@ function cpu(s, side, level, dt) {
     return out;
   }
   // Ruhephase: Deckung, wenn der Gegner in Reichweite ist
-  if (s.gap < 1.5 && R() < L.guard * 0.5) out.block = !!me.prev.block || R() < dt * 2.5;
+  if (s.gap < 1.5 && R() < L.guard * 0.5 * (L.idle ?? 1)) out.block = !!me.prev.block || R() < dt * 2.5 * (L.idle ?? 1);
+  return out;
+}
+
+/* ---------- Trainingspartner ---------- */
+// Wehrt sich nicht. In den Übungen kommt er in Reichweite und schlägt in festem Abstand den gewählten Schlag.
+function dummy(s, side, dt) {
+  const out = { x: 0, y: 0, block: false, duck: false, body: false, side: 1 };
+  const me = s.f[side], b = s.bot[side] || (s.bot[side] = { rng: (s.rng ^ 99991) % 2147483646 + 1, wait: 1.2, k: null });
+  const drill = s.drill || { mode: 'free', k: 'jab' };
+  if (s.phase !== 'fight') return out;
+  if (drill.mode === 'free') { b.k = null; b.wait = 1.2; return out; }
+  if (!b.k || (drill.k !== 'mix' && b.k !== drill.k)) b.k = drill.k === 'mix' ? TYPES[Math.floor(rnd(b) * TYPES.length)] : drill.k;
+  const want = PUNCH[b.k].range - 0.14;
+  out.y = s.gap > want + 0.06 ? -1 : s.gap < want - 0.2 ? 1 : 0;
+  b.wait -= dt;
+  if (b.wait <= 0 && !me.act && me.stun <= 0 && s.gap <= PUNCH[b.k].range && !me.prev[b.k]) { out[b.k] = true; out.side = -1; b.wait = 1.7 + rnd(b) * 0.9; b.k = null; }
   return out;
 }
 

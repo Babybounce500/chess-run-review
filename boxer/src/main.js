@@ -11,6 +11,10 @@ import { createHud } from './hud.js';
 import { SOUNDS } from './sounds.js';
 import { createShow, RIVALS } from './show.js';
 import { createOnline, NET } from './online.js';
+import { createCareer, byKey } from './career.js';
+import { createTraining } from './training.js';
+import { createReaction } from './reaction.js';
+import { applyFight, tierOf, readPoints, rankText } from './rank.js';
 
 const qs = new URLSearchParams(location.search);
 const SPEED = Math.min(10, Math.max(0.1, Number(qs.get('speed')) || 1));          // nur für Tests
@@ -42,11 +46,15 @@ const shell = createShell({
   help: `<p><b>Handy:</b> links der Stick (zur Seite = ausweichen, hoch und runter = Abstand). Rechts auf freier Fläche schlagen: <b>tippen</b> Jab, <b>hoch</b> Cross, <b>zur Seite</b> Haken, <b>runter</b> Uppercut. DECKUNG, DUCKEN und KÖRPER halten.</p>
   <p><b>Tastatur:</b> WASD, Leertaste Deckung, Q ducken, Shift Körper, J Jab, K Cross, L Haken, E Uppercut, V Kamera.</p>
   <p>Die große Zahl oben zählt die Niederschläge.</p>
+  <p><b>Karriere:</b> fünf Gegner mit eigenem Stil bis zum Titel. <b>Training:</b> die Leiste zeigt, wann du für eine Parade drücken musst. <b>Rang:</b> Kämpfe bringen Punkte von Bronze bis Champion, gespeichert nur auf diesem Gerät.</p>
   <p><b>Online:</b> beide haben dieselben Werte. Alle Schläge sind etwas langsamer, und der Gastgeber bekommt so viel Verzögerung, wie der Gast durch die Leitung verliert (oben rechts angezeigt). Serie bis zwei Siege.</p>
   <p><b>So gewinnst du:</b> Ausweichen und sofort kontern macht viel Schaden. Deckung im letzten Moment ist eine Parade. Wildes Schlagen macht müde. Seitschritt hilft gegen gerade Schläge, Ducken gegen Haken, der Uppercut bestraft das Ducken.</p>`,
-  onSolo: ({ seed, level }) => { begin(); rt.solo(seed, level); },
+  onSolo: ({ seed, level }) => {
+    begin(); rt.solo(seed, level);
+    if (level === 'train') { const s = rt.state(); s.phase = 'fight'; s.gap = 1.4; training.start(s); shell.banner('TRAINING', 'role', 1200); }
+  },
   onOnline: ({ role, seed }) => { online.reset(); begin(); rt.online(role, seed); rt.state().pace = NET.pace; },
-  onMenu: () => { rt.stop(); show.stop(); online.stop(); view.reset(); }, onLost: () => { rt.stop(); show.stop(); online.stop(); }
+  onMenu: () => { rt.stop(); show.stop(); online.stop(); training.stop(); view.reset(); shell.state.level = shell.store.get('level', 'normal'); rankBadge(); }, onLost: () => { rt.stop(); show.stop(); online.stop(); training.stop(); }
 });
 const online = createOnline({ shell, testLag: qs.has('test') ? Math.min(500, Number(qs.get('netlag')) || 0) : 0 });
 const show = createShow({ view, audio, shell, onSkip: () => { told = false; } });
@@ -57,14 +65,16 @@ function begin() {
   view.reset(); queue.length = 0; slow = 0; tap = false; layout();
   // der Gegner bekommt Namen und Gesicht
   const level = shell.state.level, names = shell.state.names;
-  if (shell.state.mode === 'solo') { names[1] = (RIVALS[level] || RIVALS.normal).name; document.getElementById('name1').textContent = names[1]; }
+  if (shell.state.mode === 'solo') { names[1] = level === 'train' ? 'Partner' : (RIVALS[level] || RIVALS.normal).name; document.getElementById('name1').textContent = names[1]; }
   const record = (key) => { try { const r = JSON.parse(shell.store.get(key, '')); return { w: r.w || 0, l: r.l || 0 }; } catch (e) { return { w: 0, l: 0 }; } };
   let w = 0, l = 0, duel = null;
   if (shell.state.mode === 'online') {                    // Bilanz gegeneinander, aus beiden Blickwinkeln
     const me = shell.state.me, r = record('friend_' + names[1 - me].toLowerCase());
     duel = []; duel[me] = r.w + ' – ' + r.l; duel[1 - me] = r.l + ' – ' + r.w;
-  } else for (const k of ['easy', 'normal', 'hard']) { const r = record('cpu_' + k); w += r.w; l += r.l; }
+  } else for (const k of ['easy', 'normal', 'hard', 'k1', 'k2', 'k3', 'k4', 'k5']) { const r = record('cpu_' + k); w += r.w; l += r.l; }
   show.reset(level, names, w + ' – ' + l, duel); document.getElementById('fightCard').textContent = ''; carded = false; pressAt = 0; wasBlock = false;
+  training.stop(); reaction.reset(); career.close(); nextKey = null; for (const id of ['rankLine', 'btnNext', 'btnHigh']) document.getElementById(id).hidden = true;
+  if (level === 'train' && shell.state.mode === 'solo') show.stop();
 }
 let pressAt = 0, wasBlock = false;
 
@@ -81,7 +91,9 @@ function readInput() {
 
 function onEvent(e, s) {
   const me = shell.state.me, solo = rt.mode() === 'solo';
-  view.event(e, s); show.event(e, s);
+  view.event(e, s);
+  if (training.active()) training.event(e, s);
+  else { show.event(e, s); if ((e.type === 'evade' || e.type === 'parry') && e.side === me) reaction.success(); }
   if (e.type === 'swing') audio.play('whoosh');
   else if (e.type === 'hit') {
     audio.play(e.body ? 'bodyshot' : 'thud', e.p);
@@ -104,6 +116,11 @@ function onEvent(e, s) {
 }
 rt = createRealtime({ shell: online.link, sim, readInput, onEvent, delay: NET.delay, sendEvery: NET.sendEvery });
 
+const reaction = createReaction();
+const training = createTraining({ reaction });
+const career = createCareer({ store: shell.store, onFight: startFight });
+// Kampf gegen einen bestimmten Gegner oder Training: Stufe setzen und den Startknopf des Baukastens benutzen
+function startFight(level, button = 'btnSolo') { shell.state.level = level; document.getElementById(button).click(); }
 const fightCard = document.createElement('div'); fightCard.id = 'fightCard'; document.getElementById('endScore').after(fightCard);
 let carded = false;
 // Ergebnistext: Art des Sieges und Punktzettel
@@ -111,7 +128,8 @@ function verdict(s) {
   const me = shell.state.me, names = shell.state.names, st = s.f[me].stats;
   const how = s.how === 'ko' ? 'K. o. in Runde ' + s.round : s.how === 'tko' ? 'Technischer K. o. in Runde ' + s.round : 'Punktentscheidung (' + s.how + ')';
   const cards = s.how === 'ko' || s.how === 'tko' ? '' : '\nRichter: ' + totals(s).map((c) => c[me] + ':' + c[1 - me]).join(' · ');
-  const series = shell.state.mode === 'online' ? '\n' + online.seriesText(names) : '';
+  const quick = reaction.best() === null ? '' : '\nSchnellste Reaktion: ' + reaction.best() + ' ms';
+  const series = quick + (shell.state.mode === 'online' ? '\n' + online.seriesText(names) : '');
   return how + cards + '\nDeine Treffer: ' + st.landed + ' von ' + st.thrown + ' · Konter: ' + st.counters + ' · Paraden: ' + st.parries + series;
 }
 
@@ -133,7 +151,33 @@ showBtn.onclick = () => { show.setEnabled(!show.enabled()); try { localStorage.s
 modeBtn.after(showBtn); showLabel();
 document.getElementById('btnSkipShow').onclick = () => show.skip();
 // Enter oder Leertaste überspringen Einmarsch und Wiederholung
-addEventListener('keydown', (e) => { if ((e.code === 'Enter' || e.code === 'Space') && !e.repeat && !/INPUT|TEXTAREA|BUTTON/.test(e.target.tagName) && (show.info().walk !== null || show.info().replay) && shell.state.screen === 'play') { e.preventDefault(); show.skip(); } });
+addEventListener('keydown', (e) => { if ((e.code === 'Enter' || e.code === 'Space') && !e.repeat && !/INPUT|TEXTAREA|BUTTON/.test(e.target.tagName) && (show.info().walk !== null || show.info().replay) && (shell.state.screen === 'play' || show.info().replay?.kind === 'highlight')) { e.preventDefault(); show.skip(); } });
+// Rang, Karriere und Training im Menü; auf dem Abschlussbild Rangzeile, nächster Gegner und Höhepunkt
+const badge = document.createElement('p'); badge.id = 'rankBadge'; document.getElementById('tagline').after(badge);
+function rankBadge() { const p = readPoints(shell.store), t = tierOf(p); badge.textContent = t.icon + ' ' + t.name + ' · ' + p + ' Punkte' + (career.progress() >= 5 ? ' · Gürtelträger' : ''); badge.style.setProperty('--share', Math.round(t.share * 100) + '%'); }
+const modes = document.createElement('div'); modes.className = 'row modes';
+for (const [id, label, fn] of [['btnCareer', '🏆 Karriere', () => career.open()], ['btnTrain', '🎯 Training', () => startFight('train')]]) { const b = document.createElement('button'); b.type = 'button'; b.id = id; b.className = 'ghost'; b.textContent = label; b.onclick = () => { audio.unlock(); fn(); }; modes.appendChild(b); }
+document.getElementById('btnSolo').after(modes);
+const rankLine = document.createElement('p'); rankLine.id = 'rankLine'; rankLine.hidden = true; document.getElementById('endTitle').after(rankLine);
+let nextKey = null;
+for (const [id, label, cls, fn] of [['btnHigh', '▶ Höhepunkt ansehen', 'ghost', () => show.highlight()], ['btnNext', 'Nächster Gegner ▸', 'primary', () => { if (nextKey) startFight(nextKey, 'btnAgain'); }]]) { const b = document.createElement('button'); b.type = 'button'; b.id = id; b.className = cls; b.textContent = label; b.hidden = true; b.onclick = () => { b.blur(); fn(); }; document.getElementById('btnAgain').before(b); }
+// Kampf abrechnen: Rangpunkte, Karriere, Texte
+function settle(s) {
+  const me = shell.state.me, online_ = shell.state.mode === 'online', level = shell.state.level;
+  const result = s.win === me ? 'win' : s.win === 1 - me ? 'loss' : 'draw';
+  const r = applyFight(readPoints(shell.store), online_ ? 'online' : level, result, s.how === 'ko' || s.how === 'tko'); shell.store.set('rank', String(r.points));
+  let text = rankText(r);
+  const o = !online_ && byKey(level);
+  if (o) {
+    const c = career.result(level, result === 'win'); text += '\n' + c.text; nextKey = c.next ? c.next.key : null;
+    let rec = { w: 0, l: 0 }; try { rec = JSON.parse(shell.store.get('cpu_' + level, '')) || rec; } catch (e) { /* neu */ }
+    document.getElementById('endRecord').textContent = 'Bilanz gegen ' + o.name + ' · Siege: ' + rec.w + ' · Niederlagen: ' + rec.l;
+    if (c.champion) { audio.play('fanfare'); view.excite(1); }
+  }
+  rankLine.textContent = text; rankLine.hidden = false;
+  document.getElementById('btnNext').hidden = !nextKey;
+  document.getElementById('btnHigh').hidden = !show.hasHighlight();
+}
 function layout() { for (const k of TYPES) controls.showButton(k, !swipe); document.body.dataset.punch = swipe ? 'swipe' : 'buttons'; }
 layout();
 
@@ -142,7 +186,8 @@ addEventListener('resize', () => view.resize()); view.resize();
 function loop(now) {
   const real = Math.min(0.1, Math.max(0, (now - last) / 1000)); last = now; frames++;
   const playing = shell.state.screen === 'play';
-  const dir = show.update(shell.paused() ? 0 : real * Math.min(SPEED, 4), rt.state(), playing);
+  const dir = show.update(shell.paused() ? 0 : real * Math.min(SPEED, 4), rt.state(), playing && !training.active());
+  document.body.classList.toggle('highlight', show.info().replay?.kind === 'highlight');
   // während Einmarsch und Wiederholung stört keine Steuerung
   controls.setEnabled(playing && !dir.busy); pad.setEnabled(playing && swipe && !dir.busy);
   document.body.classList.toggle('broadcast', !!dir.busy);
@@ -152,11 +197,14 @@ function loop(now) {
   // der Gast rechnet nichts selbst, bei ihm läuft die Zeit immer weiter
   const s = rt.update(rt.mode() === 'guest' ? real : dir.hold || gate.waiting ? 0 : real * SPEED * rate);
   const live = rt.state();
-  if (live) {
+  training.update(s, shell.state.screen === 'play');
+  if (playing && !dir.busy && !training.active()) reaction.update(s, shell.state.me);
+  if (live && training.active()) shell.setSub('Training');
+  else if (live) {
     shell.setSub(live.phase === 'rest' ? 'Pause' : 'Runde ' + live.round + '/' + MATCH.rounds + ' · ' + Math.floor(Math.ceil(live.clock) / 60) + ':' + String(Math.ceil(live.clock) % 60).padStart(2, '0') + online.status());
     if (!dir.hold && !gate.waiting && live.phase === 'intro' && live.pt < 0.2 && playing && !told) { told = true; shell.banner(live.round === MATCH.rounds ? 'LETZTE RUNDE' : 'RUNDE ' + live.round, 'role', 1700); } else if (live.phase !== 'intro') told = false;
     if (shell.state.over) {
-      if (!carded) { carded = true; if (shell.state.mode === 'online') online.result(live.win); show.resultSheet(fightCard, live); }
+      if (!carded) { carded = true; if (shell.state.mode === 'online') online.result(live.win); show.resultSheet(fightCard, live); settle(live); }
       const e = document.getElementById('endScore'), t = verdict(live); if (e.textContent !== t) e.textContent = t;
     }
   }
@@ -166,11 +214,12 @@ function loop(now) {
   requestAnimationFrame(loop);
 }
 requestAnimationFrame(loop);
+rankBadge();
 shell.start();
 window.__game = {
   shell: () => shell.snapshot(), sim: () => rt.state(), controls: () => controls.read(), sounds: () => audio.log.slice(), net: () => shell.net,
-  view: () => Object.assign(view.info(), { frames, swipe }), show: () => show.info(), online: () => online.info(),
+  view: () => Object.assign(view.info(), { frames, swipe }), show: () => show.info(), online: () => online.info(), training: () => training.info(), reaction: () => reaction.best(),
   // nur für Tests: Zustand gezielt herstellen
-  set: (patch) => { const s = rt.state(); if (!s || (rt.mode() !== 'solo' && !(rt.mode() === 'host' && qs.has('test')))) return false; if (patch.gap) s.gap = patch.gap; if (patch.clock !== undefined) s.clock = patch.clock; if (patch.hp) patch.hp.forEach((v, i) => { if (v !== null) s.f[i].hp = v; }); if (patch.round) s.round = patch.round; return true; },
+  set: (patch) => { const s = rt.state(); if (!s || (rt.mode() !== 'solo' && !(rt.mode() === 'host' && qs.has('test')))) return false; if (patch.gap) s.gap = patch.gap; if (patch.clock !== undefined) s.clock = patch.clock; if (patch.hp) patch.hp.forEach((v, i) => { if (v !== null) s.f[i].hp = v; }); if (patch.round) s.round = patch.round; if (patch.win !== undefined) { s.phase = 'over'; s.pt = 0; s.win = patch.win; s.how = 'ko'; s.down = null; } return true; },
   ranges: () => Object.fromEntries(TYPES.map((k) => [k, PUNCH[k].range]))
 };

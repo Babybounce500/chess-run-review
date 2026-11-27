@@ -2,8 +2,10 @@
 // Liest den Kampf nur mit; angehalten wird er ausschließlich während des Einmarschs.
 import { sim, totals } from './sim.js';
 import { MATCH } from './config.js';
+import { OPPONENTS } from './career.js';
 
 export const RIVALS = {
+  ...Object.fromEntries(OPPONENTS.map((o) => [o.key, o])),
   easy:   { name: 'Rocco Brandt', nick: '„Der Neuling“',  height: 178, reach: 180, weight: 74, record: '4 – 3' },
   normal: { name: 'Viktor Sand',  nick: '„Sandsturm“',    height: 183, reach: 187, weight: 76, record: '17 – 4' },
   hard:   { name: 'Ilja Stahl',   nick: '„Der Amboss“',   height: 186, reach: 192, weight: 79, record: '29 – 1' }
@@ -38,7 +40,7 @@ export function createShow({ view, audio, shell, onSkip }) {
   const skip = el('<button id="btnSkipShow" type="button" hidden>Überspringen ▸▸</button>');
   document.body.append(lower, tale, replayUi, panel, ticker, skip);
 
-  let on = true, walk = null, frames = [], pending = [], best = null, ko = null, rep = null, start = null, panelKey = '', tickerT = 0, lastLine = 0, profiles = null, phase = '', round = 0;
+  let on = true, top = null, walk = null, frames = [], pending = [], best = null, ko = null, rep = null, start = null, panelKey = '', tickerT = 0, lastLine = 0, profiles = null, phase = '', round = 0;
   const show = (e, v) => { if (e.hidden === v) e.hidden = !v; };
   const hideAll = () => { for (const e of [lower, tale, replayUi, panel, ticker, skip]) e.hidden = true; panelKey = ''; };
 
@@ -92,6 +94,7 @@ export function createShow({ view, audio, shell, onSkip }) {
       if (clip.frames.length < 8) continue;
       if (!best || clip.score >= best.score) best = clip;
       if (clip.down) ko = clip;
+      if (!top || clip.score >= top.score) top = clip;            // bester Augenblick des ganzen Kampfs
     }
   }
   function playClip(clip, angles, kind) { rep = { clip, angles, n: 0, t: clip.frames[0].t, kind, hit: false }; view.resetPose(); show(replayUi, true); show(ticker, false); }
@@ -110,12 +113,15 @@ export function createShow({ view, audio, shell, onSkip }) {
     enabled: () => on, setEnabled(v) { on = !!v; if (!on) { walk = null; stopReplay(); hideAll(); } },
     // duel = Bilanzen beider Seiten beim Online-Kampf; sonst zählt der Computergegner
     reset(level, names, record, duel) {
-      hideAll(); stopReplay(); frames = []; pending = []; best = null; ko = null; start = null; phase = ''; round = 0; tickerT = 0;
+      hideAll(); stopReplay(); top = null; frames = []; pending = []; best = null; ko = null; start = null; phase = ''; round = 0; tickerT = 0;
       // online haben beide dieselben Werte
       profiles = duel ? duel.map((r) => Object.assign({}, HERO, { nick: '„Herausforderer“', record: r })) : [Object.assign({}, HERO, { record }), RIVALS[level] || RIVALS.normal];
       walk = on ? { t: 0, stage: -1, names } : null;
     },
-    stop() { walk = null; stopReplay(); hideAll(); frames = []; pending = []; },
+    stop() { walk = null; stopReplay(); hideAll(); top = null; frames = []; pending = []; },
+    hasHighlight: () => on && !!top,
+    // Höhepunkt vom Abschlussbild aus ansehen
+    highlight() { if (!on || !top) return false; playClip(top, [0, 1], 'highlight'); return true; },
     skip() { if (walk) { walk = null; for (const e of [lower, tale, skip]) e.hidden = true; view.resetPose(); if (onSkip) onSkip(); } else stopReplay(); },
     event(e, s) {
       if (e.type === 'hit') { if (e.counter) say('counter', e.id); else if (e.body && e.p > 6) say('body', e.id); else if (e.p >= 9 || e.id % 3 === 0) say(e.k, e.id); if (on && (e.p >= 8.5 || e.counter)) pending.push({ at: s.t, hit: Object.assign({}, e), score: e.p + (e.counter ? 5 : 0), down: false }); if (e.p >= 11 || e.counter) view.excite(0.45); }
@@ -128,6 +134,10 @@ export function createShow({ view, audio, shell, onSkip }) {
     // Je Bild. Rückgabe: hold = Kampf anhalten, view = abweichende Einstellung, busy = Anzeige und Steuerung ausblenden
     update(dt, s, playing) {
       if (tickerT > 0) { tickerT -= dt; if (tickerT <= 0) ticker.hidden = true; }
+      if (s && rep && rep.kind === 'highlight') {
+        const v = replayFrame(dt); show(skip, !!v); show(replayUi, !!v);
+        return { hold: false, view: v, busy: !!v };
+      }
       if (!s || !playing) {
         // im Pausenmenü und auf dem Abschlussbild liegt keine Einblendung darüber; beim Weiterspielen kommt sie wieder
         if (!s) hideAll(); else for (const e of [lower, tale, replayUi, panel, ticker, skip]) show(e, false);
