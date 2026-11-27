@@ -110,11 +110,12 @@ try {
   const m = await T.open({ width: 1024, height: 768 }, '?speed=8&nosw');
   await m.click('[data-level="hard"]'); await m.click('#btnSolo'); await started(m);
   ok('Ein Tor fällt und wird gezeigt', !!(await until(async () => { const s = await sim(m); return s && s.phase === 'goal'; }, 90000, 'tor')));
+  // sofort prüfen: das Tonprotokoll behält nur die letzten 60 Töne
+  ok('Töne: Tor', !!(await until(async () => (await sounds(m)).includes('goal'), 5000, 'torton')));
   await sleep(40); await shot(m, '04-goal-1024');
   ok('Partie endet mit Ergebnis', !!(await until(async () => (await shell(m)).screen === 'end', 150000, 'ende')), await shell(m));
   const end = await shell(m); await shot(m, '05-end-1024');
   ok('Ergebnis passt zum Spielstand', end.winner === -1 ? end.score[0] === end.score[1] : end.score[end.winner] > end.score[1 - end.winner], end);
-  ok('Töne: Tor', (await sounds(m)).includes('goal'));
   await m.click('#btnAgain'); ok('Noch einmal beginnt bei 0:0', !!(await until(async () => (await shell(m)).screen === 'play' && (await sim(m)).score.join() === '0,0' && (await sim(m)).time > 170, 15000, 'neu')));
   ok('Eingaben sind zurückgesetzt', (await inp(m)).k === 0 && (await inp(m)).rod >= 0);
   await m.click('#btnPause'); await m.click('#btnQuit'); ok('Ins Menü', (await shell(m)).screen === 'menu' && (await sim(m)) === null);
