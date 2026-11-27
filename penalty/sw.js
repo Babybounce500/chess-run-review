@@ -1,7 +1,7 @@
 /* Offline-Speicher. Netz zuerst, damit Updates sofort ankommen; ohne Netz (oder nach 4 s) die gespeicherte Fassung.
    VERSION und SHELL werden von tools/update-sw.mjs geschrieben. */
 const PREFIX = 'cage-penalty-';
-const VERSION = PREFIX + 'abad2d68ac';
+const VERSION = PREFIX + 'e8acec0377';
 const SHELL = ["./","index.html","style.css","manifest.webmanifest","icons/icon-192.png","icons/icon-512.png","vendor/three.module.js","src/audio.js","src/config.js","src/input.js","src/main.js","src/net.js","src/sim.js","src/view.js"];
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(VERSION).then((c) => c.addAll(SHELL.map((u) => new Request(u, { cache: 'reload' })))).then(() => self.skipWaiting()));

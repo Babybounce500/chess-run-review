@@ -1,6 +1,6 @@
 // Alle Töne werden im Browser erzeugt (keine Dateien).
 export function createAudio() {
-  let ctx = null, master = null, noise = null, crowd = null, crowdGain = null, on = true;
+  let ctx = null, master = null, noise = null, on = true;
   try { on = localStorage.getItem('penalty_sound') !== '0'; } catch (e) { /* ok */ }
   const log = [];
   function ready() {
@@ -11,9 +11,6 @@ export function createAudio() {
         master = ctx.createGain(); master.gain.value = 0.7; master.connect(ctx.destination);
         noise = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
         const d = noise.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
-        crowd = ctx.createBufferSource(); crowd.buffer = noise; crowd.loop = true;
-        const f = ctx.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 620; f.Q.value = 0.6;
-        crowdGain = ctx.createGain(); crowdGain.gain.value = 0.025; crowd.connect(f); f.connect(crowdGain); crowdGain.connect(master); crowd.start();
       }
       if (ctx.state === 'suspended') ctx.resume();
       return true;
@@ -36,7 +33,7 @@ export function createAudio() {
   };
   return {
     play(name, arg) { if (!SOUNDS[name] || !ready()) return; log.push(name); if (log.length > 60) log.shift(); try { SOUNDS[name](arg); } catch (e) { /* ohne Ton weiter */ } },
-    excite(level) { if (ctx && crowdGain) crowdGain.gain.setTargetAtTime(on ? 0.025 + level * 0.07 : 0, ctx.currentTime, 0.3); },
+    excite() { /* bewusst ohne Dauergeräusch: Töne gibt es nur bei Ereignissen */ },
     toggle() { on = !on; try { localStorage.setItem('penalty_sound', on ? '1' : '0'); } catch (e) { /* ok */ } if (ctx) master.gain.value = on ? 0.7 : 0; if (on) ready(); return on; },
     enabled: () => on, log, unlock: ready,
     vibrate(pattern) { if (on && navigator.vibrate) { try { navigator.vibrate(pattern); } catch (e) { /* ok */ } } }
