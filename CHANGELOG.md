@@ -1,5 +1,8 @@
 # Änderungsprotokoll
 
+## 2026-11-27 (Shadow Boxer, Phase 1)
+- Neu im Ordner `boxer/`: Boxkampf gegen den Computer mit vier Schlägen, Deckung, Parade, Ausweichen, Kontern, Ausdauer, Niederschlägen und drei Runden.
+
 ## 2026-11-27 (Überprüfung der Sportspiele)
 - Ein kurzer Verbindungsaussetzer beendet die Partie nicht mehr sofort; abbrechen und neu einladen ist sicher.
 - Kicker nimmt unsinnige Netzdaten nicht mehr an. Hinweis beim Gast, wenn der Gastgeber pausiert. App-Symbole ergänzt.
