@@ -394,13 +394,15 @@ function pack(s) {
   };
 }
 const PHASES = ['in', 'play', 'goal', 'end'];
-const finite = (a, n) => Array.isArray(a) && a.length === n && a.every((v) => typeof v === 'number' && Number.isFinite(v));
+// Netzdaten: nur Zahlen in sinnvollen Grenzen (auch 1e308 ist Unsinn und würde beim Weiterrechnen zu Unendlich)
+const finite = (a, n, max = 1e5) => Array.isArray(a) && a.length === n && a.every((v) => typeof v === 'number' && Math.abs(v) <= max);
+const EVENT_MAX = 12, cleanEvent = (e) => { const o = {}; for (const k of Object.keys(e).slice(0, EVENT_MAX)) { const v = e[k]; if ((typeof v === 'number' && Math.abs(v) <= 1e5) || typeof v === 'boolean' || (typeof v === 'string' && v.length <= 24) || v === null) o[k] = v; } return o; };
 function unpack(d) {
-  if (!d || typeof d !== 'object' || !finite([d.t, d.tm, d.wt, d.ei], 4) || !PHASES.includes(d.ph) || !finite(d.sc, 2) || !finite(d.b, 5) || !finite(d.c, 2)) return null;
+  if (!d || typeof d !== 'object' || !finite([d.t, d.tm, d.wt, d.ei], 4) || !PHASES.includes(d.ph) || !finite(d.sc, 2) || !finite(d.b, 5, 1000) || !finite(d.c, 2)) return null;
   if (!(d.win === null || d.win === 0 || d.win === 1 || d.win === -1)) return null;
   if (!d.sc.every((v) => Number.isInteger(v) && v >= 0 && v <= 99) || !d.c.every((v) => Number.isInteger(v) && v >= 0 && v <= 3)) return null;
   if (Math.abs(d.b[0]) > HL + 1 || Math.abs(d.b[1]) > HW + 0.5) return null;
-  if (!Array.isArray(d.r) || d.r.length !== RODS.length || !d.r.every((o, i) => finite(o, 5) && Math.abs(o[0]) <= RODS[i].range + 0.01 && Math.abs(o[2]) < 4)) return null;
+  if (!Array.isArray(d.r) || d.r.length !== RODS.length || !d.r.every((o, i) => finite(o, 5, 1000) && Math.abs(o[0]) <= RODS[i].range + 0.01 && Math.abs(o[2]) < 4)) return null;
   if (!(d.h === 0 || (finite(d.h, 2) && RODS[d.h[0]] && RODS[d.h[0]].fig[d.h[1]] !== undefined))) return null;
   if (!Array.isArray(d.ev) || d.ev.length > 12 || !d.ev.every((e) => e && typeof e.type === 'string' && Number.isInteger(e.id))) return null;
   return {
@@ -408,7 +410,7 @@ function unpack(d) {
     ball: { x: d.b[0], y: d.b[1], vx: d.b[2], vy: d.b[3], s: d.b[4] },
     rods: d.r.map((o) => ({ y: o[0], vy: o[1], a: o[2], w: o[3], m: o[4] })),
     hold: d.h ? { r: d.h[0], f: d.h[1] } : null, ctl: [{ rod: d.c[0] }, { rod: d.c[1] }],
-    events: d.ev.map((e) => Object.assign({}, e)), eventId: d.ei
+    events: d.ev.map(cleanEvent), eventId: d.ei
   };
 }
 function lerp(a, b, t) {

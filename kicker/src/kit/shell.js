@@ -65,7 +65,9 @@ export function createShell(cfg) {
 
   const audio = cfg.audio;
   const net = createNet({ game: cfg.id, ice: qs.get('ice') === 'none' ? [] : undefined });
-  let gameMsg = null, offer = null;
+  let gameMsg = null, offer = null, wobble = null;
+  const GRACE = Number(qs.get('grace')) || 8000;                          // so lange darf die Verbindung wackeln
+  const calm = () => { clearTimeout(wobble); wobble = null; };
 
   function show(screen) {
     S.screen = screen;
@@ -101,6 +103,7 @@ export function createShell(cfg) {
   }
   function endButtons() { $('btnAgain').textContent = S.mode !== 'online' ? 'Noch einmal' : S.rematchMine ? 'Warte auf Antwort …' : S.rematchPeer ? 'Revanche annehmen' : 'Revanche'; $('btnAgain').disabled = S.mode === 'online' && S.rematchMine; }
   function toMenu() {
+    calm();
     if (S.mode === 'online' && net.state() !== 'off') net.leave();
     S.mode = 'solo'; S.started = false; S.over = false; S.paused = false; S.chat = []; S.unread = 0; $('chat').hidden = true; $('conn').textContent = ''; banner('');
     if (location.hash) history.replaceState(null, '', location.pathname + location.search);
@@ -118,13 +121,17 @@ export function createShell(cfg) {
   }).on('state', (s) => {
     $('conn').textContent = { off: '', wait: 'wartet', connecting: 'verbinde …', open: 'verbunden', lost: 'unterbrochen', failed: 'fehlgeschlagen', left: 'Gegner weg' }[s] || '';
     $('conn').dataset.s = s; chatUi();
-    if (s === 'open') { hello(); toast('Verbunden'); }
+    if (s === 'open') { hello(); toast(wobble ? 'Verbindung wieder da' : 'Verbunden'); calm(); }
     if (S.mode !== 'online' || S.screen === 'lost') return;
-    if (s === 'left' || ((s === 'lost' || s === 'failed') && S.started)) { lost(s === 'left' ? S.names[1 - S.me] + ' hat das Spiel verlassen.' : 'Die Verbindung ist weg.'); }
+    if (s === 'left') lost(S.names[1 - S.me] + ' hat das Spiel verlassen.');
+    else if (s === 'failed' && S.started) lost('Die Verbindung ist weg.');
+    else if (s === 'lost' && S.started) {                                 // oft erholt sie sich (Funkloch, App gewechselt)
+      if (!wobble) { toast('Verbindung wackelt …'); wobble = setTimeout(() => { wobble = null; if (S.mode === 'online' && S.started && net.state() !== 'open') lost('Die Verbindung ist weg.'); }, GRACE); }
+    }
     else if (s === 'failed') $('lobbyErr').textContent = 'Verbindung fehlgeschlagen. In strengen Netzen klappt die Direktverbindung nicht. Neu versuchen oder anderes Netz.';
   });
   setInterval(() => { if (S.mode === 'online' && !S.started && net.state() === 'open') hello(); }, 1200);
-  function lost(text) { S.started = false; $('lostText').textContent = text; show('lost'); if (cfg.onLost) cfg.onLost(); }
+  function lost(text) { calm(); S.started = false; $('lostText').textContent = text; show('lost'); if (cfg.onLost) cfg.onLost(); }
 
   function readName() { S.name = cleanText($('nameIn').value, 16); store.set('name', S.name); }
   async function host() {

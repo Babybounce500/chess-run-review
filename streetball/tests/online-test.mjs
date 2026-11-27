@@ -55,7 +55,8 @@ try {
   }
   ok('Beim Gastgeber zählt der Anzeigewert, den der Gast beim Loslassen sah', charges.length && charges.every(([g, h]) => Math.abs(g - h) <= 0.09), charges);
   ok('Gast kann im Grünen treffen', perfect > 0 && scored, [perfect, scored, charges]);
-  ok('Beide sehen denselben Spielstand', !!(await until(async () => same(await sim(a), await sim(b)) && (await sim(b)).score[1] > 0, 5000, 'stand')) && same(await shell(a), await shell(b)), [(await shell(a)).score, (await shell(b)).score]);
+  // die Anzeige beim Gast folgt rund 0,1 s später, deshalb mit auf sie warten
+  ok('Beide sehen denselben Spielstand', !!(await until(async () => same(await sim(a), await sim(b)) && (await sim(b)).score[1] > 0 && same(await shell(a), await shell(b)), 5000, 'stand')), [(await shell(a)).score, (await shell(b)).score]);
   const heard = await b.evaluate(() => window.__game.sounds()); ok('Gast hört die Spieltöne', heard.includes('swoosh') && heard.includes('net'), heard);
 
   console.log('4  Verteidigung des Gasts und Angriff des Gastgebers');

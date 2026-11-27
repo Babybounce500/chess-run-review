@@ -80,7 +80,11 @@ export function createNet({ game, ice = ICE }) {
       return encode({ v: 1, g: game, sdp: p.localDescription.sdp });
     },
     send,
-    leave() { send({ t: 'leave' }); setTimeout(() => { close(); setState('off'); }, 150); },
+    leave() {
+      send({ t: 'leave' }); const d = dc, p = pc;
+      // Nur die alte Verbindung schließen: wer sofort neu einlädt, hat inzwischen eine andere
+      setTimeout(() => { if (dc === d && pc === p) { close(); setState('off'); } else { try { if (d) d.close(); } catch (e) { /* ok */ } try { if (p) p.close(); } catch (e) { /* ok */ } } }, 150);
+    },
     drop() { close(); setState('lost'); }                          // für Tests
   };
 }

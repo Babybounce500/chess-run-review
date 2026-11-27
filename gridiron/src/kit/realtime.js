@@ -19,13 +19,13 @@ export function emit(state, type, data) { state.eventId = (state.eventId || 0) +
 export function createRealtime({ shell, sim, readInput, onEvent }) {
   let mode = 'off', state = null, prev = null, level = 'normal', acc = 0, tick = 0, seen = 0, ended = false;
   let remote = null, remoteQueue = [], remoteAge = 0;                       // Gastgeber
-  let buffer = [], clock = null, sendT = 0, lastSent = '';                  // Gast
+  let buffer = [], clock = null, sendT = 0, lastSent = '', silent = 0;      // Gast
   const neutral = () => sim.cleanInput({});
   const copy = (s) => sim.unpack(JSON.parse(JSON.stringify(sim.pack(s))));
 
   function reset(m, seed, lv) {
     mode = m; level = lv || 'normal'; state = sim.create(seed >>> 0, { level }); prev = copy(state); acc = 0; tick = 0; seen = 0; ended = false;
-    remote = neutral(); remoteQueue = []; remoteAge = 0; buffer = []; clock = null; sendT = 0; lastSent = '';
+    remote = neutral(); remoteQueue = []; remoteAge = 0; buffer = []; clock = null; sendT = 0; lastSent = ''; silent = 0;
   }
   function events(s) { for (const e of s.events || []) if (e.id > seen) { seen = e.id; if (onEvent) onEvent(e, s); } }
   function finish(s) { const w = sim.winner(s); if (w === null || w === undefined || ended) return; ended = true; const sc = sim.score(s); shell.setScore(sc[0], sc[1]); setTimeout(() => { if (ended && shell.playing()) shell.end({ winner: w }); }, 1400); }
@@ -35,7 +35,7 @@ export function createRealtime({ shell, sim, readInput, onEvent }) {
     if (d.t === 's' && mode === 'guest' && Number.isInteger(d.n)) {
       if (buffer.length && d.n <= buffer[buffer.length - 1].n) return;
       const s = sim.unpack(d.s); if (!s) return;
-      buffer.push({ n: d.n, s }); if (buffer.length > 30) buffer.shift();
+      buffer.push({ n: d.n, s }); if (buffer.length > 30) buffer.shift(); silent = 0;
     }
   });
 
@@ -52,6 +52,9 @@ export function createRealtime({ shell, sim, readInput, onEvent }) {
         sendT += dt; const mine = sim.cleanInput(readInput()), key = JSON.stringify(mine);
         if (key !== lastSent || sendT >= 1 / 20) { shell.send({ t: 'i', in: mine }); lastSent = key; sendT = 0; }
         if (!buffer.length) return state;
+        // Kommt nichts mehr an (Gastgeber hat die App gewechselt), sagen wir das, statt stumm stehen zu bleiben
+        const w = sim.winner(buffer[buffer.length - 1].s);
+        if ((w === null || w === undefined) && (silent += dt) > 2) { silent = -1; shell.toast('Warte auf den Gastgeber …'); }
         const newest = (buffer[buffer.length - 1].n * STEP);
         if (clock === null || Math.abs(newest - DELAY - clock) > 0.4) clock = newest - DELAY;
         else clock += dt + (newest - DELAY - clock) * Math.min(1, dt * 2);           // sanft nachführen
@@ -67,7 +70,7 @@ export function createRealtime({ shell, sim, readInput, onEvent }) {
       while (acc >= STEP) {
         acc -= STEP;
         if (sim.winner(state) !== null && sim.winner(state) !== undefined) { acc = 0; break; }
-        prev = copy(state);
+        if (acc < STEP) prev = copy(state);                                     // nur der letzte Schritt eines Bilds braucht den Vorzustand
         const mine = sim.cleanInput(readInput());
         let other;
         if (mode === 'solo') other = sim.cleanInput(sim.cpu(state, 1, level, STEP));

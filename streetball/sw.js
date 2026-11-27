@@ -1,8 +1,8 @@
 /* Offline-Speicher. Netz zuerst, damit Updates sofort ankommen; ohne Netz (oder nach 4 s) die gespeicherte Fassung.
    VERSION und SHELL werden von tools/update-sw.mjs geschrieben. */
 const PREFIX = 'blacktop-';
-const VERSION = PREFIX + 'ad8e1911d9';
-const SHELL = ["./","icons/icon-192.png","icons/icon-512.png","index.html","manifest.webmanifest","src/config.js","src/court.js","src/cpu.js","src/feedback.js","src/figure.js","src/hud.js","src/kit/audio.js","src/kit/controls.js","src/kit/net.js","src/kit/realtime.js","src/kit/shell.js","src/main.js","src/math.js","src/sim.js","src/sounds.js","src/view.js","style.css","vendor/three.module.js"];
+const VERSION = PREFIX + '056da5f113';
+const SHELL = ["./","icons/icon-192.png","icons/icon-512.png","icons/icon-maskable.png","index.html","manifest.webmanifest","src/config.js","src/court.js","src/cpu.js","src/feedback.js","src/figure.js","src/hud.js","src/kit/audio.js","src/kit/controls.js","src/kit/net.js","src/kit/realtime.js","src/kit/shell.js","src/main.js","src/math.js","src/sim.js","src/sounds.js","src/view.js","style.css","vendor/three.module.js"];
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(VERSION).then((c) => c.addAll(SHELL.map((u) => new Request(u, { cache: 'reload' })))).then(() => self.skipWaiting()));
 });

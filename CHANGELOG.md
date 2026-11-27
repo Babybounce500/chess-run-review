@@ -1,5 +1,9 @@
 # Änderungsprotokoll
 
+## 2026-11-27 (Überprüfung der Sportspiele)
+- Ein kurzer Verbindungsaussetzer beendet die Partie nicht mehr sofort; abbrechen und neu einladen ist sicher.
+- Kicker nimmt unsinnige Netzdaten nicht mehr an. Hinweis beim Gast, wenn der Gastgeber pausiert. App-Symbole ergänzt.
+
 ## 2026-11-27 (Sportspiele)
 - Neu: **Neon Kicker** (`kicker/`), **Blacktop Hoops** (`streetball/`) und **Neon Gridiron** (`gridiron/`), jeweils gegen den Computer oder online gegen Freunde.
 

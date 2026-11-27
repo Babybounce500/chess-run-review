@@ -216,12 +216,19 @@ function onMsg(d) {
 }
 function startOnline(first) { G.online.started = true; net.send({ t: 'start', first }); beginOnline(first); }
 function beginOnline(first) { const o = G.online; o.k = 0; o.msgs = {}; o.mine = null; o.rematchMine = o.rematchPeer = false; o.started = true; startMatch(first); }
+let wobble = null;
+const calm = () => { clearTimeout(wobble); wobble = null; };
+const gone = (text) => { calm(); G.phase = 'idle'; input.setMode('none'); $('lostText').textContent = text; show('lost'); };
 net.on('msg', onMsg).on('state', (s) => {
   $('conn').textContent = { off: '', wait: 'wartet', connecting: 'verbinde …', open: 'verbunden', lost: 'unterbrochen', failed: 'fehlgeschlagen', left: 'Gegner weg' }[s] || '';
   $('conn').dataset.s = s; chatUi();
-  if (s === 'open') { net.send({ t: 'hello', name: G.name || (G.online.host ? 'Gastgeber' : 'Gast') }); toast('Verbunden'); }
+  if (s === 'open') { net.send({ t: 'hello', name: G.name || (G.online.host ? 'Gastgeber' : 'Gast') }); toast(wobble ? 'Verbindung wieder da' : 'Verbunden'); calm(); }
   if (G.mode !== 'online' || G.screen === 'lost') return;          // die erste Erklärung bleibt stehen
-  if (s === 'left' || ((s === 'lost' || s === 'failed') && G.online.started)) { G.phase = 'idle'; input.setMode('none'); $('lostText').textContent = s === 'left' ? G.names[1 - G.me] + ' hat das Spiel verlassen.' : 'Die Verbindung ist weg.'; show('lost'); }
+  if (s === 'left') gone(G.names[1 - G.me] + ' hat das Spiel verlassen.');
+  else if (s === 'failed' && G.online.started) gone('Die Verbindung ist weg.');
+  else if (s === 'lost' && G.online.started) {                            // oft erholt sie sich (Funkloch, App gewechselt)
+    if (!wobble) { toast('Verbindung wackelt …'); wobble = setTimeout(() => { wobble = null; if (G.mode === 'online' && G.online.started && net.state() !== 'open') gone('Die Verbindung ist weg.'); }, 8000); }
+  }
   else if (s === 'failed') $('lobbyErr').textContent = 'Verbindung fehlgeschlagen. In strengen Netzen klappt die Direktverbindung nicht. Neu versuchen oder anderes Netz.';
 });
 // hello kann verloren gehen, bevor der andere zuhört: bis zum Start wiederholen
@@ -248,6 +255,7 @@ function chatUi() {
 /* ---------- Menüs ---------- */
 function readName() { G.name = cleanText($('nameIn').value, 16); store.set('name', G.name); return G.name; }
 function toMenu() {
+  calm();
   if (G.mode === 'online' && net.state() !== 'off') net.leave();
   G.mode = 'solo'; G.phase = 'idle'; G.t = null; G.result = null; G.online.started = false; G.online.chat = []; G.online.unread = 0; $('chat').hidden = true; $('conn').textContent = '';
   input.setMode('none'); view.reset(); view.setView('shooter'); view.aim(null); view.marker(null); banner('');
