@@ -12,7 +12,7 @@ export const RIVALS = {
 };
 const HERO = { nick: '„Der Herausforderer“', height: 182, reach: 185, weight: 76 };
 export const WALK = { each: 3.6, face: 3.2 };                    // Sekunden
-const SPAN = { before: 0.9, after: 0.75 }, SLOW = 0.4;
+const SPAN = { before: 0.9, after: 0.75, down: 0.4 }, SLOW = 0.4;
 const LINES = {
   jab: ['Saubere Führhand.', 'Der Jab sitzt.', 'Er hält ihn mit dem Jab auf Abstand.'],
   cross: ['Volltreffer mit der Schlaghand!', 'Der Cross kommt durch!', 'Gerade durch die Mitte!'],
@@ -159,7 +159,7 @@ export function createShow({ view, audio, shell, onSkip }) {
       const entered = s.phase !== phase; if (entered) { phase = s.phase; if (s.phase === 'fight' || s.phase === 'intro') { stopReplay(); panel.hidden = true; panelKey = ''; } if (s.phase === 'fight') { for (const e of [panel, replayUi]) e.hidden = true; } }
       if (on) {
         // Niederschlag des Gegners: sofortige Wiederholung während des Anzählens (der eigene Aufsteh-Balken bleibt frei)
-        if (s.phase === 'down' && s.down.who !== shell.state.me && ko && !ko.played && !rep) { ko.played = true; playClip(ko, [0, 1], 'down'); }
+        if (s.phase === 'down' && s.down.who !== shell.state.me && ko && !ko.played && !rep) { ko.played = true; playClip(Object.assign({}, ko, { frames: ko.frames.filter((f) => f.t >= ko.at - SPAN.down) }), [0, 1], 'down'); }
         if (s.phase === 'over' && (s.how === 'ko' || s.how === 'tko') && s.pt > 1.6 && s.pt < 2.4 && !rep && (ko || best)) { const c = ko || best; if (!c.final) { c.final = true; playClip(c, [1], 'ko'); } }
         if (s.phase === 'rest') {
           if (best && !best.rested && s.pt < 0.4 && !rep) { best.rested = true; playClip(best, [0], 'rest'); }

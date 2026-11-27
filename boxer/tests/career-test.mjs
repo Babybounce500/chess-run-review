@@ -99,5 +99,31 @@ try {
   await h.click('#btnHigh'); await sleep(300); await h.keyboard.press('Enter'); await sleep(300); ok('Enter überspringt ihn', (await info(h)).replay === null);
   await h.click('#btnAgain'); ok('Neuer Kampf ohne alten Höhepunkt', !!(await until(async () => (await info(h)).walk !== null, 5000, 'neu')) && !(await visible(h, '#btnHigh')));
   ok('Keine Fehler', !h.errors.length, h.errors);
+  console.log('Korrekturen aus der Gegenprüfung');
+  const k = await T.open({ width: 1280, height: 720 }, '?speed=1&nosw&show=0');
+  await k.click('#btnTrain'); await fighting(k);
+  await k.evaluate(() => { let n = -1; const loop = () => { if (!window.__game.training().active || window.__game.reaction() !== null) return; const s = window.__game.sim(), a = s.f[1].act; if (a && s.f[1].stats.thrown !== n) { n = s.f[1].stats.thrown; setTimeout(() => { dispatchEvent(new KeyboardEvent('keydown', { code: 'Space' })); setTimeout(() => dispatchEvent(new KeyboardEvent('keyup', { code: 'Space' })), 300); }, Math.max(0, ({ jab: 0.14, cross: 0.25, hook: 0.28, upper: 0.32 })[a.k] * a.slow * 1000 - 100)); } requestAnimationFrame(loop); }; loop(); });
+  ok('Training misst die Reaktionszeit', !!(await until(() => k.evaluate(() => window.__game.reaction()), 20000, 'reaktion')) && !!(await until(async () => /Reaktion \d+ ms/.test(await text(k, '#trainStats')), 4000, 'anzeige')), await text(k, '#trainStats'));
+  await k.click('#btnPause'); await k.click('#btnQuit');
+  // verlassen, nachdem entschieden ist, aber vor dem Abschlussbild
+  await k.click('#btnSolo'); await fighting(k); await set(k, { win: 1 }); await sleep(600);
+  await k.click('#btnPause'); await k.click('#btnQuit'); await sleep(300);
+  ok('Vor dem Abschlussbild gegangen: Niederlage zählt trotzdem, genau einmal', JSON.parse(await store(k, 'cpu_normal') || '{}').l === 1, await store(k, 'cpu_normal'));
+  await k.click('#btnSolo'); await fighting(k); await set(k, { win: 0 }); await sleep(600);
+  await k.click('#btnPause'); await k.click('#btnQuit'); await sleep(300);
+  const rec = JSON.parse(await store(k, 'cpu_normal') || '{}');
+  ok('Ebenso ein Sieg mit Rangpunkten', rec.w === 1 && rec.l === 1 && Number(await store(k, 'rank')) === 30, [rec, await store(k, 'rank')]);
+  await k.click('#btnSolo'); await fighting(k); await set(k, { win: 0 }); await ended(k); await sleep(500); await k.click('#btnMenu');
+  ok('Normaler Weg zählt nicht doppelt', JSON.parse(await store(k, 'cpu_normal')).w === 2 && Number(await store(k, 'rank')) === 60, [await store(k, 'cpu_normal'), await store(k, 'rank')]);
+  // Pause in der letzten Sekunde
+  await k.click('#btnShow'); await k.click('#btnSolo'); await sleep(500); await k.keyboard.press('Enter'); await fighting(k);
+  for (let i = 0; i < 14; i++) { await set(k, { gap: 1.15, hp: [100, 90], clock: 55 }); await k.keyboard.press('KeyK'); await sleep(800); if ((await info(k)).best >= 8.5) break; }
+  await set(k, { win: 0 }); await until(async () => (await sim(k)).pt > 6.7, 12000, 'kurz vor ende'); await k.keyboard.press('Escape');
+  ok('Abschlussbild nach Pause: nicht eingefroren', !!(await ended(k)) && !(await shell(k)).paused, await shell(k));
+  await sleep(300); if (await visible(k, '#btnHigh')) { await k.click('#btnHigh'); await sleep(500); const a1 = (await info(k)).replay; await sleep(500); const a2 = (await info(k)).replay; ok('Höhepunkt läuft danach weiter', !!a1 && (!a2 || a2.t !== a1.t || a2.angle !== a1.angle), [a1, a2]); } else ok('Höhepunkt vorhanden', false, await info(k));
+  await k.evaluate(() => localStorage.setItem('shadowboxer_career', '5')); await k.reload(); await k.waitForFunction(() => window.__game);
+  await k.click('#btnCareer'); await k.click('#careerReset'); await k.click('#careerReset'); await k.click('#careerBack');
+  ok('Nach „Karriere neu beginnen“ kein Gürtelträger mehr im Menü', !/Gürtelträger/.test(await text(k, '#rankBadge')), await text(k, '#rankBadge'));
+  ok('Keine Fehler', !k.errors.length, k.errors); await k.browserContext().close();
 } catch (e) { T.abort(e); }
 await T.done();

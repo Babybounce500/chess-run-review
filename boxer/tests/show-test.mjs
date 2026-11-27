@@ -42,17 +42,22 @@ try {
     ok(n + ': Gegner heißt in der Anzeige beim Namen', (await shell(p)).names[1] === 'Viktor Sand' && (await p.$eval('.fbar.f1 .who b', (e) => e.textContent)) === 'Viktor Sand');
 
     console.log('Wiederholung ' + n);
+    // Gegner liegen lassen, solange die Wiederholung geprüft wird: sonst steht er je nach Zufall schon nach gut 1,2 s auf.
+    // need höchstens 20, größere Werte verwirft sim.unpack und dann wird nichts mehr aufgezeichnet.
+    await p.evaluate(() => { window.__hold = true; const f = () => { if (!window.__hold) return; const s = window.__game.sim(); if (s && s.phase === 'down' && s.down.who === 1) { if (s.down.keep === undefined) s.down.keep = s.down.need; s.down.need = 20; } requestAnimationFrame(f); }; f(); });
     const down = await floorRival(p);
     ok(n + ': Niederschlag löst die sofortige Wiederholung aus', down && !!(await until(async () => (await info(p)).replay?.kind === 'down', 4000, 'replay')), await info(p));
     await sleep(500);
     // alles in einem Zug lesen, das Bildschirmfoto dauert sonst dazwischen
-    const probe = () => p.evaluate(() => ({ i: window.__game.show(), pt: window.__game.sim().pt, shot: window.__game.view().shot, ui: !document.getElementById('replay').hidden, now: performance.now() }));
+    const probe = () => p.evaluate(() => ({ i: window.__game.show(), pt: window.__game.sim().pt, phase: window.__game.sim().phase, shot: window.__game.view().shot, ui: !document.getElementById('replay').hidden, now: performance.now() }));
     const r1 = await probe(); await sleep(500); const r2 = await probe();
-    ok(n + ': Wiederholung läuft in Zeitlupe, Anzählen geht weiter', !!r1.i.replay && r1.ui && r1.pt > 0.3 && r2.pt > r1.pt && r1.shot.startsWith('replay'), r1);
+    ok(n + ': Wiederholung läuft in Zeitlupe, Anzählen geht weiter', [r1, r2].every((q) => q.phase === 'down' && q.i.replay?.kind === 'down' && q.ui && q.shot.startsWith('replay')) && r1.pt > 0.3 && r2.pt > r1.pt, [r1, r2]);
     const pace = r2.i.replay && r2.i.replay.angle === r1.i.replay.angle ? (r2.i.replay.t - r1.i.replay.t) / ((r2.now - r1.now) / 1000) : null;
-    ok(n + ': etwa 0,4-faches Tempo', pace === null || (pace > 0.25 && pace < 0.55), pace);
+    ok(n + ': etwa 0,4-faches Tempo', pace !== null && pace > 0.25 && pace < 0.55, pace);
     await shot(p, n + '-4-wiederholung');
-    if (await visible(p, 'btnSkipShow')) { await p.click('#btnSkipShow'); await sleep(200); ok(n + ': Überspringen beendet die Wiederholung', (await info(p)).replay === null); }
+    const skippable = await visible(p, 'btnSkipShow'); if (skippable) { await p.click('#btnSkipShow'); await sleep(200); }
+    ok(n + ': Überspringen beendet die Wiederholung', skippable && (await info(p)).replay === null);
+    await p.evaluate(() => { window.__hold = false; const s = window.__game.sim(); if (s.down) s.down.need = s.down.keep; });
 
     console.log('Rundenpause ' + n);
     await until(async () => (await sim(p)).phase !== 'down', 20000, 'weiter');

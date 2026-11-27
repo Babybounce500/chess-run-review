@@ -20,7 +20,7 @@ function fighter() {
     downs: 0, roundDowns: 0, combo: 0, comboT: 0,
     prev: {},
     stats: { thrown: 0, landed: 0, power: 0, counters: 0, parries: 0, evades: 0, damage: 0, knockdowns: 0 },
-    round: { damage: 0, landed: 0, knockdowns: 0 }
+    round: { damage: 0, landed: 0, knockdowns: 0, blocked: 0 }
   };
 }
 
@@ -58,10 +58,11 @@ function startPunch(s, who, k, body, side) {
 // Der Schlag kommt an: Reichweite, Ausweichen, Parade, Deckung, Treffer
 function land(s, who) {
   const a = s.f[who], d = s.f[1 - who], act = a.act, P = PUNCH[act.k], foe = 1 - who;
+  const open_ = FIGHT.counterWindow * (s.drill ? s.pace || 1 : 1);
   act.done = 1;
   const whiff = (why) => {
     act.miss = 1; a.st = Math.max(0, a.st - P.cost * FIGHT.whiffCost); a.combo = 0;
-    if (why === 'slip' || why === 'duck') { d.counter = FIGHT.counterWindow; d.stats.evades++; emit(s, 'evade', { side: foe, k: act.k, how: why === 'slip' ? 0 : 1 }); }
+    if (why === 'slip' || why === 'duck') { d.counter = open_; d.stats.evades++; emit(s, 'evade', { side: foe, k: act.k, how: why === 'slip' ? 0 : 1 }); }
     else emit(s, 'whiff', { side: who, k: act.k });
   };
   if (s.gap > P.range) return whiff('far');
@@ -75,7 +76,7 @@ function land(s, who) {
   const guarding = d.guard && d.stun <= 0 && !d.act;
   const rightHeight = !!d.low === !!act.body;
   if (guarding && rightHeight && d.gt <= FIGHT.parryWindow && P.line !== 'upper') {
-    a.stun = FIGHT.parryStun; a.act.miss = 1; a.combo = 0; d.counter = FIGHT.counterWindow + 0.2; d.stats.parries++;
+    a.stun = FIGHT.parryStun; a.act.miss = 1; a.combo = 0; d.counter = open_ + 0.2; d.stats.parries++;
     emit(s, 'parry', { side: foe, k: act.k, gt: Math.round(d.gt * 1000) });
     return;
   }
@@ -84,7 +85,7 @@ function land(s, who) {
     const through = dmg * share * (P.line === 'upper' ? 1.6 : 1);
     d.st = Math.max(0, d.st - dmg * FIGHT.guardCost); d.rest = FIGHT.regenDelay; d.hp = Math.max(1, d.hp - through * 0.6);
     if (d.st <= 0) { d.stun = 0.5; d.guard = 0; emit(s, 'break', { side: foe }); }
-    a.combo = 0; emit(s, 'block', { side: foe, k: act.k, body: act.body, gt: Math.round(Math.min(d.gt, 9) * 1000) });
+    a.combo = 0; a.round.blocked++; emit(s, 'block', { side: foe, k: act.k, body: act.body, gt: Math.round(Math.min(d.gt, 9) * 1000) });
     return;
   }
   // Sauberer Treffer
@@ -124,7 +125,7 @@ function scoreRound(s) {
   const card = [];
   for (let j = 0; j < 3; j++) {
     const bias = (rnd(s) - 0.5) * 6;
-    const diff = (x.damage - y.damage) + (x.landed - y.landed) * 0.8 + bias;
+    const diff = (x.damage - y.damage) + (x.landed - y.landed) * 0.8 + (x.blocked - y.blocked) * FIGHT.aggression + bias;
     let a = 10, b = 10;
     if (Math.abs(diff) > 2.5) { if (diff > 0) b = 9; else a = 9; }
     a -= y.knockdowns; b -= x.knockdowns;
@@ -150,7 +151,7 @@ function startRound(s) {
   s.round++; s.clock = MATCH.roundTime; s.phase = 'intro'; s.pt = 0; s.gap = RING.startGap; s.down = null;
   for (const p of s.f) {
     p.hp = Math.min(FIGHT.hp, p.hp + (FIGHT.hp - p.hp) * 0.4); p.max = Math.min(FIGHT.stamina, p.max + 12); p.st = p.max;
-    p.lean = 0; p.duck = 0; p.hurt = 0; p.counter = 0; p.combo = 0; p.roundDowns = 0; p.round = { damage: 0, landed: 0, knockdowns: 0 };
+    p.lean = 0; p.duck = 0; p.hurt = 0; p.counter = 0; p.combo = 0; p.roundDowns = 0; p.round = { damage: 0, landed: 0, knockdowns: 0, blocked: 0 };
   }
 }
 
@@ -250,17 +251,22 @@ function cpu(s, side, level, dt) {
     return out;
   }
   if (s.phase !== 'fight') return out;
+  // Wer eintönig boxt (unter den letzten sechs Schlägen höchstens zwei Arten), wird gelesen. Drei Arten im Wechsel bleiben unberechenbar
+  if (foe.act && foe.stats.thrown !== b.count) { b.count = foe.stats.thrown; b.hist = (b.hist || []).concat(foe.act.k).slice(-6); b.rep = b.hist.length >= 4 && new Set(b.hist).size <= 2 ? b.hist.filter((k) => k === foe.act.k).length : 0; if ((b.rep - 2) * (L.learn ?? 1) >= 1) b.def = null; }
+  const read = Math.max(0, (b.rep || 0) - 2) * (L.learn ?? 1);
   // Abwehr: neuen Schlag bemerken, nach der Reaktionszeit entscheiden
   if (foe.act && !foe.act.done) {
     if (!b.def) {
-      const will = R() < L.guard * (me.st < 12 ? 0.5 : 1), smart = R() < L.smart;
-      b.def = { at: L.react * (0.85 + R() * 0.3), will, smart, roll: R(), side: R() < 0.5 ? -1 : 1, t: 0 };
+      const will = R() < Math.max(L.guard * (me.st < 12 ? 0.5 : 1), Math.min(0.9, read * 0.3)), smart = R() < L.smart;
+      b.def = { at: L.react * (0.85 + R() * 0.3) * (read >= 1 ? 0.5 : 1), will, smart, roll: R(), side: R() < 0.5 ? -1 : 1, t: 0, read: read >= 1 };
     }
     b.def.t += dt;
   } else if (b.def) { b.def.t += dt; if (b.def.t > b.def.at + 0.45) b.def = null; }
   if (b.def && b.def.will && b.def.t >= b.def.at && foe.act && !me.act) {
     const k = foe.act.k, body = foe.act.body, line = PUNCH[k].line;
-    if (!b.def.smart) { out.block = true; out.body = b.def.roll < 0.3; }
+    // gelesener Schlag: in passender Höhe decken und gleich danach zurückschlagen
+    if (b.def.read) { if (!foe.act.done) { out.block = true; out.body = !!body; return out; } if (R() < L.counter * 0.6) { b.plan = [s.gap <= PUNCH.hook.range ? 'hook' : 'cross']; b.next = 0.5; } b.def = null; }
+    else if (!b.def.smart) { out.block = true; out.body = b.def.roll < 0.3; }
     else if (body) { out.block = true; out.body = true; }
     else if (line === 'hook') { if (b.def.roll < (L.duck ?? 0.55)) out.duck = true; else out.block = true; }
     else if (line === 'upper') { if (b.def.roll < 0.7) out.x = b.def.side; else out.block = true; }

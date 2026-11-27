@@ -4,6 +4,7 @@ export const TIERS = [
   { name: 'Platin', from: 450, icon: '💠' }, { name: 'Diamant', from: 700, icon: '💎' }, { name: 'Champion', from: 1000, icon: '👑' }
 ];
 const BASE = { win: 25, ko: 5, draw: 4, loss: -12 };
+const MIN_PUNCHES = 10;
 // weight: wie viel ein Sieg zählt. cap: ab so vielen Punkten bringt dieser Gegner nichts mehr (kein Sammeln an Schwachen)
 export const SOURCES = {
   easy: { weight: 0.6, cap: 250 }, normal: { weight: 1, cap: 700 }, hard: { weight: 1.4, cap: Infinity },
@@ -17,9 +18,11 @@ export function tierOf(points) {
   return Object.assign({ index: i, next, share: next ? (points - TIERS[i].from) / (next.from - TIERS[i].from) : 1 }, TIERS[i]);
 }
 // result: 'win' | 'draw' | 'loss'
-export function applyFight(points, source, result, ko) {
+// thrown: eigene Schläge. Ein Unentschieden ohne zu boxen bringt nichts
+export function applyFight(points, source, result, ko, thrown) {
   const src = SOURCES[source]; if (!src || !(result in BASE)) return { points, gain: 0, capped: false, up: 0 };
-  let gain = result === 'loss' ? BASE.loss : Math.round((BASE[result] + (result === 'win' && ko ? BASE.ko : 0)) * src.weight), capped = false;
+  const idle = result === 'draw' && thrown !== undefined && thrown < MIN_PUNCHES;
+  let gain = result === 'loss' ? BASE.loss : idle ? 0 : Math.round((BASE[result] + (result === 'win' && ko ? BASE.ko : 0)) * src.weight), capped = false;
   if (gain > 0 && points + gain > src.cap) { gain = Math.max(0, src.cap - points); capped = true; }
   const next = Math.max(0, points + gain);
   return { points: next, gain: next - points, capped, up: Math.sign(tierOf(next).index - tierOf(points).index) };

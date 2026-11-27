@@ -1,9 +1,9 @@
 // Karriere: fünf erfundene Gegner mit eigenem Stil bis zum Titelkampf. Fortschritt bleibt auf dem Gerät.
 export const OPPONENTS = [
   { key: 'k1', name: 'Rocco Brandt', nick: '„Der Neuling“', height: 178, reach: 180, weight: 74, record: '4 – 3', style: 'Wilder Schläger mit weiten Haken', tip: 'Ducke unter den Haken weg und kontere.' },
-  { key: 'k2', name: 'Milan Kord', nick: '„Die Mauer“', height: 181, reach: 182, weight: 78, record: '11 – 2', style: 'Steht hinter hoher Deckung', tip: 'Er schlägt selten. Wechsle zwischen Kopf und Körper, Körpertreffer rauben ihm die Luft.' },
+  { key: 'k2', name: 'Milan Kord', nick: '„Die Mauer“', height: 181, reach: 182, weight: 78, record: '11 – 2', style: 'Steht hinter hoher Deckung', tip: 'Er schlägt selten. Wechsle Jab, Cross und Haken zum Kopf und nimm bei seinen Schlägen die Deckung hoch.' },
   { key: 'k3', name: 'Viktor Sand', nick: '„Sandsturm“', height: 183, reach: 187, weight: 76, record: '17 – 4', style: 'Schlagserien ohne Pause', tip: 'Deckung halten, bis ihm die Luft ausgeht, dann angreifen.' },
-  { key: 'k4', name: 'Dario Venn', nick: '„Der Schatten“', height: 180, reach: 190, weight: 75, record: '21 – 1', style: 'Hält Abstand, weicht aus und kontert', tip: 'Haken gehen bei ihm oft ins Leere. Bleib bei Jab und Cross.' },
+  { key: 'k4', name: 'Dario Venn', nick: '„Der Schatten“', height: 180, reach: 190, weight: 75, record: '21 – 1', style: 'Hält Abstand und kontert', tip: 'Haken gehen bei ihm oft ins Leere. Bleib bei Jab und Cross.' },
   { key: 'k5', name: 'Ilja Stahl', nick: '„Der Amboss“', height: 186, reach: 192, weight: 79, record: '29 – 1', style: 'Champion: harte Hände, geht zum Körper', tip: 'Tiefe Deckung gegen den Körper, nach der Parade zuschlagen.', title: true }
 ];
 export const byKey = (key) => OPPONENTS.find((o) => o.key === key) || null;

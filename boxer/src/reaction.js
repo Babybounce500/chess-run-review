@@ -1,23 +1,27 @@
-// Schnellste Reaktion: Zeit vom Ausholen des Gegners bis zum Beginn der eigenen Abwehr, die Erfolg hatte.
+// Schnellste Reaktion: Zeit vom Ausholen des Gegners bis zum eigenen Tastendruck, der die erfolgreiche Abwehr eingeleitet hat.
+// Gemessen wird an der Eingabe und an der Spielzeit, die gerade zu sehen ist: online zählt so weder Leitung noch Ausgleich mit.
+import { windOf } from './sim.js';
+
 const FASTEST = 0.08;            // darunter war es geraten, nicht reagiert
 
 export function createReaction() {
-  let thrown = -1, start = null, onset = null, was = false, best = null, last = null;
-  const defending = (f) => f.guard === 1 || Math.abs(f.lean) > 0.15 || f.duck > 0.15;
+  let thrown = -1, start = null, until = 0, onset = null, was = false, best = null, last = null;
   return {
-    reset() { thrown = -1; start = null; onset = null; was = false; best = null; last = null; },
-    // je Bild mit dem angezeigten Zustand
+    reset() { thrown = -1; start = null; until = 0; onset = null; was = false; best = null; last = null; },
+    // je Bild mit dem angezeigten Zustand: neuer Schlag des Gegners?
     update(s, me) {
       if (!s) return;
-      const f = s.f[me], foe = s.f[1 - me], now = defending(f);
-      if (foe.act && foe.stats.thrown !== thrown) { thrown = foe.stats.thrown; start = s.t - foe.act.t; onset = null; was = was && now; }
-      // nur ein Wechsel in die Abwehr zählt; wer schon vorher abgewehrt hat, hat nicht reagiert
-      if (now && !was && start !== null && onset === null) onset = s.t;
-      was = now;
+      const foe = s.f[1 - me];
+      if (foe.act && foe.stats.thrown !== thrown) { thrown = foe.stats.thrown; start = s.t - foe.act.t; until = start + windOf(foe.act) + 0.02; onset = null; }
+    },
+    // eigene Eingabe: nur ein neuer Druck zwischen Ausholen und Einschlag zählt, der letzte gewinnt
+    input(t, defending) {
+      if (defending && !was && start !== null && t >= start && t <= until) onset = t;
+      was = !!defending;
     },
     // beim Ereignis „ausgewichen“ oder „pariert“ der eigenen Seite
     success() {
-      if (start === null || onset === null) return null;
+      if (onset === null) return null;
       const r = onset - start; onset = null;
       if (r < FASTEST || r > 1) return null;
       last = Math.round(r * 1000); if (best === null || last < best) best = last;

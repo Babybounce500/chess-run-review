@@ -1,5 +1,8 @@
 # Änderungsprotokoll
 
+## 2026-11-27 (Shadow Boxer, Korrekturen nach Gegenprüfung)
+- Richter werten auch geblockte Schläge; starke Computergegner lesen eintöniges Boxen. Entschiedene Kämpfe zählen auch bei vorzeitigem Verlassen. Reaktionszeit am Tastendruck gemessen, jetzt auch im Training. Pause am Kampfende, Trainingshinweise, Gegnertipps und Wiederholung beim Niederschlag korrigiert.
+
 ## 2026-11-27 (Shadow Boxer, Phase 4)
 - Karriere mit fünf Gegnern bis zum Titel, Rangstufen von Bronze bis Champion, Training mit sichtbaren Zeitfenstern, schnellste Reaktion und Höhepunkt-Wiederholung nach dem Kampf.
 

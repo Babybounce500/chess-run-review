@@ -49,7 +49,7 @@ Statt Wischen lassen sich im Menü Schlagknöpfe einstellen.
 Fünf erfundene Gegner mit eigenem Stil, nacheinander freigeschaltet, der letzte ist der Titelkampf: Rocco Brandt (wilde Haken), Milan Kord (hohe Deckung), Viktor Sand (Schlagserien), Dario Venn (Abstand und Konter), Ilja Stahl (Champion, geht zum Körper). Zu jedem gibt es einen Tipp.
 
 ## Rang
-Bronze 0 · Silber 100 · Gold 250 · Platin 450 · Diamant 700 · Champion 1000. Sieg +25 (K. o. +5) mal Gewicht des Gegners, Unentschieden +4, Niederlage −12. Leichte Gegner bringen nur bis zu einer Grenze Punkte. Gespeichert nur auf dem Gerät; ein abgebrochener Kampf zählt nicht.
+Bronze 0 · Silber 100 · Gold 250 · Platin 450 · Diamant 700 · Champion 1000. Sieg 25 (K. o. 30), Unentschieden 4 (nur mit mindestens zehn eigenen Schlägen), jeweils mal Gewicht des Gegners; Niederlage −12. Obergrenzen, bis zu denen ein Gegner Punkte bringt: Leicht und Rocco 250, Milan 450, Normal und Viktor 700, alle anderen ohne Grenze. Gespeichert nur auf dem Gerät. Ein vor der Entscheidung abgebrochener Kampf zählt nicht.
 
 ## Training
 Partner ohne Uhr und Niederschläge. Übungen „Frei“, „Parade“, „Kontern“, Schlag und Tempo wählbar. Die Leiste zeigt die Ausholbewegung, grün ist das Paradefenster (die letzten 150 ms), darunter das Konterfenster. Rückmeldung in Millisekunden.

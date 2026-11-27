@@ -2,6 +2,7 @@
 import { sim, windOf, totals } from '../src/sim.js';
 import { PUNCH, FIGHT, MATCH, DOWN, RING } from '../src/config.js';
 import { applyFight, tierOf } from '../src/rank.js';
+import { createReaction } from '../src/reaction.js';
 let pass = 0, fail = 0;
 const ok = (n, c, x) => { if (c) { pass++; console.log('  ok   ' + n); } else { fail++; console.log('  FAIL ' + n + (x !== undefined ? '  -> ' + JSON.stringify(x) : '')); } };
 const DT = 1 / 60, N = () => sim.cleanInput({});
@@ -172,6 +173,39 @@ console.log('Rang');
   r = applyFight(245, 'easy', 'win', true); ok('An leichten Gegnern endet das Sammeln', r.points === 250 && r.capped && applyFight(600, 'easy', 'win').gain === 0);
   ok('Starke Gegner zählen immer', applyFight(1200, 'k5', 'win').gain > 0 && applyFight(1200, 'online', 'win').gain > 0);
   ok('Training und Unbekanntes zählen nicht', applyFight(50, 'train', 'win').points === 50);
+}
+
+console.log('Keine Abkürzungen');
+{
+  const play = (level, strat, n = 60) => { let w = 0, l = 0; for (let i = 1; i <= n; i++) { const q = sim.create(i * 7919); let m = 0; for (; m < 60 * 400 && sim.winner(q) === null; m++) sim.step(q, [inp(strat(q, m)), sim.cleanInput(sim.cpu(q, 1, level, DT))], DT); if (q.win === 0) w++; else if (q.win === 1) l++; } return { w, l, n }; };
+  const hold = ['normal', 'hard', 'k1', 'k5'].map((k) => play(k, () => ({ block: true }), 40));
+  ok('Wer nur die Deckung hält, gewinnt nie', hold.every((r) => r.w === 0 && r.l > r.n * 0.9), hold);
+  const one = (k, hz) => (s, m) => { const per = Math.round(60 / hz); return { [k]: m % per < Math.min(6, per / 2), y: s.gap > PUNCH[k].range - 0.08 ? -1 : 0 }; };
+  const spam = ['hard', 'k4', 'k5'].map((k) => play(k, one('cross', 2)));
+  console.log('    nur Cross gegen schwer, Venn, Stahl: ' + spam.map((r) => r.w + '/' + r.n).join(' · '));
+  ok('Ein einziger Schlag reicht gegen starke Gegner nicht', spam.every((r) => r.w < r.n * 0.25), spam);
+  const mid = play('normal', one('cross', 2));
+  ok('auch gegen den normalen Computer verliert Dauerfeuer meistens', mid.w < mid.n * 0.5, mid);
+  const baby = play('easy', one('cross', 2));
+  ok('Anfänger dürfen gegen Leicht trotzdem draufhauen', baby.w > baby.n * 0.7, baby);
+}
+{
+  const a = sim.create(1); a.phase = 'fight'; a.gap = 1.1; run(a, 0.4, N, inp({ block: true })); run(a, 0.4, (x, t) => inp({ jab: t < 0.02 }), inp({ block: true }));
+  ok('Richter sehen geblockte Schläge', a.f[0].round.blocked === 1, a.f[0].round);
+  const dodge = (pace, drill) => { const q = scene(1.1); q.pace = pace; if (drill) q.drill = { mode: 'counter', k: 'jab' }; run(q, 0.35, N, (x, t) => inp({ jab: t > 0.1 && t < 0.12 })); const w = scene(1.1); w.pace = pace; if (drill) w.drill = { mode: 'counter', k: 'jab' }; let c = 0; for (let t = 0; t < 1; t += DT) { sim.step(w, [inp({ x: 1 }), inp({ jab: t > 0.15 && t < 0.17 })], DT); c = Math.max(c, w.f[0].counter); } return c; };
+  ok('Im langsamen Training wächst das Konterfenster mit', Math.abs(dodge(1.6, true) - FIGHT.counterWindow * 1.6) < 0.03 && Math.abs(dodge(1.25, false) - FIGHT.counterWindow) < 0.03, [dodge(1.6, true), dodge(1.25, false)]);
+  ok('Unentschieden ohne zu boxen bringt keine Punkte', applyFight(50, 'hard', 'draw', false, 0).gain === 0 && applyFight(50, 'hard', 'draw', false, 40).gain === 6);
+}
+{
+  const r = createReaction(), foe = (t, thrown) => ({ t, f: [{}, { act: { k: 'cross', t: 0.02, slow: 1 }, stats: { thrown } }] });
+  r.update(foe(1.02, 1), 0); r.input(1.05, false); r.input(1.2, true);
+  ok('Reaktion: Zeit vom Ausholen bis zum Druck', r.success() === 200, r.last());
+  r.update(foe(2.02, 2), 0); r.input(2.05, false); r.input(2.09, true); r.input(2.11, false); r.input(2.22, true);
+  ok('Reaktion: der letzte Druck zählt, nicht der Fehlversuch', r.success() === 220, r.last());
+  r.update(foe(3.02, 3), 0); r.input(3.05, false); r.input(3.5, true);
+  ok('Reaktion: Druck nach dem Einschlag zählt nicht', r.success() === null);
+  r.input(3.9, true); r.update(foe(4.02, 4), 0); r.input(4.2, true);
+  ok('Reaktion: wer schon vorher abwehrt, hat nicht reagiert', r.success() === null && r.best() === 200, r.best());
 }
 
 console.log(`\n${pass} bestanden, ${fail} fehlgeschlagen`);

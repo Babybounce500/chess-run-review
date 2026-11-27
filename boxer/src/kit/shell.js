@@ -99,6 +99,7 @@ export function createShell(cfg) {
     if (!draw) { rec[won ? 'w' : 'l']++; store.set(key, JSON.stringify(rec)); }
     $('endRecord').textContent = (S.mode === 'online' ? 'Bilanz gegen ' + S.names[1 - S.me] : 'Bilanz gegen den Computer (' + { easy: 'leicht', normal: 'normal', hard: 'schwer' }[S.level] + ')') + ' · Siege: ' + rec.w + ' · Niederlagen: ' + rec.l;
     if (audio) { audio.play('whistle'); if (won) audio.play('cheer'); }
+    S.paused = false;                                   // wer in der letzten Sekunde pausiert hat, soll nicht eingefroren bleiben
     banner(''); endButtons(); show('end');
   }
   function endButtons() { $('btnAgain').textContent = S.mode !== 'online' ? 'Noch einmal' : S.rematchMine ? 'Warte auf Antwort …' : S.rematchPeer ? 'Revanche annehmen' : 'Revanche'; $('btnAgain').disabled = S.mode === 'online' && S.rematchMine; }

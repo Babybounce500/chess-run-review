@@ -54,7 +54,7 @@ const shell = createShell({
     if (level === 'train') { const s = rt.state(); s.phase = 'fight'; s.gap = 1.4; training.start(s); shell.banner('TRAINING', 'role', 1200); }
   },
   onOnline: ({ role, seed }) => { online.reset(); begin(); rt.online(role, seed); rt.state().pace = NET.pace; },
-  onMenu: () => { rt.stop(); show.stop(); online.stop(); training.stop(); view.reset(); shell.state.level = shell.store.get('level', 'normal'); rankBadge(); }, onLost: () => { rt.stop(); show.stop(); online.stop(); training.stop(); }
+  onMenu: () => { leaveFight(); rt.stop(); show.stop(); online.stop(); training.stop(); view.reset(); shell.state.level = shell.store.get('level', 'normal'); rankBadge(); }, onLost: () => { leaveFight(); rt.stop(); show.stop(); online.stop(); training.stop(); }
 });
 const online = createOnline({ shell, testLag: qs.has('test') ? Math.min(500, Number(qs.get('netlag')) || 0) : 0 });
 const show = createShow({ view, audio, shell, onSkip: () => { told = false; } });
@@ -75,7 +75,10 @@ function begin() {
   show.reset(level, names, w + ' – ' + l, duel); document.getElementById('fightCard').textContent = ''; carded = false; pressAt = 0; wasBlock = false;
   training.stop(); reaction.reset(); career.close(); nextKey = null; for (const id of ['rankLine', 'btnNext', 'btnHigh']) document.getElementById(id).hidden = true;
   if (level === 'train' && shell.state.mode === 'solo') show.stop();
+  // festhalten, was für die Wertung zählt: beim Verlassen hat der Baukasten schon umgestellt
+  fight = { online: shell.state.mode === 'online', level, me: shell.state.me, names: names.slice(), training: shell.state.mode === 'solo' && level === 'train' }; done = null;
 }
+let fight = null, done = null;
 let pressAt = 0, wasBlock = false;
 
 function readInput() {
@@ -83,9 +86,12 @@ function readInput() {
   tap = false;
   for (const k of TYPES) i[k] = c[k];
   const p = queue.shift(); if (p) { i[p.k] = true; lastSide = i.side = p.side; } else if (c.hook) i.side = lastSide = -1;
+  // welchen Augenblick man beim Drücken gesehen hat (Reaktionszeit, Training, online das Aufstehen)
+  const s = rt.state();
+  if (s) { reaction.input(s.t, i.block || i.duck || Math.abs(i.x) > 0.35); if (i.block && !wasBlock) { pressAt = s.t; training.press(s.t); } }
+  wasBlock = i.block;
   if (shell.state.mode !== 'online') return i;
-  // online merken wir, welchen Augenblick man beim Drücken der Deckung gesehen hat
-  const s = rt.state(); if (i.block && !wasBlock) pressAt = s ? s.t : 0; wasBlock = i.block; i.at = i.block ? pressAt : 0;
+  i.at = i.block ? pressAt : 0;
   return shell.state.role === 'host' ? online.own(i) : i;
 }
 
@@ -118,7 +124,7 @@ rt = createRealtime({ shell: online.link, sim, readInput, onEvent, delay: NET.de
 
 const reaction = createReaction();
 const training = createTraining({ reaction });
-const career = createCareer({ store: shell.store, onFight: startFight });
+const career = createCareer({ store: shell.store, onFight: startFight, onClose: () => rankBadge() });
 // Kampf gegen einen bestimmten Gegner oder Training: Stufe setzen und den Startknopf des Baukastens benutzen
 function startFight(level, button = 'btnSolo') { shell.state.level = level; document.getElementById(button).click(); }
 const fightCard = document.createElement('div'); fightCard.id = 'fightCard'; document.getElementById('endScore').after(fightCard);
@@ -161,20 +167,37 @@ document.getElementById('btnSolo').after(modes);
 const rankLine = document.createElement('p'); rankLine.id = 'rankLine'; rankLine.hidden = true; document.getElementById('endTitle').after(rankLine);
 let nextKey = null;
 for (const [id, label, cls, fn] of [['btnHigh', '▶ Höhepunkt ansehen', 'ghost', () => show.highlight()], ['btnNext', 'Nächster Gegner ▸', 'primary', () => { if (nextKey) startFight(nextKey, 'btnAgain'); }]]) { const b = document.createElement('button'); b.type = 'button'; b.id = id; b.className = cls; b.textContent = label; b.hidden = true; b.onclick = () => { b.blur(); fn(); }; document.getElementById('btnAgain').before(b); }
-// Kampf abrechnen: Rangpunkte, Karriere, Texte
-function settle(s) {
-  const me = shell.state.me, online_ = shell.state.mode === 'online', level = shell.state.level;
-  const result = s.win === me ? 'win' : s.win === 1 - me ? 'loss' : 'draw';
-  const r = applyFight(readPoints(shell.store), online_ ? 'online' : level, result, s.how === 'ko' || s.how === 'tko'); shell.store.set('rank', String(r.points));
-  let text = rankText(r);
-  const o = !online_ && byKey(level);
-  if (o) {
-    const c = career.result(level, result === 'win'); text += '\n' + c.text; nextKey = c.next ? c.next.key : null;
-    let rec = { w: 0, l: 0 }; try { rec = JSON.parse(shell.store.get('cpu_' + level, '')) || rec; } catch (e) { /* neu */ }
-    document.getElementById('endRecord').textContent = 'Bilanz gegen ' + o.name + ' · Siege: ' + rec.w + ' · Niederlagen: ' + rec.l;
-    if (c.champion) { audio.play('fanfare'); view.excite(1); }
+// Kampf werten, sobald er entschieden ist (nicht erst beim Abschlussbild): Rangpunkte, Serie, Karriere
+function commit(s) {
+  if (done || !fight || fight.training) return;
+  const me = fight.me, level = fight.level, result = s.win === me ? 'win' : s.win === 1 - me ? 'loss' : 'draw';
+  const key = fight.online ? 'friend_' + fight.names[1 - me].toLowerCase() : 'cpu_' + level;
+  done = { key, result, before: shell.store.get(key, ''), next: null, champion: false, rival: null, shown: false };
+  if (fight.online) online.result(s.win);
+  const r = applyFight(readPoints(shell.store), fight.online ? 'online' : level, result, s.how === 'ko' || s.how === 'tko', s.f[me].stats.thrown); shell.store.set('rank', String(r.points));
+  done.text = rankText(r);
+  const o = !fight.online && byKey(level);
+  if (o) { const c = career.result(level, result === 'win'); done.text += '\n' + c.text; done.next = c.next ? c.next.key : null; done.champion = c.champion; done.rival = o.name; }
+}
+// Verlässt jemand vor dem Abschlussbild, trägt der Baukasten die Bilanz nicht mehr ein: das holen wir nach
+function leaveFight() {
+  const s = rt.state(); if (s && s.phase === 'over') commit(s);
+  if (!done || done.shown) return;
+  done.shown = true;
+  if (done.result === 'draw' || shell.store.get(done.key, '') !== done.before) return;
+  let rec = { w: 0, l: 0 }; try { rec = JSON.parse(done.before) || rec; } catch (e) { /* neu */ }
+  rec[done.result === 'win' ? 'w' : 'l']++; shell.store.set(done.key, JSON.stringify(rec));
+}
+// Abschlussbild füllen
+function showResult(s) {
+  commit(s); if (!done) return;
+  done.shown = true; nextKey = done.next;
+  if (done.rival) {
+    let rec = { w: 0, l: 0 }; try { rec = JSON.parse(shell.store.get(done.key, '')) || rec; } catch (e) { /* neu */ }
+    document.getElementById('endRecord').textContent = 'Bilanz gegen ' + done.rival + ' · Siege: ' + rec.w + ' · Niederlagen: ' + rec.l;
   }
-  rankLine.textContent = text; rankLine.hidden = false;
+  if (done.champion) { audio.play('fanfare'); view.excite(1); }
+  rankLine.textContent = done.text; rankLine.hidden = false;
   document.getElementById('btnNext').hidden = !nextKey;
   document.getElementById('btnHigh').hidden = !show.hasHighlight();
 }
@@ -198,13 +221,14 @@ function loop(now) {
   const s = rt.update(rt.mode() === 'guest' ? real : dir.hold || gate.waiting ? 0 : real * SPEED * rate);
   const live = rt.state();
   training.update(s, shell.state.screen === 'play');
-  if (playing && !dir.busy && !training.active()) reaction.update(s, shell.state.me);
+  if (playing && !dir.busy) reaction.update(live, shell.state.me);
+  if (live && live.phase === 'over') commit(live);
   if (live && training.active()) shell.setSub('Training');
   else if (live) {
     shell.setSub(live.phase === 'rest' ? 'Pause' : 'Runde ' + live.round + '/' + MATCH.rounds + ' · ' + Math.floor(Math.ceil(live.clock) / 60) + ':' + String(Math.ceil(live.clock) % 60).padStart(2, '0') + online.status());
     if (!dir.hold && !gate.waiting && live.phase === 'intro' && live.pt < 0.2 && playing && !told) { told = true; shell.banner(live.round === MATCH.rounds ? 'LETZTE RUNDE' : 'RUNDE ' + live.round, 'role', 1700); } else if (live.phase !== 'intro') told = false;
     if (shell.state.over) {
-      if (!carded) { carded = true; if (shell.state.mode === 'online') online.result(live.win); show.resultSheet(fightCard, live); settle(live); }
+      if (!carded) { carded = true; show.resultSheet(fightCard, live); showResult(live); }
       const e = document.getElementById('endScore'), t = verdict(live); if (e.textContent !== t) e.textContent = t;
     }
   }

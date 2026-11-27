@@ -86,10 +86,15 @@ try {
     ok('Revanche: beide wieder beim Einmarsch', !!(await until(async () => (await show(a)).walk !== null && (await show(b)).walk !== null && (await sim(a)).t === 0, 8000, 'revanche')));
     ok('Serie läuft weiter', (await net(a)).series.join() === before.join() && (await net(b)).series.join() === before.join(), [before, (await net(a)).series, (await net(b)).series]);
     await a.bringToFront(); await a.click('#btnSkipShow'); await b.bringToFront(); await b.click('#btnSkipShow'); ok('Zweiter Kampf beginnt', !!(await fighting(a, b)));
+    await until(async () => (await sim(a)).phase === 'fight', 8000, 'k2'); await set(a, { round: 3, clock: 0.4, hp: [100, 100] });
+    await until(async () => (await sim(b)).phase === 'over', 8000, 'entschieden');
+    const key = (p, n) => p.evaluate((n) => localStorage.getItem('shadowboxer_friend_' + n), n), count = (s) => { const r = JSON.parse(s || '{"w":0,"l":0}'); return r.w + r.l; };
+    const had = count(await key(a, 'ben')), decided = (await sim(a)).win;
     // Verlassen
-    await b.bringToFront(); await b.click('#btnPause'); await b.click('#btnQuit');
+    await b.bringToFront(); await b.keyboard.press('Escape'); await sleep(250); await b.click('#btnQuit');     // im Querformat verdeckt die Richtertafel die Knöpfe
     ok('Gast geht: Gastgeber erfährt es', !!(await until(async () => (await shell(a)).screen === 'lost', 8000, 'weg')));
     await a.bringToFront(); await sleep(300);
+    ok('Entschiedener Kampf zählt, auch wenn der andere sofort geht', decided < 0 || count(await key(a, 'ben')) === had + 1, [decided, had, await key(a, 'ben')]);
     ok('Keine Einblendung bleibt hängen', (await a.evaluate(() => ['lower', 'tale', 'replay', 'panel', 'ticker', 'btnSkipShow'].filter((id) => !document.getElementById(id).hidden))).length === 0);
     await a.click('#lostMenu'); await a.click('#btnSolo');
     ok('Danach wieder allein spielbar, ohne Ausgleich und Online-Tempo', !!(await until(async () => (await shell(a)).mode === 'solo' && (await show(a)).walk !== null, 6000, 'solo')) && !(await sim(a)).pace && (await net(a)).lag === 0);
